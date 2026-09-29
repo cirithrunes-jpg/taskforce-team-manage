@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11130f">
+<title>TASKFORCE Control Center</title>
+<link rel="stylesheet" href="css/style.css?v=20260929-cc1">
+<link rel="stylesheet" href="css/admin.css?v=20260929-cc1">
+</head>
+<body>
+<div id="adminGate" class="auth-gate show">
+  <div class="auth-card" id="adminGateCard">
+    <div class="auth-brand">
+      <div class="brand-mark">TF</div>
+      <div><strong>TASKFORCE Control Center</strong><small>Acesso restrito à administração da plataforma</small></div>
+    </div>
+    <div id="adminStatus" class="auth-message">Verificando acesso...</div>
+    <form id="adminLoginForm" class="auth-form" hidden>
+      <label>E-mail<input name="email" type="email" autocomplete="email" required></label>
+      <label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+      <button class="primary" type="submit">Entrar no Control Center</button>
+      <a class="ghost admin-link-button" href="/">Voltar ao TASKFORCE</a>
+    </form>
+  </div>
+</div>
+
+<div class="admin-shell" id="adminShell" hidden>
+  <aside class="admin-sidebar">
+    <div class="brand">
+      <div class="brand-mark">TF</div>
+      <div><strong>CONTROL CENTER</strong><small>Administração da plataforma</small></div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-admin-view="overview"><span>⌂</span><span>Visão geral</span></button>
+      <button class="nav-item" data-admin-view="teams"><span>◆</span><span>Equipes</span></button>
+      <button class="nav-item" data-admin-view="users"><span>◉</span><span>Usuários</span></button>
+      <button class="nav-item" data-admin-view="app"><span>▣</span><span>Aplicativo</span></button>
+    </nav>
+    <div class="admin-side-actions">
+      <a class="ghost admin-link-button" href="/">Abrir TASKFORCE</a>
+      <button class="ghost" id="adminLogout">Sair</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="topbar">
+      <button class="hamburger" id="adminMenuBtn">☰</button>
+      <div><h1 id="adminPageTitle">Visão geral</h1><p id="adminPageSubtitle">Panorama de toda a plataforma TASKFORCE</p></div>
+      <div class="status-chip"><span class="dot"></span><span>Produção</span></div>
+    </header>
+
+    <section class="admin-view active" id="admin-view-overview">
+      <div class="hero admin-hero">
+        <div><span class="eyebrow">PLATAFORMA</span><h2>TASKFORCE Control Center</h2><p>Indicadores globais das equipes e usuários cadastrados.</p></div>
+        <button class="ghost" id="refreshAdmin">Atualizar dados</button>
+      </div>
+
+      <div class="stats admin-stats">
+        <article class="stat"><span>Equipes</span><strong id="ccTeams">—</strong><small id="ccTeams30">— novas em 30 dias</small></article>
+        <article class="stat"><span>Usuários</span><strong id="ccUsers">—</strong><small id="ccUsers30">— novos em 30 dias</small></article>
+        <article class="stat"><span>Operadores</span><strong id="ccOperators">—</strong><small>vínculos ativos</small></article>
+        <article class="stat"><span>Administradores</span><strong id="ccAdmins">—</strong><small>administradores de equipes</small></article>
+      </div>
+
+      <div class="grid-2">
+        <article class="panel">
+          <div class="panel-head"><h3>Atividade da plataforma</h3><span class="badge">GLOBAL</span></div>
+          <div class="metric-list">
+            <div><span>Termos aceitos</span><strong id="ccTerms">—</strong></div>
+            <div><span>Acessos revogados</span><strong id="ccRevocations">—</strong></div>
+            <div><span>Equipes com mensalidade</span><strong id="ccBillingTeams">—</strong></div>
+            <div><span>Mensalidades pagas</span><strong id="ccPaid">—</strong></div>
+            <div><span>Mensalidades pendentes</span><strong id="ccPending">—</strong></div>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><h3>Estado do aplicativo</h3><span class="badge">WEB</span></div>
+          <div class="app-health">
+            <div><small>Ambiente</small><strong>Produção</strong></div>
+            <div><small>Versão web</small><strong>v0.2</strong></div>
+            <div><small>Backend</small><strong>Supabase</strong></div>
+            <div><small>Hospedagem</small><strong>Cloudflare Pages</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="admin-view" id="admin-view-teams">
+      <div class="section-head">
+        <div><h2>Equipes</h2><p>Visão administrativa das equipes criadas na plataforma.</p></div>
+        <input id="teamSearch" class="admin-search" placeholder="Buscar equipe...">
+      </div>
+      <div id="platformTeamsList" class="admin-table-wrap"></div>
+    </section>
+
+    <section class="admin-view" id="admin-view-users">
+      <div class="section-head"><div><h2>Usuários</h2><p>Indicadores de cadastro e ativação de contas.</p></div></div>
+      <div class="stats">
+        <article class="stat"><span>Confirmados</span><strong id="ccConfirmed">—</strong></article>
+        <article class="stat"><span>Não confirmados</span><strong id="ccUnconfirmed">—</strong></article>
+        <article class="stat"><span>Com perfil</span><strong id="ccWithProfile">—</strong></article>
+        <article class="stat"><span>Sem equipe</span><strong id="ccWithoutTeam">—</strong></article>
+      </div>
+      <article class="panel admin-note-panel">
+        <h3>Privacidade</h3>
+        <p>Esta primeira versão do Control Center trabalha principalmente com contagens e indicadores globais. Dados pessoais detalhados dos operadores continuam protegidos dentro das regras de cada equipe.</p>
+      </article>
+    </section>
+
+    <section class="admin-view" id="admin-view-app">
+      <div class="section-head"><div><h2>Aplicativo</h2><p>Base para operação, publicação e futura integração com a Google Play.</p></div></div>
+      <div class="settings-grid">
+        <article class="panel">
+          <h3>Web app</h3>
+          <div class="app-health">
+            <div><small>Produção</small><strong>taskforce-team-manage.pages.dev</strong></div>
+            <div><small>Versão</small><strong>v0.2</strong></div>
+            <div><small>Status</small><strong>Ativo</strong></div>
+          </div>
+        </article>
+        <article class="panel">
+          <h3>Google Play</h3>
+          <p class="meta">Ainda não conectada. Quando o aplicativo Android for publicado, esta área poderá receber dados da Play Console por API.</p>
+          <div class="future-list">
+            <span>Instalações</span><span>Avaliações</span><span>Versão publicada</span><span>Erros e ANRs</span><span>Status de lançamento</span>
+          </div>
+        </article>
+        <article class="panel">
+          <h3>Próximas integrações</h3>
+          <p class="meta">A estrutura já está separada do painel das equipes para permitir gestão centralizada da plataforma.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js?v=20260929-cc1"></script>
+<script src="js/platform-admin.js?v=20260929-cc1"></script>
+</body>
+</html>
