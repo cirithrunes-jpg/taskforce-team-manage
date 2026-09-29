@@ -378,6 +378,7 @@ async function loadTeamData(detail){
     }
   }
   renderAll();
+  await loadFinanceData();
 }
 window.addEventListener("taskforce:auth-ready",e=>loadTeamData(e.detail));
 if(window.TASKFORCE_AUTH?.state?.membership)loadTeamData(window.TASKFORCE_AUTH.state);
