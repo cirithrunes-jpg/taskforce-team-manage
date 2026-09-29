@@ -420,13 +420,17 @@ function injectSessionTools(){
   if(!top||document.getElementById("sessionTools"))return;
   const tools=document.createElement("div");
   tools.id="sessionTools";tools.className="session-tools";
-  tools.innerHTML='<button class="ghost small" id="myProfileBtn">Meu perfil</button><button class="ghost small" id="signOutBtn">Sair</button>';
+  tools.innerHTML='<a class="ghost small" id="controlCenterBtn" href="/admin.html" style="display:none;text-decoration:none">Control Center</a><button class="ghost small" id="myProfileBtn">Meu perfil</button><button class="ghost small" id="signOutBtn">Sair</button>';
   top.insertBefore(tools,top.querySelector(".status-chip"));
   document.getElementById("myProfileBtn").onclick=()=>{
     if(state.membership?.role==="operator")renderReadOnlyProfile();
     else renderProfileForm(state.session.user,state.profile||{});
   };
   document.getElementById("signOutBtn").onclick=logout;
+  rpcAuth("is_platform_admin").then(isOwner=>{
+    const btn=document.getElementById("controlCenterBtn");
+    if(btn&&isOwner)btn.style.display="inline-block";
+  }).catch(()=>{});
 }
 
 function renderReadOnlyProfile(){
