@@ -238,7 +238,7 @@ function renderCreateTeam(){
     e.preventDefault();status("Criando equipe...");
     const f=new FormData(e.target);
     try{
-      const {error}=await withTimeout(client.rpc("create_team",{team_name:String(f.get("team")).trim()}));
+      const {error}=await withTimeout(client.rpc("create_team_v2",{team_name:String(f.get("team")).trim()}));
       if(error)throw error;
       status("Equipe criada.","success");
       await finishLogin();
