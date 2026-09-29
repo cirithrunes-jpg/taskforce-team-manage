@@ -57,7 +57,31 @@
 
     <section class="view" id="view-fields"><div class="section-head"><div><h2 data-i18n="fields">Campos</h2><p data-i18n="fieldsSubtitle">Locais cadastrados com endereço e localização GPS.</p></div><button class="primary" id="addField">+ <span data-i18n="newField">Novo campo</span></button></div><div id="fieldsList" class="cards-list"></div></section>
 
-    <section class="view" id="view-finance"><div class="section-head"><div><h2 data-i18n="finance">Financeiro</h2><p data-i18n="financeSubtitle">Visão simples das entradas, despesas e saldo da equipe.</p></div></div><div class="stats"><article class="stat"><span data-i18n="income">Entradas</span><strong>R$ 0,00</strong></article><article class="stat"><span data-i18n="expenses">Despesas</span><strong>R$ 0,00</strong></article><article class="stat"><span data-i18n="balance">Saldo</span><strong>R$ 0,00</strong></article></div></section>
+    <section class="view" id="view-finance">
+      <div class="section-head">
+        <div><h2 data-i18n="finance">Financeiro</h2><p>Mensalidades, pagamentos e comprovantes da equipe.</p></div>
+        <div class="finance-actions" id="financeAdminActions" hidden>
+          <button class="ghost" id="openBillingSettings">Configurar mensalidade</button>
+          <button class="primary" id="generateFees">Gerar mensalidades do mês</button>
+        </div>
+      </div>
+      <div class="stats">
+        <article class="stat"><span>Valor mensal</span><strong id="financeMonthlyValue">R$ 0,00</strong><small id="financeDueDay">Não configurado</small></article>
+        <article class="stat"><span>Pagos</span><strong id="financePaidCount">0</strong><small>mensalidades confirmadas</small></article>
+        <article class="stat"><span>Pendentes</span><strong id="financePendingCount">0</strong><small>aguardando pagamento</small></article>
+        <article class="stat"><span>Em análise</span><strong id="financeSubmittedCount">0</strong><small>comprovantes enviados</small></article>
+      </div>
+      <div class="grid-2 finance-grid">
+        <article class="panel">
+          <div class="panel-head"><h3 id="financeListTitle">Mensalidades</h3><input id="financeMonth" type="month"></div>
+          <div id="financeFeesList" class="cards-list"></div>
+        </article>
+        <article class="panel">
+          <h3>Pagamento via Pix</h3>
+          <div id="financePixBox" class="empty">O administrador ainda não configurou o pagamento.</div>
+        </article>
+      </div>
+    </section>
 
     <section class="view" id="view-documents"><div class="section-head"><div><h2 data-i18n="documents">Documentos</h2><p data-i18n="documentsSubtitle">Termos e documentos administrativos da equipe.</p></div></div><article class="document-card"><div class="doc-icon">▱</div><div><h3 data-i18n="responsibilityTermTitle">Termo de Ciência e Responsabilidade</h3><p data-i18n="responsibilityTermDesc">Registro de ciência sobre esforço físico, ambientes de jogo, impactos de BBs e regras de segurança.</p></div><button class="ghost" id="viewTerm" data-i18n="viewTerm">Visualizar termo</button></article><p class="legal-note" data-i18n="legalNote">Modelo administrativo. Antes do uso definitivo, recomenda-se revisão jurídica adequada à legislação aplicável.</p></section>
 
@@ -92,6 +116,34 @@
 <label class="wide"><span data-i18n="teamHistory">História da equipe</span><textarea name="history" rows="4"></textarea></label><label class="wide"><span data-i18n="founders">Fundadores</span><textarea name="founders" rows="2"></textarea></label><label class="wide"><span data-i18n="supporters">Apoiadores / parceiros</span><textarea name="supporters" rows="2"></textarea></label>
 <label><span data-i18n="responsible">Responsável</span><input name="responsible"></label><label><span data-i18n="phone">Telefone / WhatsApp</span><input name="phone"></label><label><span data-i18n="email">E-mail</span><input type="email" name="email"></label><label><span data-i18n="social">Site / rede social</span><input name="social"></label>
 </div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveTeam">Salvar equipe</button></div></form></dialog>
+
+
+<dialog id="billingSettingsModal" class="modal"><form method="dialog" id="billingSettingsForm">
+  <div class="modal-head"><h2>Configurar mensalidade</h2><button value="cancel" class="icon-btn">×</button></div>
+  <div class="form-grid">
+    <label><span>Cobrança mensal</span><select name="enabled"><option value="true">Ativada</option><option value="false">Desativada</option></select></label>
+    <label><span>Valor da mensalidade (R$)</span><input name="monthly_amount" type="number" min="0" step="0.01" required></label>
+    <label><span>Dia do vencimento</span><input name="due_day" type="number" min="1" max="28" required></label>
+    <label><span>Nome do recebedor</span><input name="payee_name"></label>
+    <label class="wide"><span>Chave Pix / Pix Copia e Cola</span><textarea name="pix_key" rows="2"></textarea></label>
+    <label class="wide"><span>Link para pagamento Pix</span><input name="pix_link" type="url" placeholder="https://..."></label>
+    <label class="wide"><span>URL da imagem do QR Code</span><input name="qr_code_url" type="url" placeholder="https://..."></label>
+    <label class="wide"><span>Observações para pagamento</span><textarea name="notes" rows="3"></textarea></label>
+  </div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Salvar configuração</button></div>
+</form></dialog>
+
+<dialog id="paymentSubmitModal" class="modal"><form method="dialog" id="paymentSubmitForm">
+  <div class="modal-head"><h2>Informar pagamento</h2><button value="cancel" class="icon-btn">×</button></div>
+  <input type="hidden" name="fee_id">
+  <div class="form-grid">
+    <label><span>Data do pagamento</span><input name="payment_date" type="date" required></label>
+    <label class="wide"><span>Comprovante (JPG, PNG, WebP ou PDF, até 5 MB)</span><input name="receipt" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf"></label>
+    <label class="wide"><span>Observação</span><textarea name="note" rows="3"></textarea></label>
+  </div>
+  <div class="privacy-box">O operador apenas informa o pagamento. Somente um administrador pode marcar a mensalidade como paga.</div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Enviar comprovante</button></div>
+</form></dialog>
 
 <dialog id="termModal" class="modal"><form method="dialog"><div class="modal-head"><h2 data-i18n="responsibilityTermTitle">Termo de Ciência e Responsabilidade</h2><button value="cancel" class="icon-btn">×</button></div><div class="term-text"><p>Declaro participar voluntariamente das atividades esportivas de Airsoft promovidas ou acompanhadas pela equipe.</p><p>Declaro estar ciente de que a atividade pode envolver esforço físico, deslocamento em terrenos irregulares e participação em locais que podem apresentar obstáculos, estruturas deterioradas ou outras condições próprias do ambiente.</p><p>Reconheço que projéteis plásticos utilizados na prática esportiva podem causar dor, marcas ou ferimentos, mesmo com a adoção de medidas de segurança.</p><p>Comprometo-me a utilizar os equipamentos de proteção exigidos, seguir as regras da equipe, do local e dos organizadores, informar limitações relevantes à minha participação e interromper a atividade quando entender que minha segurança ou a de terceiros possa estar comprometida.</p><p>Declaro ser responsável por avaliar minha aptidão física para participar da atividade e por fornecer informações de emergência corretas quando solicitadas.</p></div><div class="legal-note" data-i18n="legalNote">Modelo administrativo. Antes do uso definitivo, recomenda-se revisão jurídica adequada à legislação aplicável.</div><div class="modal-actions"><button value="cancel" class="primary" data-i18n="close">Fechar</button></div></form></dialog>
 
