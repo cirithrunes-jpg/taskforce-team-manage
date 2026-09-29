@@ -146,3 +146,10 @@ body[data-role="operator"] .admin-only{display:none!important}
 .session-tools{margin-left:auto;display:flex;gap:8px}
 .session-tools+.status-chip{margin-left:0}
 @media(max-width:700px){.session-tools .small{padding:7px 9px}.session-tools{gap:5px}.session-tools+.status-chip{display:none}}
+
+
+.password-wrap{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.password-wrap input{min-width:0}
+.password-toggle{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px;padding:10px 12px}
+.password-toggle:hover{border-color:var(--accent)}
+.auth-form button[disabled]{opacity:.6;cursor:wait}
