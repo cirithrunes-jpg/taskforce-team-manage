@@ -220,9 +220,10 @@ function renderProfileForm(user,existing={}){
       privacy_ack:true
     };
     try{
-      const data=await withTimeout(rpcAuth("save_my_profile",{payload}));
-      state.profile=data||payload;
-      status("Cadastro salvo.","success");
+      const raw=await withTimeout(rpcAuth("save_my_profile",{payload}));
+      const saved=Array.isArray(raw)?(raw[0]||payload):(raw||payload);
+      state.profile=saved;
+      status("Cadastro salvo. Agora vamos criar sua equipe.","success");
       await continueAfterProfile();
     }catch(err){status(err.message||"Não foi possível salvar.","error")}
   };
@@ -257,7 +258,8 @@ function renderCreateTeam(){
     const f=new FormData(e.target);
     try{
       await withTimeout(rpcAuth("create_team_v2",{team_name:String(f.get("team")).trim()}));
-      status("Equipe criada.","success");
+      status("Equipe criada. Carregando painel...","success");
+      await loadMembership();
       await finishLogin();
     }catch(err){status(err.message||"Não foi possível criar a equipe.","error")}
   };
@@ -267,9 +269,20 @@ async function continueAfterLogin(session){
   state.session=session;
   status("Login confirmado. Verificando cadastro...");
   try{
-    const data=await withTimeout(rpcAuth("get_my_profile"));
-    state.profile=data||null;
-    if(!state.profile){renderProfileForm(session.user);return}
+    const raw=await withTimeout(rpcAuth("get_my_profile"));
+    const profile=Array.isArray(raw)?(raw[0]||null):raw;
+    const hasProfile=!!(
+      profile &&
+      typeof profile==="object" &&
+      profile.user_id &&
+      profile.name &&
+      profile.email
+    );
+    state.profile=hasProfile?profile:null;
+    if(!state.profile){
+      renderProfileForm(session.user);
+      return;
+    }
     await continueAfterProfile();
   }catch(err){
     setGate('<div class="auth-card"><div class="auth-message error">'+h(err.message||"Erro ao carregar cadastro.")+'</div><button id="retryAuth" class="primary">Tentar novamente</button><button id="logoutAuth" class="ghost">Sair</button></div>');
