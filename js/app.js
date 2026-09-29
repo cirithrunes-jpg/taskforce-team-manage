@@ -15,11 +15,10 @@ function t(key){return (window.I18N[lang]&&window.I18N[lang][key])||window.I18N.
 function esc(v){return String(v||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function translate(){
   document.documentElement.lang=lang==="pt"?"pt-BR":lang;
-  $$("[data-i18n]").forEach(el=>{const v=t(el.dataset.i18n);if(v)el.textContent=v});
+  $("[data-i18n]").forEach(el=>{const v=t(el.dataset.i18n);if(v)el.textContent=v});
   $("#languageSelect").value=lang;
   updateHeader($(".nav-item.active")?.dataset.view||"command");
   renderAll();
-  await loadFinanceData();
 }
 function updateHeader(view){
   const pair=titles[view]||titles.command;
