@@ -104,9 +104,15 @@ function renderLogin(tab="login"){
         throw error;
       }
       if(!data?.session)throw new Error("Login aceito, mas nenhuma sessão foi criada.");
-      state.session=data.session;
+      const persisted=await client.auth.setSession({
+        access_token:data.session.access_token,
+        refresh_token:data.session.refresh_token
+      });
+      if(persisted.error)throw persisted.error;
+      const activeSession=persisted.data.session||data.session;
+      state.session=activeSession;
       status("Senha correta. Login confirmado.","success");
-      setTimeout(()=>continueAfterLogin(data.session),350);
+      setTimeout(()=>continueAfterLogin(activeSession),350);
     }catch(err){
       status(err.message||"Falha ao entrar.","error");
       button.disabled=false;
