@@ -141,3 +141,8 @@ label span{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
 .invite-actions{display:flex;gap:8px;flex-wrap:wrap}
 .invite-actions a{text-decoration:none;display:inline-flex;align-items:center}
 body[data-role="operator"] .admin-only{display:none!important}
+
+
+.session-tools{margin-left:auto;display:flex;gap:8px}
+.session-tools+.status-chip{margin-left:0}
+@media(max-width:700px){.session-tools .small{padding:7px 9px}.session-tools{gap:5px}.session-tools+.status-chip{display:none}}
