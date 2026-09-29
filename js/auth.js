@@ -32,8 +32,13 @@ function renderLogin(){
   document.getElementById("loginForm").onsubmit=async e=>{
     e.preventDefault();msg("Entrando...");
     const f=new FormData(e.target);
-    const {error}=await client.auth.signInWithPassword({email:f.get("email").trim(),password:f.get("password")});
-    if(error)msg(error.message,"error");
+    const {data,error}=await client.auth.signInWithPassword({email:f.get("email").trim(),password:f.get("password")});
+    if(error)return msg(error.message,"error");
+    if(data?.session){
+      state.session=data.session;
+      msg("Login realizado. Carregando...","success");
+      await bootstrap();
+    }
   };
   document.getElementById("signupForm").onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.target);
