@@ -209,20 +209,12 @@ function renderProfileForm(user,existing={}){
 }
 
 async function loadMembership(){
-  const {data,error}=await withTimeout(
-    client.from("team_members").select("team_id,user_id,group_id,role").eq("user_id",state.session.user.id).limit(1).maybeSingle()
-  );
+  const {data,error}=await withTimeout(client.rpc("get_my_team_context"));
   if(error)throw error;
-  state.membership=data||null;
-  if(!data)return;
-  const [teamRes,groupRes]=await Promise.all([
-    client.from("teams").select("id,name,data").eq("id",data.team_id).maybeSingle(),
-    data.group_id?client.from("team_groups").select("id,name").eq("id",data.group_id).maybeSingle():Promise.resolve({data:null,error:null})
-  ]);
-  if(teamRes.error)throw teamRes.error;
-  if(groupRes.error)throw groupRes.error;
-  state.team=teamRes.data||null;
-  state.group=groupRes.data||null;
+  const ctx=data||null;
+  state.membership=ctx?.membership||null;
+  state.team=ctx?.team||null;
+  state.group=ctx?.group||null;
 }
 
 async function acceptInvite(){
