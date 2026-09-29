@@ -199,9 +199,9 @@ function renderProfileForm(user,existing={}){
       privacy_ack:true
     };
     try{
-      const {error}=await withTimeout(client.from("profiles").upsert(payload,{onConflict:"user_id"}));
+      const {data,error}=await withTimeout(client.rpc("save_my_profile",{payload}));
       if(error)throw error;
-      state.profile=payload;
+      state.profile=data||payload;
       status("Cadastro salvo.","success");
       await continueAfterProfile();
     }catch(err){status(err.message||"Não foi possível salvar.","error")}
@@ -258,7 +258,7 @@ async function continueAfterLogin(session){
   state.session=session;
   status("Login confirmado. Verificando cadastro...");
   try{
-    const {data,error}=await withTimeout(client.from("profiles").select("*").eq("user_id",session.user.id).maybeSingle());
+    const {data,error}=await withTimeout(client.rpc("get_my_profile"));
     if(error)throw error;
     state.profile=data||null;
     if(!state.profile){renderProfileForm(session.user);return}
