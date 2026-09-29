@@ -357,8 +357,33 @@ function renderResponsibilityAcceptance(){
         supplied_title:RESPONSIBILITY_TERM.title,
         supplied_text:RESPONSIBILITY_TERM.text
       }));
-      status("Termo aceito e arquivado.","success");
-      setTimeout(()=>finishLogin(),250);
+
+      let emailNote="";
+      try{
+        const token=state.session?.access_token;
+        const res=await fetch(C.supabaseUrl+"/functions/v1/send-term-acceptance-email",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "apikey":C.supabasePublishableKey,
+            "Authorization":"Bearer "+token
+          },
+          body:JSON.stringify({acceptance_id:state.termAcceptance?.id})
+        });
+        const data=await res.json().catch(()=>({}));
+        if(res.ok){
+          emailNote=" Cópia enviada aos administradores por e-mail.";
+        }else{
+          console.warn("Falha ao enviar e-mail do termo:",data);
+          emailNote=" O termo foi arquivado, mas o aviso por e-mail não foi enviado.";
+        }
+      }catch(err){
+        console.warn("Falha ao chamar envio do termo:",err);
+        emailNote=" O termo foi arquivado, mas o aviso por e-mail não foi enviado.";
+      }
+
+      status("Termo aceito e arquivado."+emailNote,"success");
+      setTimeout(()=>finishLogin(),500);
     }catch(err){
       status(err.message||"Não foi possível registrar o aceite.","error");
     }
