@@ -136,9 +136,35 @@ function showOperator(id){
   normal.forEach(x=>html+='<div class="detail-item"><small>'+esc(x[0])+'</small>'+esc(x[1]||"—")+'</div>');
   sensitive.forEach(x=>html+='<div class="detail-item sensitive"><small>'+esc(x[0])+'</small>'+esc(x[1]||"—")+'</div>');
   html+='</div><div class="privacy-box">'+t("healthPrivacy")+'</div>';
+  if(membership?.role==="admin" && o.member_role==="operator"){
+    html+='<div class="modal-actions"><button type="button" class="ghost danger-action" id="removeOperatorBtn">Remover operador da equipe</button></div>';
+  }
   $("#operatorDetails").innerHTML=html;
+  if($("#removeOperatorBtn")){
+    $("#removeOperatorBtn").onclick=()=>removeOperatorFromTeam(o);
+  }
   openDialog("#operatorDetailsModal");
 }
+async function loadAdminMembers(){
+  if(membership?.role!=="admin"){operators=[];return}
+  const data=await financeRpc("admin_list_members");
+  operators=Array.isArray(data)?data:[];
+}
+async function removeOperatorFromTeam(o){
+  if(membership?.role!=="admin"||o.member_role!=="operator")return;
+  const label=o.callsign||o.name||"este operador";
+  if(!confirm("Remover "+label+" da equipe? O acesso será revogado e só poderá voltar com um novo convite."))return;
+  try{
+    await financeRpc("admin_remove_member",{target_user:o.user_id,reason_text:"Removido por administrador"});
+    $("#operatorDetailsModal").close();
+    await loadAdminMembers();
+    renderOperators();
+    alert("Operador removido. O acesso à equipe foi revogado.");
+  }catch(err){
+    alert("Não foi possível remover o operador: "+err.message);
+  }
+}
+
 function renderGames(){
   const list=sortedGames(),root=$("#gamesList"),dash=$("#dashboardGames");
   if(!list.length){
@@ -368,14 +394,7 @@ async function loadTeamData(detail){
 
   operators=[];
   if(membership.role==="admin"){
-    const {data:members,error:mErr}=await db.from("team_members").select("user_id,role").eq("team_id",membership.team_id);
-    if(mErr){console.error(mErr)}
-    const ids=(members||[]).map(m=>m.user_id);
-    if(ids.length){
-      const {data:profiles,error:pErr}=await db.from("profiles").select("*").in("user_id",ids);
-      if(pErr){console.error(pErr)}
-      operators=(profiles||[]).map(p=>({...p,member_role:(members||[]).find(m=>m.user_id===p.user_id)?.role||"operator"}));
-    }
+    try{await loadAdminMembers()}catch(err){console.error("Operadores:",err)}
   }
   renderAll();
   await loadFinanceData();
