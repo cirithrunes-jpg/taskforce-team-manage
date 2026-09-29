@@ -307,7 +307,7 @@ async function continueAfterProfile(){
 function applyPermissions(){
   const role=state.membership?.role||"operator";
   document.body.dataset.role=role;
-  document.querySelectorAll('.nav-item[data-view="operators"],.nav-item[data-view="finance"],.nav-item[data-view="settings"]').forEach(el=>el.hidden=role!=="admin");
+  document.querySelectorAll('.nav-item[data-view="operators"],.nav-item[data-view="settings"]').forEach(el=>el.hidden=role!=="admin");
   ["addGame","quickGame","addField","quickField"].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=role!=="admin"});
 }
 
