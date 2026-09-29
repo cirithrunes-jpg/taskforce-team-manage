@@ -35,6 +35,27 @@ function withTimeout(promise,ms=15000){
     new Promise((_,rej)=>setTimeout(()=>rej(new Error("Tempo de conexão excedido. Tente novamente.")),ms))
   ]);
 }
+async function rpcAuth(name,body={}){
+  const token=state.session?.access_token;
+  if(!token)throw new Error("Sessão não autenticada.");
+  const res=await fetch(C.supabaseUrl+"/rest/v1/rpc/"+name,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":C.supabasePublishableKey,
+      "Authorization":"Bearer "+token
+    },
+    body:JSON.stringify(body)
+  });
+  const raw=await res.text();
+  let data=null;
+  try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!res.ok){
+    const message=data?.message||data?.hint||data?.details||String(data||"Erro no servidor.");
+    throw new Error(message);
+  }
+  return data;
+}
 function togglePassword(btn,input){
   btn.onclick=()=>{
     const visible=input.type==="text";
@@ -199,8 +220,7 @@ function renderProfileForm(user,existing={}){
       privacy_ack:true
     };
     try{
-      const {data,error}=await withTimeout(client.rpc("save_my_profile",{payload}));
-      if(error)throw error;
+      const data=await withTimeout(rpcAuth("save_my_profile",{payload}));
       state.profile=data||payload;
       status("Cadastro salvo.","success");
       await continueAfterProfile();
@@ -209,8 +229,7 @@ function renderProfileForm(user,existing={}){
 }
 
 async function loadMembership(){
-  const {data,error}=await withTimeout(client.rpc("get_my_team_context"));
-  if(error)throw error;
+  const data=await withTimeout(rpcAuth("get_my_team_context"));
   const ctx=data||null;
   state.membership=ctx?.membership||null;
   state.team=ctx?.team||null;
@@ -219,8 +238,7 @@ async function loadMembership(){
 
 async function acceptInvite(){
   if(!inviteToken)return false;
-  const {error}=await withTimeout(client.rpc("accept_invitation",{invite_token:inviteToken}));
-  if(error)throw error;
+  await withTimeout(rpcAuth("accept_invitation",{invite_token:inviteToken}));
   const u=new URL(location.href);u.searchParams.delete("invite");history.replaceState({},"",u.pathname+u.search);
   return true;
 }
@@ -238,8 +256,7 @@ function renderCreateTeam(){
     e.preventDefault();status("Criando equipe...");
     const f=new FormData(e.target);
     try{
-      const {error}=await withTimeout(client.rpc("create_team_v2",{team_name:String(f.get("team")).trim()}));
-      if(error)throw error;
+      await withTimeout(rpcAuth("create_team_v2",{team_name:String(f.get("team")).trim()}));
       status("Equipe criada.","success");
       await finishLogin();
     }catch(err){status(err.message||"Não foi possível criar a equipe.","error")}
@@ -250,8 +267,7 @@ async function continueAfterLogin(session){
   state.session=session;
   status("Login confirmado. Verificando cadastro...");
   try{
-    const {data,error}=await withTimeout(client.rpc("get_my_profile"));
-    if(error)throw error;
+    const data=await withTimeout(rpcAuth("get_my_profile"));
     state.profile=data||null;
     if(!state.profile){renderProfileForm(session.user);return}
     await continueAfterProfile();
