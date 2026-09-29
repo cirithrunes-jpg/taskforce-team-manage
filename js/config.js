@@ -1,8 +1,9 @@
-// TASKFORCE configuration.
-// Nunca coloque uma Supabase service_role/secret key neste arquivo.
-// Somente a URL pública e a publishable key serão adicionadas quando conectarmos o backend.
+// TASKFORCE public client configuration.
+// A publishable key is safe to use in the browser when RLS policies are enforced.
+// NEVER place service_role / secret keys here.
 window.TASKFORCE_CONFIG = {
-  supabaseUrl: "",
-  supabasePublishableKey: "",
-  environment: "prototype"
+  supabaseUrl: "https://eqonbegeyzvbszrgdyut.supabase.co",
+  supabasePublishableKey: "sb_publishable_CQZVlbFBjy1juypbSWUdYg_gH29TpMw",
+  environment: "production",
+  appUrl: "https://taskforce-team-manage.pages.dev"
 };
