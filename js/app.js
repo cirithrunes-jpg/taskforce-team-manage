@@ -2,7 +2,7 @@ const $=(s)=>document.querySelector(s), $$=(s)=>[...document.querySelectorAll(s)
 const pref={get(k,f){try{return JSON.parse(localStorage.getItem("tf_pref_"+k))??f}catch{return f}},set(k,v){localStorage.setItem("tf_pref_"+k,JSON.stringify(v))}};
 const db=window.TASKFORCE_DB;
 let team={},operators=[],games=[],fields=[],membership=null,currentProfile=null;
-let billingSettings=null,monthlyFees=[],adminEmails=[];
+let billingSettings=null,monthlyFees=[],adminEmails=[],termAcceptances=[];
 let lang=pref.get("lang","pt"),theme=pref.get("theme","dark");
 
 const titles={
@@ -47,7 +47,8 @@ $("#languageSelect").onchange=e=>{lang=e.target.value;pref.set("lang",lang);tran
 
 function openDialog(id){$(id)?.showModal()}
 ["#openTeamModal","#openTeamModal2","#openTeamModal3"].forEach(id=>$(id).onclick=()=>{fillTeamForm();openDialog("#teamModal")});
-$("#viewTerm").onclick=()=>openDialog("#termModal");
+$("#viewTerm").onclick=()=>showCurrentTerm();
+$("#printTermBtn").onclick=()=>window.print();
 
 function inviteOperator(){
   if(membership?.role!=="admin")return;
@@ -378,7 +379,75 @@ $("#paymentSubmitForm").addEventListener("submit",async e=>{
     }
   }catch(err){alert("Não foi possível enviar o pagamento: "+err.message)}
 });
-function renderAll(){renderTeam();renderOperators();renderGames();renderFields();renderFinance()}
+function termDate(v){
+  if(!v)return "—";
+  try{return new Date(v).toLocaleString("pt-BR")}catch{return v}
+}
+function showCurrentTerm(){
+  const html=[
+    "Declaro participar voluntariamente das atividades esportivas de Airsoft promovidas ou acompanhadas pela equipe.",
+    "Declaro estar ciente de que a atividade pode envolver esforço físico, deslocamento em terrenos irregulares e participação em locais que podem apresentar obstáculos, estruturas deterioradas ou outras condições próprias do ambiente.",
+    "Reconheço que projéteis plásticos utilizados na prática esportiva podem causar dor, marcas ou ferimentos, mesmo com a adoção de medidas de segurança.",
+    "Comprometo-me a utilizar os equipamentos de proteção exigidos, seguir as regras da equipe, do local e dos organizadores, informar limitações relevantes à minha participação e interromper a atividade quando entender que minha segurança ou a de terceiros possa estar comprometida.",
+    "Declaro ser responsável por avaliar minha aptidão física para participar da atividade e por fornecer informações de emergência corretas quando solicitadas."
+  ].map(x=>'<p>'+esc(x)+'</p>').join("");
+  $("#termModalContent").innerHTML=html;
+  openDialog("#termModal");
+}
+function showAcceptedTerm(id){
+  const a=termAcceptances.find(x=>x.id===id);
+  if(!a)return;
+  const p=a.profile_snapshot||{};
+  const dataRows=[
+    ["Nome",p.name],["E-mail",p.email],["Telefone",p.phone],["Endereço",p.address],
+    ["Codinome",p.callsign],["Função",p.role],["Tipo sanguíneo",p.blood],
+    ["Contato de emergência",p.emergency],["Telefone de emergência",p.emergencyPhone],
+    ["Parentesco / relação",p.relationship],["Alergias",p.allergy],["Informações de saúde",p.health]
+  ];
+  $("#termModalContent").innerHTML=
+    '<div class="detail-grid">'+
+      dataRows.map(r=>'<div class="detail-item"><small>'+esc(r[0])+'</small>'+esc(r[1]||"—")+'</div>').join("")+
+    '</div>'+
+    '<div class="privacy-box">Aceite registrado em '+esc(termDate(a.accepted_at))+' • versão '+esc(a.term_version||"—")+'</div>'+
+    String(a.term_text||"").split(/\n\n+/).map(x=>'<p>'+esc(x)+'</p>').join("");
+  openDialog("#termModal");
+}
+function renderTermDocuments(){
+  const panel=$("#acceptedTermsPanel"),root=$("#acceptedTermsList"),count=$("#acceptedTermsCount");
+  if(!panel||!root||!count)return;
+  const isAdmin=membership?.role==="admin";
+  panel.hidden=false;
+  const list=Array.isArray(termAcceptances)?termAcceptances:[];
+  count.textContent=String(list.length);
+  if(!list.length){
+    root.innerHTML='<div class="empty">'+(isAdmin?"Nenhum termo aceito arquivado.":"Seu termo aceito ainda não foi localizado.")+'</div>';
+    return;
+  }
+  root.innerHTML=list.map(a=>{
+    const p=a.profile_snapshot||{};
+    const title=isAdmin?(p.name||p.callsign||"Operador"):"Meu termo de responsabilidade";
+    return '<article class="card-row"><div><h3>'+esc(title)+'</h3><div class="meta">Aceito em '+esc(termDate(a.accepted_at))+' • '+esc(a.term_version||"")+'</div></div><button class="ghost small" data-term-acceptance="'+esc(a.id)+'">Ver cópia</button></article>';
+  }).join("");
+  $("[data-term-acceptance]").forEach(b=>b.onclick=()=>showAcceptedTerm(b.dataset.termAcceptance));
+}
+async function loadTermDocuments(){
+  try{
+    if(membership?.role==="admin"){
+      const data=await financeRpc("admin_list_term_acceptances");
+      termAcceptances=Array.isArray(data)?data:[];
+    }else{
+      const a=await financeRpc("get_my_term_acceptance");
+      termAcceptances=a?[a]:[];
+    }
+    renderTermDocuments();
+  }catch(err){
+    console.error("Documentos:",err);
+    termAcceptances=[];
+    renderTermDocuments();
+  }
+}
+
+function renderAll(){renderTeam();renderOperators();renderGames();renderFields();renderFinance();renderTermDocuments()}
 
 async function loadTeamData(detail){
   membership=detail.membership;
@@ -396,7 +465,7 @@ async function loadTeamData(detail){
     try{await loadAdminMembers()}catch(err){console.error("Operadores:",err)}
   }
   renderAll();
-  await loadFinanceData();
+  await Promise.all([loadFinanceData(),loadTermDocuments()]);
 }
 window.addEventListener("taskforce:auth-ready",e=>loadTeamData(e.detail));
 if(window.TASKFORCE_AUTH?.state?.membership)loadTeamData(window.TASKFORCE_AUTH.state);
