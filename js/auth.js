@@ -120,6 +120,16 @@ async function acceptInviteIfNeeded(){
   }
   cleanInviteUrl();
 }
+function injectSessionTools(){
+  const top=document.querySelector(".topbar");
+  if(!top||document.getElementById("sessionTools"))return;
+  const tools=document.createElement("div");
+  tools.id="sessionTools";tools.className="session-tools";
+  tools.innerHTML='<button class="ghost small" id="myProfileBtn">Meu perfil</button><button class="ghost small" id="signOutBtn">Sair</button>';
+  top.insertBefore(tools,top.querySelector(".status-chip"));
+  document.getElementById("myProfileBtn").onclick=()=>renderProfileForm(state.session.user,state.profile||{});
+  document.getElementById("signOutBtn").onclick=()=>client.auth.signOut();
+}
 function applyRole(){
   const role=state.membership?.role;
   document.body.dataset.role=role||"";
@@ -173,7 +183,7 @@ async function bootstrap(){
   try{await loadMembership()}catch(e){gate().innerHTML='<div class="auth-card"><div class="auth-message error">'+escHtml(e.message)+'</div></div>';gate().classList.add("show");return}
   if(!state.membership){renderCreateTeam();return}
   gate().classList.remove("show");gate().innerHTML="";
-  applyRole();await injectAdminTools();
+  injectSessionTools();applyRole();await injectAdminTools();
 }
 client.auth.onAuthStateChange(()=>setTimeout(bootstrap,0));
 window.TASKFORCE_AUTH={client,state,bootstrap,signOut:()=>client.auth.signOut()};
