@@ -26,7 +26,7 @@ const client=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey
 });
 window.TASKFORCE_DB=client;
 
-const state={session:null,profile:null,membership:null,team:null,group:null,access_revoked:false,revoked_at:null};
+const state={session:null,profile:null,membership:null,team:null,group:null,access_revoked:false,revoked_at:null,termAcceptance:null};
 const inviteToken=new URLSearchParams(location.search).get("invite");
 
 function withTimeout(promise,ms=15000){
@@ -305,6 +305,66 @@ async function continueAfterLogin(session){
   }
 }
 
+const RESPONSIBILITY_TERM={
+  version:"2026-09-29-v1",
+  title:"Termo de Ciência e Responsabilidade",
+  text:[
+    "Declaro participar voluntariamente das atividades esportivas de Airsoft promovidas ou acompanhadas pela equipe.",
+    "Declaro estar ciente de que a atividade pode envolver esforço físico, deslocamento em terrenos irregulares e participação em locais que podem apresentar obstáculos, estruturas deterioradas ou outras condições próprias do ambiente.",
+    "Reconheço que projéteis plásticos utilizados na prática esportiva podem causar dor, marcas ou ferimentos, mesmo com a adoção de medidas de segurança.",
+    "Comprometo-me a utilizar os equipamentos de proteção exigidos, seguir as regras da equipe, do local e dos organizadores, informar limitações relevantes à minha participação e interromper a atividade quando entender que minha segurança ou a de terceiros possa estar comprometida.",
+    "Declaro ser responsável por avaliar minha aptidão física para participar da atividade e por fornecer informações de emergência corretas quando solicitadas."
+  ].join("\n\n")
+};
+
+async function ensureOperatorTerm(){
+  if(state.membership?.role!=="operator")return true;
+  const accepted=await withTimeout(rpcAuth("get_my_term_acceptance"));
+  state.termAcceptance=accepted||null;
+  if(state.termAcceptance?.term_version===RESPONSIBILITY_TERM.version)return true;
+  renderResponsibilityAcceptance();
+  return false;
+}
+
+function renderResponsibilityAcceptance(){
+  const p=state.profile||{};
+  setGate(
+    '<div class="auth-card auth-wide">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>'+h(RESPONSIBILITY_TERM.title)+'</strong><small>Aceite obrigatório para operadores</small></div></div>'+
+      '<div class="detail-grid">'+
+        '<div class="detail-item"><small>Nome</small>'+h(p.name||"—")+'</div>'+
+        '<div class="detail-item"><small>E-mail</small>'+h(p.email||"—")+'</div>'+
+        '<div class="detail-item"><small>Codinome</small>'+h(p.callsign||"—")+'</div>'+
+        '<div class="detail-item"><small>Equipe</small>'+h(state.team?.name||"—")+'</div>'+
+      '</div>'+
+      '<div class="term-text">'+RESPONSIBILITY_TERM.text.split("\n\n").map(x=>'<p>'+h(x)+'</p>').join("")+'</div>'+
+      '<div class="legal-note">O aceite será registrado com data e hora, versão do termo e uma cópia dos dados cadastrais informados neste momento. O registro administrativo não substitui orientação jurídica sobre validade ou força probatória.</div>'+
+      '<form id="responsibilityAcceptForm" class="auth-form">'+
+        '<label class="consent"><input type="checkbox" name="accept" required><span>Li e aceito o Termo de Ciência e Responsabilidade acima.</span></label>'+
+        '<button class="primary" type="submit">Aceitar e entrar no aplicativo</button>'+
+        '<button class="ghost" type="button" id="logoutTerm">Não aceitar / sair</button>'+
+      '</form>'+
+      '<div id="authStatus" class="auth-message"></div>'+
+    '</div>'
+  );
+  document.getElementById("logoutTerm").onclick=logout;
+  document.getElementById("responsibilityAcceptForm").onsubmit=async e=>{
+    e.preventDefault();
+    status("Registrando aceite...");
+    try{
+      state.termAcceptance=await withTimeout(rpcAuth("accept_responsibility_term",{
+        supplied_version:RESPONSIBILITY_TERM.version,
+        supplied_title:RESPONSIBILITY_TERM.title,
+        supplied_text:RESPONSIBILITY_TERM.text
+      }));
+      status("Termo aceito e arquivado.","success");
+      setTimeout(()=>finishLogin(),250);
+    }catch(err){
+      status(err.message||"Não foi possível registrar o aceite.","error");
+    }
+  };
+}
+
 async function continueAfterProfile(){
   try{
     if(inviteToken)await acceptInvite();
@@ -314,6 +374,7 @@ async function continueAfterProfile(){
       return;
     }
     if(!state.membership){renderCreateTeam();return}
+    if(!(await ensureOperatorTerm()))return;
     await finishLogin();
   }catch(err){
     setGate('<div class="auth-card"><div class="auth-message error">'+h(err.message||"Erro ao entrar na equipe.")+'</div><button id="retryMembership" class="primary">Tentar novamente</button><button id="logoutMembership" class="ghost">Sair</button></div>');
@@ -447,7 +508,7 @@ async function finishLogin(){
 
 async function logout(){
   try{await client.auth.signOut()}catch{}
-  state.session=null;state.profile=null;state.membership=null;state.team=null;state.group=null;
+  state.session=null;state.profile=null;state.membership=null;state.team=null;state.group=null;state.termAcceptance=null;
   location.replace(location.pathname);
 }
 
