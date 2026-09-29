@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11130f">
+<title>TASKFORCE Team Manager</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-mark">TF</div><div><strong id="teamNameTop">TASKFORCE</strong><small data-i18n="teamManager">Gerência de equipe</small></div></div>
+    <button class="team-card" id="openTeamModal"><span class="team-badge">T</span><span><strong id="teamNameSide">Sua equipe</strong><small id="teamCitySide" data-i18n="registerTeam">Cadastrar equipe</small></span></button>
+    <nav class="nav">
+      <button class="nav-item active" data-view="command"><span>⌂</span><span data-i18n="command">Comando</span></button>
+      <button class="nav-item" data-view="operators"><span>◉</span><span data-i18n="operators">Operadores</span></button>
+      <button class="nav-item" data-view="calendar"><span>▦</span><span data-i18n="calendar">Calendário</span></button>
+      <button class="nav-item" data-view="fields"><span>⌖</span><span data-i18n="fields">Campos</span></button>
+      <button class="nav-item" data-view="finance"><span>▤</span><span data-i18n="finance">Financeiro</span></button>
+      <button class="nav-item" data-view="documents"><span>▱</span><span data-i18n="documents">Documentos</span></button>
+      <button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
+      <button class="nav-item" data-view="settings"><span>⚙</span><span data-i18n="settings">Configurações</span></button>
+    </nav>
+    <div class="sidebar-footer"><small>v0.1 • MVP</small></div>
+  </aside>
+
+  <button class="rail-toggle" id="railToggle">☰</button>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" id="menuBtn">☰</button>
+      <div><h1 id="pageTitle">Comando</h1><p id="pageSubtitle">Resumo dos principais pontos da equipe</p></div>
+      <div class="status-chip"><span class="dot"></span><span data-i18n="online">Online</span></div>
+    </header>
+
+    <section class="view active" id="view-command">
+      <div class="hero">
+        <div><span class="eyebrow" data-i18n="overview">VISÃO GERAL</span><h2 id="heroTeamName">Sua equipe</h2><p data-i18n="overviewText">Informações essenciais para acompanhar a equipe de forma rápida.</p></div>
+        <button class="primary" id="openTeamModal2" data-i18n="registerTeam">Cadastrar equipe</button>
+      </div>
+      <div class="stats">
+        <article class="stat"><span data-i18n="activeOperators">Operadores ativos</span><strong id="statOperators">0</strong><small data-i18n="registeredTeam">cadastrados na equipe</small></article>
+        <article class="stat"><span data-i18n="nextGame">Próximo jogo</span><strong id="statNextGame">—</strong><small id="statNextGamePlace">Nenhum jogo cadastrado</small></article>
+        <article class="stat"><span data-i18n="cashBalance">Saldo da equipe</span><strong>R$ 0,00</strong><small data-i18n="financePending">financeiro ainda sem lançamentos</small></article>
+        <article class="stat"><span data-i18n="documents">Documentos</span><strong>1</strong><small data-i18n="responsibilityTerm">termo de responsabilidade</small></article>
+      </div>
+      <div class="grid-2">
+        <article class="panel"><div class="panel-head"><h3 data-i18n="upcomingGames">Próximos jogos</h3><button class="ghost small" data-go="calendar" data-i18n="seeCalendar">Ver calendário</button></div><div id="dashboardGames" class="empty" data-i18n="noGames">Nenhum jogo registrado.</div></article>
+        <article class="panel"><div class="panel-head"><h3 data-i18n="quickActions">Ações rápidas</h3></div><div class="quick-actions"><button class="quick" id="quickOperator">+ <span data-i18n="newOperator">Novo operador</span></button><button class="quick" id="quickGame">+ <span data-i18n="registerGame">Registrar jogo</span></button><button class="quick" id="quickField">+ <span data-i18n="newField">Novo campo</span></button><button class="quick" data-go="documents"><span>▱</span> <span data-i18n="openDocuments">Abrir documentos</span></button></div></article>
+      </div>
+    </section>
+
+    <section class="view" id="view-operators"><div class="section-head"><div><h2 data-i18n="operators">Operadores</h2><p data-i18n="operatorsSubtitle">Cadastro, segurança e informações essenciais dos integrantes.</p></div><button class="primary" id="addOperator">+ <span data-i18n="newOperator">Novo operador</span></button></div><div id="operatorsList" class="cards-list"></div></section>
+
+    <section class="view" id="view-calendar"><div class="section-head"><div><h2 data-i18n="calendar">Calendário</h2><p data-i18n="calendarSubtitle">O operador registra aqui as datas dos jogos da equipe.</p></div><button class="primary" id="addGame">+ <span data-i18n="registerGame">Registrar jogo</span></button></div><div id="gamesList" class="cards-list"></div></section>
+
+    <section class="view" id="view-fields"><div class="section-head"><div><h2 data-i18n="fields">Campos</h2><p data-i18n="fieldsSubtitle">Locais cadastrados com endereço e localização GPS.</p></div><button class="primary" id="addField">+ <span data-i18n="newField">Novo campo</span></button></div><div id="fieldsList" class="cards-list"></div></section>
+
+    <section class="view" id="view-finance"><div class="section-head"><div><h2 data-i18n="finance">Financeiro</h2><p data-i18n="financeSubtitle">Visão simples das entradas, despesas e saldo da equipe.</p></div></div><div class="stats"><article class="stat"><span data-i18n="income">Entradas</span><strong>R$ 0,00</strong></article><article class="stat"><span data-i18n="expenses">Despesas</span><strong>R$ 0,00</strong></article><article class="stat"><span data-i18n="balance">Saldo</span><strong>R$ 0,00</strong></article></div></section>
+
+    <section class="view" id="view-documents"><div class="section-head"><div><h2 data-i18n="documents">Documentos</h2><p data-i18n="documentsSubtitle">Termos e documentos administrativos da equipe.</p></div></div><article class="document-card"><div class="doc-icon">▱</div><div><h3 data-i18n="responsibilityTermTitle">Termo de Ciência e Responsabilidade</h3><p data-i18n="responsibilityTermDesc">Registro de ciência sobre esforço físico, ambientes de jogo, impactos de BBs e regras de segurança.</p></div><button class="ghost" id="viewTerm" data-i18n="viewTerm">Visualizar termo</button></article><p class="legal-note" data-i18n="legalNote">Modelo administrativo. Antes do uso definitivo, recomenda-se revisão jurídica adequada à legislação aplicável.</p></section>
+
+    <section class="view" id="view-contacts"><div class="section-head"><div><h2 data-i18n="contacts">Contatos</h2><p data-i18n="contactsSubtitle">Contatos administrativos e serviços úteis à equipe.</p></div></div><div class="empty" data-i18n="noContacts">Nenhum contato cadastrado.</div></section>
+
+    <section class="view" id="view-settings"><div class="section-head"><div><h2 data-i18n="settings">Configurações</h2><p data-i18n="settingsSubtitle">Preferências do aplicativo e identificação da equipe.</p></div></div><div class="settings-grid">
+      <article class="panel"><h3 data-i18n="teamIdentity">Identificação da equipe</h3><p data-i18n="teamIdentityText">Nome, história, fundadores, apoiadores e contatos.</p><button class="primary" id="openTeamModal3" data-i18n="editTeam">Cadastrar / Editar equipe</button></article>
+      <article class="panel"><h3 data-i18n="language">Idioma</h3><select id="languageSelect"><option value="pt">Português</option><option value="es">Español</option><option value="en">English</option></select></article>
+      <article class="panel"><h3 data-i18n="appearance">Aparência</h3><div class="segmented"><button data-theme="dark" class="theme-btn active" data-i18n="dark">Escuro</button><button data-theme="light" class="theme-btn" data-i18n="light">Claro</button></div></article>
+      <article class="panel"><h3 data-i18n="dataStatus">Status dos dados</h3><p data-i18n="localPrototype">Protótipo local. A conexão segura com o Supabase será ativada na próxima etapa.</p></article>
+    </div></section>
+  </main>
+</div>
+
+<dialog id="operatorModal" class="modal"><form method="dialog" id="operatorForm"><div class="modal-head"><h2 data-i18n="operatorFormTitle">Cadastrar operador</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid">
+<label><span data-i18n="fullName">Nome completo</span><input name="name" required></label><label><span data-i18n="callsign">Codinome</span><input name="callsign"></label>
+<label><span data-i18n="role">Função</span><select name="role"><option>Assault</option><option>Suporte</option><option>Comunicação</option><option>Observador</option><option>Apoio médico</option><option>Liderança</option><option>Outra</option></select></label>
+<label><span data-i18n="bloodType">Tipo sanguíneo</span><select name="blood"><option value="">Não informado</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></label>
+<label><span data-i18n="phone">Telefone</span><input name="phone"></label><label><span data-i18n="email">E-mail</span><input name="email" type="email"></label><label class="wide"><span data-i18n="address">Endereço</span><input name="address"></label>
+<label><span data-i18n="emergencyContact">Contato de emergência</span><input name="emergency"></label><label><span data-i18n="emergencyPhone">Telefone de emergência</span><input name="emergencyPhone"></label>
+<label class="wide"><span data-i18n="medAllergy">Alergia a medicamentos</span><textarea name="allergy" rows="2"></textarea></label><label class="wide"><span data-i18n="healthNotes">Informações de saúde relevantes em emergência</span><textarea name="health" rows="3"></textarea></label>
+</div><div class="privacy-box" data-i18n="healthPrivacy">Dados de saúde e emergência deverão ter acesso restrito no sistema definitivo.</div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveOperator">Salvar operador</button></div></form></dialog>
+
+<dialog id="operatorDetailsModal" class="modal"><form method="dialog"><div class="modal-head"><h2 id="detailsTitle">Operador</h2><button value="cancel" class="icon-btn">×</button></div><div id="operatorDetails"></div><div class="modal-actions"><button value="cancel" class="primary" data-i18n="close">Fechar</button></div></form></dialog>
+
+<dialog id="gameModal" class="modal"><form method="dialog" id="gameForm"><div class="modal-head"><h2 data-i18n="registerGame">Registrar jogo</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid"><label class="wide"><span data-i18n="gameName">Nome do jogo</span><input name="name" required></label><label><span data-i18n="date">Data</span><input type="date" name="date" required></label><label><span data-i18n="time">Horário</span><input type="time" name="time"></label><label class="wide"><span data-i18n="fieldPlace">Campo / local</span><input name="place"></label><label class="wide"><span data-i18n="notes">Observações</span><textarea name="notes" rows="3"></textarea></label></div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveGame">Salvar jogo</button></div></form></dialog>
+
+<dialog id="fieldModal" class="modal"><form method="dialog" id="fieldForm"><div class="modal-head"><h2 data-i18n="newField">Novo campo</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid"><label class="wide"><span data-i18n="fieldName">Nome do campo</span><input name="name" required></label><label class="wide"><span data-i18n="address">Endereço</span><input name="address"></label><label><span>Latitude</span><input name="lat"></label><label><span>Longitude</span><input name="lng"></label><label class="wide"><span data-i18n="gpsLink">Link GPS / Maps</span><input name="gps"></label><label class="wide"><span data-i18n="fieldContact">Contato do campo</span><input name="contact"></label></div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveField">Salvar campo</button></div></form></dialog>
+
+<dialog id="teamModal" class="modal"><form method="dialog" id="teamForm"><div class="modal-head"><h2 data-i18n="teamRegistration">Cadastro da equipe</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid">
+<label><span data-i18n="teamName">Nome da equipe</span><input name="name" required></label><label><span data-i18n="teamAcronym">Sigla</span><input name="acronym"></label><label><span data-i18n="foundationDate">Data de fundação</span><input type="date" name="founded"></label><label><span data-i18n="cityState">Cidade / UF</span><input name="city"></label>
+<label class="wide"><span data-i18n="teamHistory">História da equipe</span><textarea name="history" rows="4"></textarea></label><label class="wide"><span data-i18n="founders">Fundadores</span><textarea name="founders" rows="2"></textarea></label><label class="wide"><span data-i18n="supporters">Apoiadores / parceiros</span><textarea name="supporters" rows="2"></textarea></label>
+<label><span data-i18n="responsible">Responsável</span><input name="responsible"></label><label><span data-i18n="phone">Telefone / WhatsApp</span><input name="phone"></label><label><span data-i18n="email">E-mail</span><input type="email" name="email"></label><label><span data-i18n="social">Site / rede social</span><input name="social"></label>
+</div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveTeam">Salvar equipe</button></div></form></dialog>
+
+<dialog id="termModal" class="modal"><form method="dialog"><div class="modal-head"><h2 data-i18n="responsibilityTermTitle">Termo de Ciência e Responsabilidade</h2><button value="cancel" class="icon-btn">×</button></div><div class="term-text"><p>Declaro participar voluntariamente das atividades esportivas de Airsoft promovidas ou acompanhadas pela equipe.</p><p>Declaro estar ciente de que a atividade pode envolver esforço físico, deslocamento em terrenos irregulares e participação em locais que podem apresentar obstáculos, estruturas deterioradas ou outras condições próprias do ambiente.</p><p>Reconheço que projéteis plásticos utilizados na prática esportiva podem causar dor, marcas ou ferimentos, mesmo com a adoção de medidas de segurança.</p><p>Comprometo-me a utilizar os equipamentos de proteção exigidos, seguir as regras da equipe, do local e dos organizadores, informar limitações relevantes à minha participação e interromper a atividade quando entender que minha segurança ou a de terceiros possa estar comprometida.</p><p>Declaro ser responsável por avaliar minha aptidão física para participar da atividade e por fornecer informações de emergência corretas quando solicitadas.</p></div><div class="legal-note" data-i18n="legalNote">Modelo administrativo. Antes do uso definitivo, recomenda-se revisão jurídica adequada à legislação aplicável.</div><div class="modal-actions"><button value="cancel" class="primary" data-i18n="close">Fechar</button></div></form></dialog>
+
+<script src="js/config.js"></script>
+<script src="js/translations.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
