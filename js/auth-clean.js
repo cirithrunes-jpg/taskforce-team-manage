@@ -26,7 +26,7 @@ const client=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey
 });
 window.TASKFORCE_DB=client;
 
-const state={session:null,profile:null,membership:null,team:null,group:null};
+const state={session:null,profile:null,membership:null,team:null,group:null,access_revoked:false,revoked_at:null};
 const inviteToken=new URLSearchParams(location.search).get("invite");
 
 function withTimeout(promise,ms=15000){
@@ -235,6 +235,8 @@ async function loadMembership(){
   state.membership=ctx?.membership||null;
   state.team=ctx?.team||null;
   state.group=ctx?.group||null;
+  state.access_revoked=!!ctx?.access_revoked;
+  state.revoked_at=ctx?.revoked_at||null;
 }
 
 async function acceptInvite(){
@@ -242,6 +244,18 @@ async function acceptInvite(){
   await withTimeout(rpcAuth("accept_invitation",{invite_token:inviteToken}));
   const u=new URL(location.href);u.searchParams.delete("invite");history.replaceState({},"",u.pathname+u.search);
   return true;
+}
+
+function renderRevokedAccess(){
+  setGate(
+    '<div class="auth-card">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Acesso revogado</strong><small>Vínculo com a equipe encerrado</small></div></div>'+
+      '<div class="auth-message error">Seu acesso à equipe <strong>'+h(state.team?.name||"anterior")+'</strong> foi revogado por um administrador.</div>'+
+      '<p class="auth-foot">Para voltar a acessar o TASKFORCE por essa equipe, você precisa receber um novo convite de um administrador.</p>'+
+      '<button class="ghost" type="button" id="logoutRevoked">Sair</button>'+
+    '</div>'
+  );
+  document.getElementById("logoutRevoked").onclick=logout;
 }
 
 function renderCreateTeam(){
@@ -295,6 +309,10 @@ async function continueAfterProfile(){
   try{
     if(inviteToken)await acceptInvite();
     await loadMembership();
+    if(state.access_revoked && !state.membership){
+      renderRevokedAccess();
+      return;
+    }
     if(!state.membership){renderCreateTeam();return}
     await finishLogin();
   }catch(err){
@@ -308,7 +326,7 @@ function applyPermissions(){
   const role=state.membership?.role||"operator";
   document.body.dataset.role=role;
   document.querySelectorAll('.nav-item[data-view="operators"],.nav-item[data-view="settings"]').forEach(el=>el.hidden=role!=="admin");
-  ["addGame","quickGame","addField","quickField"].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=role!=="admin"});
+  ["addGame","quickGame","addField","quickField","openTeamModal","openTeamModal2","openTeamModal3","quickOperator"].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=role!=="admin"});
 }
 
 function injectSessionTools(){
@@ -318,8 +336,31 @@ function injectSessionTools(){
   tools.id="sessionTools";tools.className="session-tools";
   tools.innerHTML='<button class="ghost small" id="myProfileBtn">Meu perfil</button><button class="ghost small" id="signOutBtn">Sair</button>';
   top.insertBefore(tools,top.querySelector(".status-chip"));
-  document.getElementById("myProfileBtn").onclick=()=>renderProfileForm(state.session.user,state.profile||{});
+  document.getElementById("myProfileBtn").onclick=()=>{
+    if(state.membership?.role==="operator")renderReadOnlyProfile();
+    else renderProfileForm(state.session.user,state.profile||{});
+  };
   document.getElementById("signOutBtn").onclick=logout;
+}
+
+function renderReadOnlyProfile(){
+  const p=state.profile||{};
+  const rows=[
+    ["Nome",p.name],["E-mail",p.email],["Telefone",p.phone],["Endereço",p.address],
+    ["Codinome",p.callsign],["Função",p.role],["Tipo sanguíneo",p.blood],
+    ["Contato de emergência",p.emergency],["Telefone de emergência",p.emergencyPhone],
+    ["Parentesco / relação",p.relationship],["Alergias a medicamentos",p.allergy],
+    ["Informações de saúde",p.health]
+  ];
+  setGate(
+    '<div class="auth-card auth-wide">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Meu perfil</strong><small>Visualização</small></div></div>'+
+      '<div class="detail-grid">'+rows.map(r=>'<div class="detail-item"><small>'+h(r[0])+'</small>'+h(r[1]||"—")+'</div>').join("")+'</div>'+
+      '<div class="auth-foot">Operadores podem visualizar o cadastro, mas não alterar dados após a conclusão inicial.</div>'+
+      '<button class="primary" type="button" id="closeReadOnlyProfile">Voltar</button>'+
+    '</div>'
+  );
+  document.getElementById("closeReadOnlyProfile").onclick=finishLogin;
 }
 
 async function injectAdminInvite(){
@@ -328,25 +369,74 @@ async function injectAdminInvite(){
   if(!settings||document.getElementById("invitePanel"))return;
   const panel=document.createElement("article");
   panel.className="panel";panel.id="invitePanel";
-  panel.innerHTML='<h3>Convidar operadores</h3><p>O link é a chave da equipe. Quem entrar por ele será vinculado automaticamente a <strong>'+h(state.team?.name||"esta equipe")+'</strong>.</p><button class="primary" id="newInviteBtn">Gerar convite</button><div id="inviteResult" class="invite-result"></div>';
+  panel.innerHTML=
+    '<h3>Convidar membro</h3>'+
+    '<p>Escolha o nível de acesso antes de gerar o link. O vínculo é definido no servidor e não pode ser alterado pelo convidado.</p>'+
+    '<button class="primary" id="newInviteBtn">Gerar convite</button>'+
+    '<div id="inviteResult" class="invite-result"></div>';
   settings.prepend(panel);
+
   document.getElementById("newInviteBtn").onclick=async()=>{
     const out=document.getElementById("inviteResult");
     const {data:groups,error}=await client.from("team_groups").select("id,name").eq("team_id",state.membership.team_id).order("name");
     if(error){out.textContent=error.message;return}
-    out.innerHTML='<div class="invite-form"><label>E-mail do operador<input id="inviteEmail" type="email" placeholder="operador@email.com"></label><label>Grupo<select id="inviteGroup">'+(groups||[]).map(g=>'<option value="'+g.id+'">'+h(g.name)+'</option>').join("")+'</select></label><button class="primary" id="createInviteNow">Criar link</button></div>';
+
+    out.innerHTML=
+      '<div class="invite-form">'+
+        '<label>Tipo de convite<select id="inviteRole"><option value="operator">Operador — acesso limitado</option><option value="admin">Administrador — acesso completo</option></select></label>'+
+        '<label>E-mail do convidado<input id="inviteEmail" type="email" placeholder="usuario@email.com"></label>'+
+        '<label>Grupo<select id="inviteGroup">'+(groups||[]).map(g=>'<option value="'+g.id+'">'+h(g.name)+'</option>').join("")+'</select></label>'+
+        '<button class="primary" id="createInviteNow">Criar link</button>'+
+      '</div>'+
+      '<div id="inviteRoleWarning" class="auth-message"></div>';
+
+    const roleSel=document.getElementById("inviteRole");
+    const warning=document.getElementById("inviteRoleWarning");
+    const refreshWarning=()=>{
+      warning.textContent=roleSel.value==="admin"
+        ?"Atenção: este convite dará acesso administrativo completo à equipe."
+        :"Operador poderá visualizar o app e enviar seus próprios dados/comprovantes, sem alterar configurações da equipe.";
+      warning.className="auth-message "+(roleSel.value==="admin"?"error":"");
+    };
+    roleSel.onchange=refreshWarning;refreshWarning();
+
     document.getElementById("createInviteNow").onclick=async()=>{
       const email=document.getElementById("inviteEmail").value.trim()||null;
       const group=document.getElementById("inviteGroup").value;
-      const {data:token,error}=await client.rpc("create_invitation",{target_team:state.membership.team_id,target_group:group,recipient_email:email,use_limit:1});
-      if(error){out.innerHTML='<div class="auth-message error">'+h(error.message)+'</div>';return}
-      const link=(C.appUrl||location.origin)+"/?invite="+encodeURIComponent(token);
-      out.innerHTML='<div class="invite-ready"><strong>Convite criado</strong><input id="inviteLink" readonly value="'+h(link)+'"><div class="invite-actions"><button class="ghost" id="copyInvite">Copiar link</button><a class="ghost" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent("Convite TASKFORCE: "+link)+'">WhatsApp</a><a class="ghost" href="mailto:'+(email?encodeURIComponent(email):"")+'?subject='+encodeURIComponent("Convite TASKFORCE")+'&body='+encodeURIComponent("Use este link para entrar na equipe: "+link)+'">E-mail</a></div></div>';
-      document.getElementById("copyInvite").onclick=async()=>{await navigator.clipboard.writeText(link);document.getElementById("copyInvite").textContent="Copiado!"};
+      const role=roleSel.value;
+
+      if(role==="admin"&&!confirm("Este usuário terá acesso completo como administrador. Deseja continuar?"))return;
+
+      try{
+        const token=await rpcAuth("create_invitation",{
+          target_team:state.membership.team_id,
+          target_group:group,
+          recipient_email:email,
+          use_limit:1,
+          target_role:role
+        });
+        const link=(C.appUrl||location.origin)+"/?invite="+encodeURIComponent(token);
+        const label=role==="admin"?"Administrador":"Operador";
+        out.innerHTML=
+          '<div class="invite-ready">'+
+            '<strong>Convite de '+label+' criado</strong>'+
+            '<input id="inviteLink" readonly value="'+h(link)+'">'+
+            '<div class="invite-actions">'+
+              '<button class="ghost" id="copyInvite">Copiar link</button>'+
+              '<a class="ghost" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent("Convite TASKFORCE ("+label+"): "+link)+'">WhatsApp</a>'+
+              '<a class="ghost" href="mailto:'+(email?encodeURIComponent(email):"")+'?subject='+encodeURIComponent("Convite TASKFORCE - "+label)+'&body='+encodeURIComponent("Use este link para entrar na equipe como "+label+": "+link)+'">E-mail</a>'+
+            '</div>'+
+          '</div>';
+        document.getElementById("copyInvite").onclick=async()=>{
+          await navigator.clipboard.writeText(link);
+          document.getElementById("copyInvite").textContent="Copiado!";
+        };
+      }catch(err){
+        out.innerHTML='<div class="auth-message error">'+h(err.message||"Não foi possível criar o convite.")+'</div>';
+      }
     };
   };
 }
-
 async function finishLogin(){
   hideGate();
   injectSessionTools();
