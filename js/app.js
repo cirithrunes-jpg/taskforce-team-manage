@@ -96,6 +96,17 @@ function setLogoImage(imgSel,fallbackSel,src,fallbackText="TF"){
   const img=$(imgSel),fb=$(fallbackSel);if(!img||!fb)return;
   if(src){img.src=src;img.hidden=false;fb.hidden=true}else{img.removeAttribute("src");img.hidden=true;fb.hidden=false;fb.textContent=fallbackText}
 }
+function applyTeamWallpaper(src){
+  const root=document.documentElement;
+  if(src){
+    const safe=String(src).replace(/["\\\n\r]/g,m=>m==="""?"%22":m==="\\"?"%5C":"");
+    root.style.setProperty("--team-wallpaper",'url("'+safe+'")');
+    root.classList.add("has-team-wallpaper");
+  }else{
+    root.style.setProperty("--team-wallpaper","none");
+    root.classList.remove("has-team-wallpaper");
+  }
+}
 function renderTeamLogoPreview(){setLogoImage("#teamLogoPreview","#teamLogoPreviewFallback",teamLogo(),team.acronym||"TF")}
 $("#teamLogoInput")?.addEventListener("change",e=>{
   const file=e.target.files?.[0];if(!file)return;
@@ -199,6 +210,7 @@ function renderTeam(){
   const logo=team.logoData||"";
   setLogoImage("#teamLogoSide","#teamLogoFallback",logo,(team.acronym||team.name||"T").slice(0,2).toUpperCase());
   setLogoImage("#teamLogoHero","#teamLogoHeroFallback",logo,(team.acronym||"TF").slice(0,3).toUpperCase());
+  applyTeamWallpaper(logo);
 }
 function renderOperators(){
   const root=$("#operatorsList");
