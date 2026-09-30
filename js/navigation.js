@@ -8,6 +8,7 @@
   }
   function switchView(view){
     if(!view) return;
+    if(document.body.dataset.role==="operator"&&view==="documents") return;
     qa(".view").forEach(v=>v.classList.remove("active"));
     qa(".nav-item").forEach(v=>v.classList.remove("active"));
     qa(".mobile-nav-item[data-mobile-view]").forEach(v=>v.classList.toggle("active",v.dataset.mobileView===view));
