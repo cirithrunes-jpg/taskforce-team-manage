@@ -2,6 +2,7 @@ const $=(s)=>document.querySelector(s), $$=(s)=>[...document.querySelectorAll(s)
 const pref={get(k,f){try{return JSON.parse(localStorage.getItem("tf_pref_"+k))??f}catch{return f}},set(k,v){localStorage.setItem("tf_pref_"+k,JSON.stringify(v))}};
 const db=window.TASKFORCE_DB;
 let team={},operators=[],games=[],fields=[],membership=null,currentProfile=null;
+let pendingTeamLogoData=null;
 let billingSettings=null,monthlyFees=[],adminEmails=[],termAcceptances=[];
 let lang=pref.get("lang","pt"),theme=pref.get("theme","dark");
 
@@ -67,6 +68,19 @@ function initials(n){return String(n||"").trim().split(/\s+/).slice(0,2).map(x=>
 function formatDate(v){if(!v)return"—";const p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
 function sortedGames(){return [...games].sort((a,b)=>(a.date||"").localeCompare(b.date||""))}
 function assertAdmin(){if(membership?.role!=="admin")throw new Error("Apenas administradores podem realizar esta ação.")}
+function teamLogo(){return pendingTeamLogoData!==null?pendingTeamLogoData:(team.logoData||"")}
+function setLogoImage(imgSel,fallbackSel,src,fallbackText="TF"){
+  const img=$(imgSel),fb=$(fallbackSel);if(!img||!fb)return;
+  if(src){img.src=src;img.hidden=false;fb.hidden=true}else{img.removeAttribute("src");img.hidden=true;fb.hidden=false;fb.textContent=fallbackText}
+}
+function renderTeamLogoPreview(){setLogoImage("#teamLogoPreview","#teamLogoPreviewFallback",teamLogo(),team.acronym||"TF")}
+$("#teamLogoInput")?.addEventListener("change",e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(!["image/png","image/jpeg","image/webp"].includes(file.type)){alert("Use uma imagem PNG, JPG ou WebP.");e.target.value="";return}
+  if(file.size>2*1024*1024){alert("O brasão deve ter no máximo 2 MB.");e.target.value="";return}
+  const reader=new FileReader();reader.onload=()=>{pendingTeamLogoData=String(reader.result||"");renderTeamLogoPreview()};reader.readAsDataURL(file);
+});
+$("#removeTeamLogo")?.addEventListener("click",()=>{pendingTeamLogoData="";$("#teamLogoInput").value="";renderTeamLogoPreview()});
 
 $("#gameForm").addEventListener("submit",async e=>{
   e.preventDefault();
@@ -99,16 +113,21 @@ $("#teamForm").addEventListener("submit",async e=>{
     const form=formObject(e.target);
     const name=form.name.trim();
     const data={...form};delete data.name;
+    if(pendingTeamLogoData!==null)data.logoData=pendingTeamLogoData;
     const {error}=await db.from("teams").update({name,data}).eq("id",membership.team_id);
     if(error)throw error;
     team={name,...data};
+    pendingTeamLogoData=null;
     $("#teamModal").close();renderAll();
   }catch(err){alert(err.message)}
 });
 
 function fillTeamForm(){
   const form=$("#teamForm");
+  pendingTeamLogoData=null;
   Object.entries(team).forEach(([k,v])=>{if(form.elements[k])form.elements[k].value=v||""});
+  $("#teamLogoInput").value="";
+  renderTeamLogoPreview();
 }
 function renderTeam(){
   const name=team.name||t("registerTeam");
@@ -116,6 +135,9 @@ function renderTeam(){
   $("#teamNameSide").textContent=name;
   $("#heroTeamName").textContent=name;
   $("#teamCitySide").textContent=team.city||t("registerTeam");
+  const logo=team.logoData||"";
+  setLogoImage("#teamLogoSide","#teamLogoFallback",logo,(team.acronym||team.name||"T").slice(0,2).toUpperCase());
+  setLogoImage("#teamLogoHero","#teamLogoHeroFallback",logo,(team.acronym||"TF").slice(0,3).toUpperCase());
 }
 function renderOperators(){
   const root=$("#operatorsList");
