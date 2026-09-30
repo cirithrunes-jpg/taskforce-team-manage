@@ -10,7 +10,12 @@ const cents=v=>Math.round(Number(String(v||"0").replace(",","."))*100);
 if(!window.supabase||!C.supabaseUrl||!C.supabasePublishableKey){
   $("#controlStatus").textContent="Configuração do Supabase não encontrada.";return;
 }
-const db=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const db=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey,{auth:{
+  persistSession:true,
+  autoRefreshToken:true,
+  detectSessionInUrl:false,
+  storageKey:"taskforce-control-auth-v1"
+}});
 const state={session:null,overview:{},users:{},teams:[],finance:{},plans:[],discounts:[],subscriptions:[],payments:[],credits:[],cancellations:[],support:[]};
 
 function installDialogSafety(){
@@ -61,7 +66,15 @@ function discountName(id){return state.discounts.find(x=>x.id===id)?.code||""}
 async function confirmAccess(session){
   state.session=session;status("Verificando permissão...");
   const allowed=await rpc("is_platform_admin");
-  if(!allowed){await db.auth.signOut();state.session=null;$("#controlLoginForm").hidden=true;status("Acesso não autorizado.","error");return}
+  if(!allowed){
+    await db.auth.signOut();
+    state.session=null;
+    gate(true);
+    $("#controlLoginForm").hidden=false;
+    $("#controlLoginForm").reset();
+    status("Esta conta não possui acesso ao TASKFORCE Control. Entre com uma conta de administração da plataforma.","error");
+    return;
+  }
   gate(false);await loadAll();
 }
 function renderLogin(){gate(true);$("#controlLoginForm").hidden=false;status("Entre com sua conta de administração da plataforma.");}
