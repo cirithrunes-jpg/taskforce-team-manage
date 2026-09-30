@@ -388,9 +388,66 @@ async function loadMembership(){
   state.revoked_at=ctx?.revoked_at||null;
 }
 
+function renderInviteAccountMismatch(){
+  setGate(
+    '<div class="auth-card">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Convite vinculado a outro e-mail</strong><small>Use a conta que recebeu o convite</small></div></div>'+
+      '<div class="auth-message error">Este convite foi criado para um e-mail diferente da conta que está aberta neste navegador.</div>'+
+      '<p class="auth-foot">Saia desta conta e entre ou crie uma conta usando exatamente o e-mail que recebeu o convite. O link continuará válido.</p>'+
+      '<button class="primary" type="button" id="switchInviteAccount">Sair e continuar com o convite</button>'+
+      '<button class="ghost" type="button" id="cancelInviteFlow">Cancelar</button>'+
+    '</div>'
+  );
+  document.getElementById("switchInviteAccount").onclick=async()=>{
+    try{await client.auth.signOut()}catch{}
+    state.session=null;state.profile=null;state.membership=null;state.team=null;state.group=null;state.termAcceptance=null;
+    location.replace(location.pathname+"?invite="+encodeURIComponent(inviteToken));
+  };
+  document.getElementById("cancelInviteFlow").onclick=async()=>{
+    try{await client.auth.signOut()}catch{}
+    state.session=null;state.profile=null;state.membership=null;state.team=null;state.group=null;state.termAcceptance=null;
+    location.replace(location.pathname);
+  };
+}
+function renderInviteInvalid(message){
+  setGate(
+    '<div class="auth-card">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Não foi possível usar o convite</strong><small>Convite da equipe</small></div></div>'+
+      '<div class="auth-message error">'+h(message)+'</div>'+
+      '<p class="auth-foot">Peça ao administrador da equipe para gerar um novo convite.</p>'+
+      '<button class="ghost" type="button" id="inviteInvalidLogout">Sair</button>'+
+    '</div>'
+  );
+  document.getElementById("inviteInvalidLogout").onclick=logout;
+}
 async function acceptInvite(){
   if(!inviteToken)return false;
-  await withTimeout(rpcAuth("accept_invitation",{invite_token:inviteToken}));
+  try{
+    await withTimeout(rpcAuth("accept_invitation",{invite_token:inviteToken}));
+  }catch(err){
+    const msg=String(err?.message||"");
+    if(msg.includes("INVITE_EMAIL_MISMATCH")){
+      renderInviteAccountMismatch();
+      return "handled";
+    }
+    if(msg.includes("INVITE_EXPIRED_OR_USED")){
+      renderInviteInvalid("Este convite expirou, já foi utilizado ou foi revogado.");
+      return "handled";
+    }
+    if(msg.includes("INVITE_NOT_FOUND")){
+      renderInviteInvalid("Este link de convite não é válido.");
+      return "handled";
+    }
+    if(msg.includes("USER_ALREADY_IN_ANOTHER_TEAM")){
+      renderInviteInvalid("Esta conta já está vinculada a outra equipe.");
+      return "handled";
+    }
+    if(msg.includes("EMAIL_CONFIRMATION_REQUIRED")){
+      renderInviteInvalid("Confirme o e-mail da sua conta antes de aceitar o convite.");
+      return "handled";
+    }
+    throw err;
+  }
   const u=new URL(location.href);u.searchParams.delete("invite");history.replaceState({},"",u.pathname+u.search);
   return true;
 }
@@ -541,7 +598,10 @@ function renderResponsibilityAcceptance(){
 
 async function continueAfterProfile(){
   try{
-    if(inviteToken)await acceptInvite();
+    if(inviteToken){
+      const inviteResult=await acceptInvite();
+      if(inviteResult==="handled")return;
+    }
     await loadMembership();
     if(state.access_revoked && !state.membership){
       renderRevokedAccess();
