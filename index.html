@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style.css?v=20260929-mobile1">
+<link rel="stylesheet" href="css/style.css?v=20260930-chat1">
 </head>
 <body>
 <div class="app-shell">
@@ -20,7 +20,7 @@
       <button class="nav-item" data-view="fields"><span>⌖</span><span data-i18n="fields">Campos</span></button>
       <button class="nav-item" data-view="finance"><span>▤</span><span data-i18n="finance">Financeiro</span></button>
       <button class="nav-item" data-view="documents"><span>▱</span><span data-i18n="documents">Documentos</span></button>
-      <button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
+      <button class="nav-item" data-view="chat"><span>●</span><span>Chat</span></button><button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
       <button class="nav-item" data-view="settings"><span>⚙</span><span data-i18n="settings">Configurações</span></button>
     </nav>
     <div class="sidebar-footer"><small>v0.2 • Atualização 29/09</small></div>
@@ -31,11 +31,11 @@
   <button class="mobile-nav-item active" data-mobile-view="command"><span class="mobile-nav-icon">⌂</span><small>Início</small></button>
   <button class="mobile-nav-item" data-mobile-view="operators"><span class="mobile-nav-icon">◉</span><small>Equipe</small></button>
   <button class="mobile-nav-item" data-mobile-view="calendar"><span class="mobile-nav-icon">▦</span><small>Agenda</small></button>
-  <button class="mobile-nav-item" data-mobile-view="finance"><span class="mobile-nav-icon">▤</span><small>Financeiro</small></button>
+  <button class="mobile-nav-item" data-mobile-view="chat"><span class="mobile-nav-icon">●</span><small>Chat</small></button>
   <button class="mobile-nav-item" id="mobileMoreBtn"><span class="mobile-nav-icon">•••</span><small>Mais</small></button>
 </nav>
 <div class="mobile-more-sheet" id="mobileMoreSheet" hidden>
-  <button data-mobile-view="fields"><span>⌖</span> Campos</button>
+  <button data-mobile-view="finance"><span>▤</span> Financeiro</button><button data-mobile-view="fields"><span>⌖</span> Campos</button>
   <button data-mobile-view="documents"><span>▱</span> Documentos</button>
   <button data-mobile-view="contacts"><span>☏</span> Contatos</button>
   <button data-mobile-view="settings"><span>⚙</span> Configurações</button>
@@ -112,7 +112,16 @@
       <p class="legal-note">Os registros de aceite são mantidos como arquivo administrativo da equipe. A utilidade ou força probatória de um registro depende do contexto e da legislação aplicável; recomenda-se revisão jurídica para uso formal.</p>
     </section>
 
-    <section class="view" id="view-contacts"><div class="section-head"><div><h2 data-i18n="contacts">Contatos</h2><p data-i18n="contactsSubtitle">Contatos administrativos e serviços úteis à equipe.</p></div></div><div class="empty" data-i18n="noContacts">Nenhum contato cadastrado.</div></section>
+    <section class="view" id="view-chat">
+  <div class="section-head"><div><h2>Chat da equipe</h2><p>Conversa geral em tempo real, exclusiva para integrantes desta equipe.</p></div><span class="badge">GERAL</span></div>
+  <article class="chat-shell">
+    <div class="chat-head"><div class="chat-team-crest"><img id="chatTeamLogo" alt="" hidden><span id="chatTeamFallback">TF</span></div><div><strong id="chatTeamName">Equipe</strong><small>Canal geral • membros da equipe</small></div></div>
+    <div class="chat-messages" id="chatMessages"><div class="empty">Carregando mensagens…</div></div>
+    <form class="chat-compose" id="chatForm"><textarea id="chatInput" maxlength="2000" rows="1" placeholder="Mensagem para a equipe…" aria-label="Mensagem"></textarea><button class="primary" type="submit">Enviar</button></form>
+  </article>
+</section>
+
+<section class="view" id="view-contacts"><div class="section-head"><div><h2 data-i18n="contacts">Contatos</h2><p data-i18n="contactsSubtitle">Contatos administrativos e serviços úteis à equipe.</p></div></div><div class="empty" data-i18n="noContacts">Nenhum contato cadastrado.</div></section>
 
     <section class="view" id="view-settings"><div class="section-head"><div><h2 data-i18n="settings">Configurações</h2><p data-i18n="settingsSubtitle">Preferências do aplicativo e identificação da equipe.</p></div></div><div class="settings-grid">
       <article class="panel"><h3 data-i18n="teamIdentity">Identificação da equipe</h3><p data-i18n="teamIdentityText">Nome, história, fundadores, apoiadores e contatos.</p><button class="primary" id="openTeamModal3" data-i18n="editTeam">Cadastrar / Editar equipe</button></article>
@@ -178,6 +187,6 @@
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260929-1700"></script>
 <script src="js/auth-clean.js?v=20260929-cc1"></script>
-<script src="js/app.js?v=20260929-mobile3"></script>
+<script src="js/app.js?v=20260930-chat1"></script>
 </body>
 </html>
