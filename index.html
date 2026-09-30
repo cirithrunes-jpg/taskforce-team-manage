@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style-modern.css?v=20260930-wallpaper1">
+<link rel="stylesheet" href="css/style-modern.css?v=20260930-permissions1">
 <link rel="stylesheet" href="css/beginners.css?v=20260930-demo1">
 </head>
 <body>
@@ -20,7 +20,7 @@
       <button class="nav-item" data-view="calendar"><span>▦</span><span data-i18n="calendar">Calendário</span></button>
       <button class="nav-item" data-view="fields"><span>⌖</span><span data-i18n="fields">Campos</span></button>
       <button class="nav-item" data-view="finance"><span>▤</span><span data-i18n="finance">Financeiro</span></button>
-      <button class="nav-item" data-view="documents"><span>▱</span><span data-i18n="documents">Documentos</span></button>
+      <button class="nav-item operator-no-access" data-view="documents"><span>▱</span><span data-i18n="documents">Documentos</span></button>
       <button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
       <button class="nav-item" data-view="settings"><span>⚙</span><span data-i18n="settings">Configurações</span></button>
     </nav>
@@ -108,16 +108,16 @@
       </div>
     </section>
 
-    <section class="view" id="view-operators"><div class="section-head"><div><h2 data-i18n="operators">Operadores</h2><p data-i18n="operatorsSubtitle">Cadastro, segurança e informações essenciais dos integrantes.</p></div><button class="primary" id="addOperator">+ <span data-i18n="newOperator">Novo operador</span></button></div><div id="operatorsList" class="cards-list"></div></section>
+    <section class="view" id="view-operators"><div class="section-head"><div><h2 data-i18n="operators">Operadores</h2><p data-i18n="operatorsSubtitle">Cadastro, segurança e informações essenciais dos integrantes.</p></div><button class="primary admin-only" id="addOperator">+ <span data-i18n="newOperator">Novo operador</span></button></div><div id="operatorsList" class="cards-list"></div></section>
 
-    <section class="view" id="view-calendar"><div class="section-head"><div><h2 data-i18n="calendar">Calendário</h2><p data-i18n="calendarSubtitle">O operador registra aqui as datas dos jogos da equipe.</p></div><button class="primary" id="addGame">+ <span data-i18n="registerGame">Registrar jogo</span></button></div><div id="gamesList" class="cards-list"></div></section>
+    <section class="view" id="view-calendar"><div class="section-head"><div><h2 data-i18n="calendar">Calendário</h2><p data-i18n="calendarSubtitle">O operador registra aqui as datas dos jogos da equipe.</p></div><button class="primary admin-only" id="addGame">+ <span data-i18n="registerGame">Registrar jogo</span></button></div><div id="gamesList" class="cards-list"></div></section>
 
-    <section class="view" id="view-fields"><div class="section-head"><div><h2 data-i18n="fields">Campos</h2><p data-i18n="fieldsSubtitle">Locais cadastrados com endereço e localização GPS.</p></div><button class="primary" id="addField">+ <span data-i18n="newField">Novo campo</span></button></div><div id="fieldsList" class="cards-list"></div></section>
+    <section class="view" id="view-fields"><div class="section-head"><div><h2 data-i18n="fields">Campos</h2><p data-i18n="fieldsSubtitle">Locais cadastrados com endereço e localização GPS.</p></div><button class="primary admin-only" id="addField">+ <span data-i18n="newField">Novo campo</span></button></div><div id="fieldsList" class="cards-list"></div></section>
 
     <section class="view" id="view-finance">
       <div class="section-head">
         <div><h2 data-i18n="finance">Financeiro</h2><p>Mensalidades, pagamentos e comprovantes da equipe.</p></div>
-        <div class="finance-actions" id="financeAdminActions" hidden>
+        <div class="finance-actions admin-only" id="financeAdminActions" hidden>
           <button class="ghost" id="openBillingSettings">Configurar mensalidade</button>
           <button class="primary" id="generateFees">Gerar mensalidades do mês</button>
         </div>
@@ -140,7 +140,7 @@
       </div>
     </section>
 
-    <section class="view" id="view-documents">
+    <section class="view operator-no-access" id="view-documents">
       <div class="section-head"><div><h2 data-i18n="documents">Documentos</h2><p data-i18n="documentsSubtitle">Termos e documentos administrativos da equipe.</p></div></div>
       <article class="document-card">
         <div class="doc-icon">▱</div>
@@ -164,7 +164,7 @@
     <button class="more-card more-card-featured" data-go="beginners"><span class="more-icon">◎</span><span><strong>Airsoft para Iniciantes</strong><small>Do zero ao primeiro evento</small></span><b>›</b></button>
     <button class="more-card" data-go="finance"><span class="more-icon">▤</span><span><strong>Financeiro</strong><small>Mensalidades e pagamentos</small></span><b>›</b></button>
     <button class="more-card" data-go="fields"><span class="more-icon">⌖</span><span><strong>Campos</strong><small>Locais e endereços</small></span><b>›</b></button>
-    <button class="more-card" data-go="documents"><span class="more-icon">▱</span><span><strong>Documentos</strong><small>Termos e arquivos</small></span><b>›</b></button>
+    <button class="more-card operator-no-access" data-go="documents"><span class="more-icon">▱</span><span><strong>Documentos</strong><small>Termos e arquivos</small></span><b>›</b></button>
     <button class="more-card" data-go="contacts"><span class="more-icon">☏</span><span><strong>Contatos</strong><small>Contatos úteis da equipe</small></span><b>›</b></button>
     <button class="more-card" data-go="settings"><span class="more-icon">⚙</span><span><strong>Configurações</strong><small>Equipe e preferências</small></span><b>›</b></button>
   </div>
@@ -340,7 +340,7 @@
 <section class="view" id="view-contacts"><div class="section-head"><div><h2 data-i18n="contacts">Contatos</h2><p data-i18n="contactsSubtitle">Contatos administrativos e serviços úteis à equipe.</p></div></div><div class="empty" data-i18n="noContacts">Nenhum contato cadastrado.</div></section>
 
     <section class="view" id="view-settings"><div class="section-head"><div><h2 data-i18n="settings">Configurações</h2><p data-i18n="settingsSubtitle">Preferências do aplicativo e identificação da equipe.</p></div></div><div class="settings-grid">
-      <article class="panel"><h3 data-i18n="teamIdentity">Identificação da equipe</h3><p data-i18n="teamIdentityText">Nome, história, fundadores, apoiadores e contatos.</p><button class="primary" id="openTeamModal3" data-i18n="editTeam">Cadastrar / Editar equipe</button></article>
+      <article class="panel admin-only" id="teamIdentityPanel"><h3 data-i18n="teamIdentity">Identificação da equipe</h3><p data-i18n="teamIdentityText">Nome, história, fundadores, apoiadores e contatos.</p><button class="primary" id="openTeamModal3" data-i18n="editTeam">Cadastrar / Editar equipe</button></article>
       <article class="panel"><h3 data-i18n="language">Idioma</h3><select id="languageSelect"><option value="pt">Português</option><option value="es">Español</option><option value="en">English</option></select></article>
       <article class="panel"><h3 data-i18n="appearance">Aparência</h3><div class="segmented"><button data-theme="dark" class="theme-btn active" data-i18n="dark">Escuro</button><button data-theme="light" class="theme-btn" data-i18n="light">Claro</button></div></article>
       <article class="panel"><h3 data-i18n="dataStatus">Status dos dados</h3><p data-i18n="localPrototype">Dados da equipe sincronizados com segurança.</p></article>
@@ -368,7 +368,7 @@
 
 <dialog id="operatorDetailsModal" class="modal"><form method="dialog"><div class="modal-head"><h2 id="detailsTitle">Operador</h2><button value="cancel" class="icon-btn">×</button></div><div id="operatorDetails"></div><div class="modal-actions"><button value="cancel" class="primary" data-i18n="close">Fechar</button></div></form></dialog>
 
-<dialog id="gameModal" class="modal"><form method="dialog" id="gameForm"><div class="modal-head"><h2 data-i18n="registerGame">Registrar jogo</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid"><label class="wide"><span data-i18n="gameName">Nome do jogo</span><input name="name" required></label><label><span data-i18n="date">Data</span><input type="date" name="date" required></label><label><span data-i18n="time">Horário</span><input type="time" name="time"></label><label class="wide"><span data-i18n="fieldPlace">Campo / local</span><input name="place"></label><label class="wide"><span data-i18n="notes">Observações</span><textarea name="notes" rows="3"></textarea></label></div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveGame">Salvar jogo</button></div></form></dialog>
+<dialog id="gameModal" class="modal"><form method="dialog" id="gameForm"><div class="modal-head"><h2 data-i18n="registerGame">Registrar jogo</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid"><label class="wide"><span data-i18n="gameName">Nome do jogo</span><select name="name" required><option value="">Selecione</option><option>Operação</option><option>Ação social</option><option>Jogo aberto</option><option>Jogo fechado</option><option>Evento interno</option><option>Treino de nivelamento tático</option><option>Outros</option></select></label><label><span data-i18n="date">Data</span><input type="date" name="date" required></label><label><span data-i18n="time">Horário</span><input type="time" name="time"></label><label class="wide"><span data-i18n="fieldPlace">Campo / local</span><select name="field_id" id="gameFieldSelect"><option value="">Nenhum campo definido</option></select></label><label class="wide"><span data-i18n="notes">Observações</span><textarea name="notes" rows="3"></textarea></label></div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveGame">Salvar jogo</button></div></form></dialog>
 
 <dialog id="fieldModal" class="modal"><form method="dialog" id="fieldForm"><div class="modal-head"><h2 data-i18n="newField">Novo campo</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid"><label class="wide"><span data-i18n="fieldName">Nome do campo</span><input name="name" required></label><label class="wide"><span data-i18n="address">Endereço</span><input name="address"></label><label><span>Latitude</span><input name="lat"></label><label><span>Longitude</span><input name="lng"></label><label class="wide"><span data-i18n="gpsLink">Link GPS / Maps</span><input name="gps"></label><label class="wide"><span data-i18n="fieldContact">Contato do campo</span><input name="contact"></label></div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveField">Salvar campo</button></div></form></dialog>
 
@@ -411,9 +411,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260930-support1"></script>
-<script src="js/auth-clean.js?v=20260930-termguard1"></script>
-<script src="js/app.js?v=20260930-wallpaper1"></script>
+<script src="js/auth-clean.js?v=20260930-permissions1"></script>
+<script src="js/app.js?v=20260930-permissions1"></script>
 <script src="js/beginners.js?v=20260930-demo1"></script>
-<script src="js/navigation.js?v=20260930-stable2"></script>
+<script src="js/navigation.js?v=20260930-permissions1"></script>
 </body>
 </html>
