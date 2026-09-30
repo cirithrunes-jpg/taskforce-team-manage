@@ -15,12 +15,13 @@ async function authRest(path,{method="GET",body=null,prefer=""}={}){
 let team={},operators=[],games=[],fields=[],membership=null,currentProfile=null;
 let pendingTeamLogoData=null;
 let billingSettings=null,monthlyFees=[],adminEmails=[],termAcceptances=[];
+let adminContacts=[],teamNews=[],platformNews=[];
 let lang=pref.get("lang","pt"),theme=pref.get("theme","dark");
 
 const titles={
 command:["command","commandSubtitle"],operators:["operators","operatorsSubtitle"],calendar:["calendar","calendarSubtitle"],
 fields:["fields","fieldsSubtitle"],finance:["finance","financeSubtitle"],documents:["documents","documentsSubtitle"],
-contacts:["contacts","contactsSubtitle"],beginners:["Airsoft para Iniciantes","Do zero ao primeiro evento"],more:["Mais","Outros recursos da equipe"],settings:["settings","settingsSubtitle"]
+contacts:["contacts","contactsSubtitle"],news:["News","Jornal da equipe e radar das últimas 24 horas"],beginners:["Airsoft para Iniciantes","Do zero ao primeiro evento"],more:["Mais","Outros recursos da equipe"],settings:["settings","settingsSubtitle"]
 };
 
 function t(key){return (window.I18N[lang]&&window.I18N[lang][key])||window.I18N.pt[key]||key}
@@ -568,7 +569,91 @@ async function loadTermDocuments(){
   }
 }
 
-function renderAll(){renderTeam();renderOperators();renderGames();renderFields();renderFinance();renderTermDocuments()}
+function newsTimeLeft(expiresAt){
+  const ms=new Date(expiresAt).getTime()-Date.now();
+  if(ms<=0)return"expirada";
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
+  return h>0?("restam "+h+"h "+m+"min"):("restam "+m+"min");
+}
+function renderAdminContacts(){
+  const root=$("#adminContactsList");if(!root)return;
+  if(!adminContacts.length){root.innerHTML='<div class="empty">Nenhum administrador com contato disponível.</div>';return}
+  root.innerHTML=adminContacts.map(x=>{
+    const title=x.callsign||x.name||"Administrador";
+    const sub=x.name&&x.callsign?x.name:"Administrador da equipe";
+    const email=x.email?'<a class="ghost small" href="mailto:'+encodeURIComponent(x.email)+'">E-mail</a>':"";
+    const phone=x.phone?'<a class="ghost small" href="tel:'+esc(x.phone).replace(/[^0-9+]/g,"")+'">Telefone</a>':"";
+    return '<article class="admin-contact-row"><div><strong>'+esc(title)+'</strong><small>'+esc(sub)+'</small></div><div class="admin-contact-actions">'+phone+email+'</div></article>';
+  }).join("");
+}
+async function loadAdminContacts(){
+  try{
+    const data=await financeRpc("list_team_admin_contacts");
+    adminContacts=Array.isArray(data)?data:[];
+  }catch(err){console.error("Contatos da equipe:",err);adminContacts=[]}
+  renderAdminContacts();
+}
+function renderNews(){
+  const dateEl=$("#newsDate");if(dateEl)dateEl.textContent=new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"});
+  const teamRoot=$("#teamNewsList"),platformRoot=$("#platformNewsList");
+  if(teamRoot){
+    const list=[...teamNews].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
+    if(!list.length)teamRoot.innerHTML='<div class="empty">Nenhuma notícia da equipe nas últimas 24 horas.</div>';
+    else teamRoot.innerHTML=list.map((x,i)=>{
+      const cat={birthday:"ANIVERSÁRIO",evento:"EVENTO",comunicado:"COMUNICADO",equipe:"EQUIPE"}[x.category]||"EQUIPE";
+      const sys=x.is_system?'<span class="news-auto">AUTOMÁTICO</span>':"";
+      const del=membership?.role==="admin"&&!x.is_system?'<button class="news-delete" data-news-delete="'+esc(x.id)+'">Excluir</button>':"";
+      return '<article class="news-story '+(i===0?"news-lead":"")+'"><div class="news-story-meta"><span>'+cat+'</span>'+sys+'<small>'+esc(newsTimeLeft(x.expires_at))+'</small></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.body)+'</p>'+del+'</article>';
+    }).join("");
+    $("[data-news-delete]").forEach(b=>b.onclick=()=>deleteTeamNews(b.dataset.newsDelete));
+  }
+  if(platformRoot){
+    if(!platformNews.length)platformRoot.innerHTML='<div class="empty">Sem atualizações institucionais nas últimas 24 horas.</div>';
+    else platformRoot.innerHTML=platformNews.map(x=>'<article class="news-radar-item"><small>'+esc(x.category==="seguranca"?"SEGURANÇA":"REGULAMENTAÇÃO")+' • '+esc(x.source_name)+'</small><strong>'+esc(x.title)+'</strong><span>'+esc(x.summary||"")+'</span><em>'+esc(newsTimeLeft(x.expires_at))+'</em></article>').join("");
+  }
+}
+async function loadNewsData(){
+  if(!membership?.team_id)return;
+  try{
+    const now=encodeURIComponent(new Date().toISOString());
+    const [teamItems,platformItems]=await Promise.all([
+      authRest("team_news_posts?select=id,category,title,body,is_system,created_at,expires_at&team_id=eq."+encodeURIComponent(membership.team_id)+"&expires_at=gt."+now+"&order=created_at.desc"),
+      authRest("platform_news_items?select=id,source_name,category,title,summary,created_at,expires_at&expires_at=gt."+now+"&order=created_at.desc&limit=20")
+    ]);
+    teamNews=Array.isArray(teamItems)?teamItems:[];
+    platformNews=Array.isArray(platformItems)?platformItems:[];
+  }catch(err){console.error("News:",err);teamNews=[];platformNews=[]}
+  renderNews();
+}
+async function deleteTeamNews(id){
+  if(membership?.role!=="admin")return;
+  try{
+    await authRest("team_news_posts?id=eq."+encodeURIComponent(id),{method:"DELETE",prefer:"return=minimal"});
+    await loadNewsData();
+  }catch(err){alert("Não foi possível excluir a publicação: "+err.message)}
+}
+$("#newsPostForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(membership?.role!=="admin")return;
+  const form=e.currentTarget,statusEl=$("#newsPostStatus"),button=form.querySelector('button[type="submit"]');
+  const f=new FormData(form);
+  button.disabled=true;if(statusEl)statusEl.textContent="Publicando...";
+  try{
+    await authRest("team_news_posts",{method:"POST",body:{
+      team_id:membership.team_id,
+      author_user_id:currentProfile?.user_id,
+      category:String(f.get("category")||"equipe"),
+      title:String(f.get("title")||"").trim(),
+      body:String(f.get("body")||"").trim(),
+      is_system:false,
+      expires_at:new Date(Date.now()+24*60*60*1000).toISOString()
+    },prefer:"return=minimal"});
+    form.reset();if(statusEl)statusEl.textContent="Publicado por 24 horas.";
+    await loadNewsData();
+  }catch(err){if(statusEl)statusEl.textContent="Não foi possível publicar: "+err.message}
+  finally{button.disabled=false}
+});
+function renderAll(){renderTeam();renderOperators();renderGames();renderFields();renderFinance();renderTermDocuments();renderAdminContacts();renderNews()}
 
 async function loadTeamData(detail){
   membership=detail.membership;
@@ -593,9 +678,9 @@ async function loadTeamData(detail){
     }
   }catch(err){console.error("Equipe:",err)}
   renderAll();
-  await Promise.all([loadFinanceData(),loadTermDocuments()]);
+  await Promise.all([loadFinanceData(),loadTermDocuments(),loadAdminContacts(),loadNewsData()]);
 }
 window.addEventListener("taskforce:auth-ready",e=>loadTeamData(e.detail));
 if(window.TASKFORCE_AUTH?.state?.membership)loadTeamData(window.TASKFORCE_AUTH.state);
 translate();
-window.TASKFORCE_AGENDA_CLEANUP_TIMER=setInterval(()=>{if(membership)renderGames()},15*60*1000);
+window.TASKFORCE_AGENDA_CLEANUP_TIMER=setInterval(()=>{if(membership){renderGames();loadNewsData()}},15*60*1000);
