@@ -191,3 +191,6 @@ html.has-team-wallpaper .app-shell::before{opacity:.042}
   html.has-team-wallpaper .app-shell::before{opacity:.038}
   :root[data-theme="light"].has-team-wallpaper .app-shell::before{opacity:.03}
 }
+
+body[data-role="operator"] .operator-no-access{display:none!important}
+.team-card:disabled{opacity:1;cursor:default}
