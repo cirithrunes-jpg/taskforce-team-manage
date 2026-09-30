@@ -158,18 +158,27 @@ function chatAuthorName(userId){
   const o=operators.find(x=>(x.user_id||x.id)===userId);
   return o?.callsign||o?.name||"Integrante";
 }
+function chatDayLabel(date){
+  const d=new Date(date),now=new Date(),y=new Date();y.setDate(now.getDate()-1);
+  const key=x=>x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate();
+  if(key(d)===key(now))return"Hoje";
+  if(key(d)===key(y))return"Ontem";
+  return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:d.getFullYear()===now.getFullYear()?undefined:"numeric"});
+}
 function renderChat(){
   const root=$("#chatMessages");if(!root)return;
   $("#chatTeamName").textContent=team.name||"Equipe";
   setLogoImage("#chatTeamLogo","#chatTeamFallback",team.logoData||"",(team.acronym||"TF").slice(0,3).toUpperCase());
-  if(!chatMessages.length){root.innerHTML='<div class="empty">Nenhuma mensagem ainda. Inicie a conversa da equipe.</div>';return}
+  if(!chatMessages.length){root.innerHTML='<div class="chat-loading">Nenhuma mensagem ainda. Inicie a conversa.</div>';return}
   const myId=currentProfile?.user_id;
-  root.innerHTML=chatMessages.map(m=>{
-    const mine=m.user_id===myId;
-    const dt=new Date(m.created_at);
+  let lastDay="",html="";
+  chatMessages.forEach(m=>{
+    const mine=m.user_id===myId,dt=new Date(m.created_at),day=chatDayLabel(dt);
+    if(day!==lastDay){html+='<div class="chat-date-separator">'+esc(day)+'</div>';lastDay=day}
     const when=dt.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-    return '<div class="chat-line '+(mine?"mine":"")+'"><div class="chat-bubble"><strong>'+esc(mine?"Você":chatAuthorName(m.user_id))+'</strong><p>'+esc(m.body)+'</p><small>'+esc(when)+'</small></div></div>';
-  }).join("");
+    html+='<div class="chat-line '+(mine?"mine":"")+'"><div class="chat-bubble"><strong>'+esc(chatAuthorName(m.user_id))+'</strong><p>'+esc(m.body)+'</p><small>'+esc(when)+'</small></div></div>';
+  });
+  root.innerHTML=html;
   root.scrollTop=root.scrollHeight;
 }
 async function loadChat(){
@@ -183,13 +192,14 @@ async function loadChat(){
       if(!chatMessages.some(x=>x.id===payload.new.id)){chatMessages.push(payload.new);renderChat()}
     }).subscribe();
 }
+$("#chatInput")?.addEventListener("input",e=>{e.target.style.height="42px";e.target.style.height=Math.min(e.target.scrollHeight,110)+"px"});
 $("#chatForm")?.addEventListener("submit",async e=>{
   e.preventDefault();
   const input=$("#chatInput"),body=input.value.trim();if(!body||!membership?.team_id)return;
   const {data:{user}}=await db.auth.getUser();if(!user)return;
   const {data,error}=await db.from("team_chat_messages").insert({team_id:membership.team_id,user_id:user.id,body}).select("id,team_id,user_id,body,created_at").single();
   if(error){alert("Não foi possível enviar a mensagem.");console.error(error);return}
-  input.value="";
+  input.value="";input.style.height="42px";
   if(data&&!chatMessages.some(x=>x.id===data.id)){chatMessages.push(data);renderChat()}
 });
 function renderOperators(){
