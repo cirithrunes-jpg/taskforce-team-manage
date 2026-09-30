@@ -9,7 +9,7 @@ let lang=pref.get("lang","pt"),theme=pref.get("theme","dark");
 const titles={
 command:["command","commandSubtitle"],operators:["operators","operatorsSubtitle"],calendar:["calendar","calendarSubtitle"],
 fields:["fields","fieldsSubtitle"],finance:["finance","financeSubtitle"],documents:["documents","documentsSubtitle"],
-contacts:["contacts","contactsSubtitle"],more:["Mais","Outros recursos da equipe"],settings:["settings","settingsSubtitle"]
+contacts:["contacts","contactsSubtitle"],beginners:["Airsoft para Iniciantes","Do zero ao primeiro evento"],more:["Mais","Outros recursos da equipe"],settings:["settings","settingsSubtitle"]
 };
 
 function t(key){return (window.I18N[lang]&&window.I18N[lang][key])||window.I18N.pt[key]||key}
