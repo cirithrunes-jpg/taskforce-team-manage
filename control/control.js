@@ -25,7 +25,7 @@ function installDialogSafety(){
     const dlg=e.target.closest("dialog");
     if(dlg&&e.target===dlg)dlg.close("cancel");
   });
-  $("dialog").forEach(dlg=>{
+  $$("dialog").forEach(dlg=>{
     dlg.addEventListener("cancel",e=>{
       e.preventDefault();
       dlg.close("cancel");
