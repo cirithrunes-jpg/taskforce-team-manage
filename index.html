@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style-modern.css?v=20260930-news1">
+<link rel="stylesheet" href="css/style-modern.css?v=20260930-news2">
 <link rel="stylesheet" href="css/beginners.css?v=20260930-demo1">
 </head>
 <body>
@@ -377,6 +377,14 @@
       <article class="panel"><h3 data-i18n="language">Idioma</h3><select id="languageSelect"><option value="pt">Português</option><option value="es">Español</option><option value="en">English</option></select></article>
       <article class="panel"><h3 data-i18n="appearance">Aparência</h3><div class="segmented"><button data-theme="dark" class="theme-btn active" data-i18n="dark">Escuro</button><button data-theme="light" class="theme-btn" data-i18n="light">Claro</button></div></article>
       <article class="panel"><h3 data-i18n="dataStatus">Status dos dados</h3><p data-i18n="localPrototype">Dados da equipe sincronizados com segurança.</p></article>
+      <article class="panel" id="birthdaySettingsCard">
+        <div class="panel-head"><div><h3>Aniversário no News</h3><p>Informe apenas dia e mês para receber felicitações automáticas da equipe.</p></div><span class="badge">PRIVACIDADE</span></div>
+        <form id="birthdaySettingsForm" class="birthday-settings-form">
+          <label>Dia<select name="day" id="birthdayDaySelect"><option value="">Dia</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select></label>
+          <label>Mês<select name="month" id="birthdayMonthSelect"><option value="">Mês</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></label>
+          <div class="birthday-settings-actions"><span id="birthdaySettingsStatus" aria-live="polite"></span><button class="primary" type="submit">Salvar aniversário</button></div>
+        </form>
+      </article>
       <article class="panel" id="adminContactsPanel">
         <div class="panel-head"><div><h3>Contatos da equipe</h3><p>Administradores disponíveis para contato.</p></div><span class="badge">AUTOMÁTICO</span></div>
         <div id="adminContactsList" class="admin-contacts-list"><div class="empty">Carregando contatos...</div></div>
@@ -449,7 +457,7 @@
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260930-support1"></script>
 <script src="js/auth-clean.js?v=20260930-news1"></script>
-<script src="js/app.js?v=20260930-news1"></script>
+<script src="js/app.js?v=20260930-news2"></script>
 <script src="js/beginners.js?v=20260930-demo1"></script>
 <script src="js/navigation.js?v=20260930-permissions1"></script>
 </body>
