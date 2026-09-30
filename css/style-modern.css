@@ -221,3 +221,12 @@ body[data-role="operator"] .operator-no-access{display:none!important}
   .news-masthead h2{font-size:34px}.news-masthead-top{font-size:8px}
 }
 @media(max-width:520px){.admin-contact-row{align-items:flex-start;flex-direction:column}.admin-contact-actions{width:100%}.admin-contact-actions a{flex:1;text-align:center}}
+
+.birthday-settings-form{display:grid;grid-template-columns:120px 1fr;gap:10px;margin-top:10px}
+.birthday-settings-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.birthday-settings-actions span{color:var(--muted);font-size:10px}
+@media(max-width:560px){
+  .birthday-settings-form{grid-template-columns:1fr 1fr}
+  .birthday-settings-actions{grid-column:1/-1;flex-direction:column;align-items:stretch}
+  .birthday-settings-actions .primary{width:100%}
+}
