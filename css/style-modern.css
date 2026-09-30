@@ -181,7 +181,7 @@ body[data-role="operator"] .admin-only{display:none!important}
 html.has-team-wallpaper .app-shell::before{opacity:.042}
 :root[data-theme="light"].has-team-wallpaper .app-shell::before{opacity:.034}
 .main{position:relative;z-index:1}
-.sidebar,.mobile-nav,.rail-toggle{position:relative;z-index:5}
+.sidebar,.mobile-nav,.rail-toggle{z-index:5}
 @media(max-width:900px){
   .app-shell::before{
     inset:0;
