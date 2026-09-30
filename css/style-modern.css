@@ -325,3 +325,31 @@ body[data-role="operator"] .admin-only{display:none!important}
   }
   .chat-send{width:44px;height:44px}
 }
+
+
+/* Team crest watermark inside chat — intentionally subtle */
+.chat-whatsapp .chat-messages::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:var(--chat-team-mark,none);
+  background-repeat:repeat;
+  background-size:108px 108px;
+  background-position:18px 16px;
+  opacity:.04;
+}
+.chat-whatsapp .chat-messages>*{
+  position:relative;
+  z-index:1;
+}
+:root[data-theme="dark"] .chat-whatsapp .chat-messages::before{opacity:.045}
+@media(max-width:700px){
+  .chat-whatsapp .chat-messages::before{
+    background-size:96px 96px;
+    background-position:14px 12px;
+    opacity:.035;
+  }
+  :root[data-theme="dark"] .chat-whatsapp .chat-messages::before{opacity:.04}
+}
