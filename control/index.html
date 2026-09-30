@@ -185,7 +185,7 @@
 </div>
 
 <dialog id="planModal" class="modal"><form method="dialog" id="planForm">
-  <div class="modal-head"><div><small>CATÁLOGO</small><h3>Novo plano</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="modal-head"><div><small>CATÁLOGO</small><h3>Novo plano</h3></div><button type="button" data-dialog-close value="cancel" class="icon-btn">×</button></div>
   <div class="form-grid">
     <label>Nome<input name="name" required maxlength="120" placeholder="Ex.: TASKFORCE Team"></label>
     <label>Código<input name="code" required maxlength="80" placeholder="team-monthly"></label>
@@ -193,12 +193,12 @@
     <label>Cobrança<select name="interval"><option value="monthly">Mensal</option><option value="yearly">Anual</option></select></label>
     <label>Dias de teste<input name="trial_days" type="number" min="0" max="365" value="0"></label>
   </div>
-  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Salvar plano</button></div>
+  <div class="modal-actions"><button type="button" data-dialog-close value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Salvar plano</button></div>
   <div class="form-status" id="planStatus"></div>
 </form></dialog>
 
 <dialog id="discountModal" class="modal"><form method="dialog" id="discountForm">
-  <div class="modal-head"><div><small>BENEFÍCIO</small><h3>Novo desconto</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="modal-head"><div><small>BENEFÍCIO</small><h3>Novo desconto</h3></div><button type="button" data-dialog-close value="cancel" class="icon-btn">×</button></div>
   <div class="form-grid">
     <label>Nome<input name="name" required maxlength="140" placeholder="Ex.: Lançamento"></label>
     <label>Código<input name="code" required maxlength="80" placeholder="LANCAMENTO20"></label>
@@ -209,12 +209,12 @@
     <label>Limite de usos<input name="max_redemptions" type="number" min="1" placeholder="Sem limite"></label>
     <label>Válido até<input name="valid_until" type="date"></label>
   </div>
-  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Criar benefício</button></div>
+  <div class="modal-actions"><button type="button" data-dialog-close value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Criar benefício</button></div>
   <div class="form-status" id="discountStatus"></div>
 </form></dialog>
 
 <dialog id="subscriptionModal" class="modal"><form method="dialog" id="subscriptionForm">
-  <div class="modal-head"><div><small>CLIENTE</small><h3>Registrar assinatura</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="modal-head"><div><small>CLIENTE</small><h3>Registrar assinatura</h3></div><button type="button" data-dialog-close value="cancel" class="icon-btn">×</button></div>
   <div class="form-grid">
     <label>Equipe<select name="team_id" id="subscriptionTeam" required></select></label>
     <label>Plano<select name="plan_id" id="subscriptionPlan" required></select></label>
@@ -222,24 +222,24 @@
     <label>Status<select name="status"><option value="active">Ativa</option><option value="trialing">Em teste</option><option value="paused">Pausada</option><option value="past_due">Em atraso</option></select></label>
     <label>Origem<select name="provider"><option value="manual">Manual</option><option value="mercadopago">Mercado Pago</option><option value="paddle">Paddle</option><option value="stripe">Stripe</option><option value="google_play">Google Play</option></select></label>
   </div>
-  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Registrar</button></div>
+  <div class="modal-actions"><button type="button" data-dialog-close value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Registrar</button></div>
   <div class="form-status" id="subscriptionStatus"></div>
 </form></dialog>
 
 <dialog id="paymentModal" class="modal"><form method="dialog" id="paymentForm">
-  <div class="modal-head"><div><small>TRANSAÇÃO</small><h3>Registrar pagamento</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="modal-head"><div><small>TRANSAÇÃO</small><h3>Registrar pagamento</h3></div><button type="button" data-dialog-close value="cancel" class="icon-btn">×</button></div>
   <div class="form-grid">
     <label>Assinatura<select name="subscription_id" id="paymentSubscription" required></select></label>
     <label>Valor (R$)<input name="amount" type="number" min="0" step="0.01" required></label>
     <label>Status<select name="status"><option value="paid">Pago</option><option value="pending">Pendente</option><option value="failed">Falhou</option><option value="refunded">Reembolsado</option></select></label>
     <label>Origem<select name="provider"><option value="manual">Manual</option><option value="mercadopago">Mercado Pago</option><option value="paddle">Paddle</option><option value="stripe">Stripe</option><option value="google_play">Google Play</option></select></label>
   </div>
-  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Registrar pagamento</button></div>
+  <div class="modal-actions"><button type="button" data-dialog-close value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Registrar pagamento</button></div>
   <div class="form-status" id="paymentStatus"></div>
 </form></dialog>
 
 <dialog id="creditModal" class="modal"><form method="dialog" id="creditForm">
-  <div class="modal-head"><div><small>CRÉDITO</small><h3>Conceder crédito</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="modal-head"><div><small>CRÉDITO</small><h3>Conceder crédito</h3></div><button type="button" data-dialog-close value="cancel" class="icon-btn">×</button></div>
   <div class="form-grid">
     <label>Equipe<select name="team_id" id="creditTeam" required></select></label>
     <label>Valor (R$)<input name="amount" type="number" min="0.01" step="0.01" required></label>
@@ -247,12 +247,12 @@
     <label class="wide">Motivo<input name="reason" minlength="3" maxlength="280" required placeholder="Ex.: Crédito por indicação"></label>
     <label>Expira em<input name="expires_at" type="date"></label>
   </div>
-  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Conceder crédito</button></div>
+  <div class="modal-actions"><button type="button" data-dialog-close value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Conceder crédito</button></div>
   <div class="form-status" id="creditStatus"></div>
 </form></dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/config.js?v=20260929-1700"></script>
-<script src="control.js?v=20260930-authrest1"></script>
+<script src="control.js?v=20260930-dialogfix1"></script>
 </body>
 </html>
