@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style.css?v=20260930-polish2">
+<link rel="stylesheet" href="css/style-modern.css?v=20260930-sports1">
 </head>
 <body>
 <div class="app-shell">
@@ -29,18 +29,11 @@
   <button class="rail-toggle" id="railToggle">☰</button>
 <nav class="mobile-nav" id="mobileNav" aria-label="Navegação principal">
   <button class="mobile-nav-item active" data-mobile-view="command"><span class="mobile-nav-icon">⌂</span><small>Início</small></button>
-  <button class="mobile-nav-item" data-mobile-view="operators"><span class="mobile-nav-icon">◉</span><small>Equipe</small></button>
   <button class="mobile-nav-item" data-mobile-view="calendar"><span class="mobile-nav-icon">▦</span><small>Agenda</small></button>
+  <button class="mobile-nav-item" data-mobile-view="operators"><span class="mobile-nav-icon">◉</span><small>Equipe</small></button>
   <button class="mobile-nav-item" data-mobile-view="chat"><span class="mobile-nav-icon">●</span><small>Chat</small></button>
-  <button class="mobile-nav-item" id="mobileMoreBtn"><span class="mobile-nav-icon">•••</span><small>Mais</small></button>
+  <button class="mobile-nav-item" data-mobile-view="more"><span class="mobile-nav-icon">•••</span><small>Mais</small></button>
 </nav>
-<div class="mobile-more-sheet" id="mobileMoreSheet" hidden>
-  <button data-mobile-view="finance"><span>▤</span> Financeiro</button><button data-mobile-view="fields"><span>⌖</span> Campos</button>
-  <button data-mobile-view="documents"><span>▱</span> Documentos</button>
-  <button data-mobile-view="contacts"><span>☏</span> Contatos</button>
-  <button data-mobile-view="settings"><span>⚙</span> Configurações</button>
-</div>
-<div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" hidden></div>
 
   <main class="main">
     <header class="topbar">
@@ -50,19 +43,55 @@
     </header>
 
     <section class="view active" id="view-command">
-      <div class="hero">
-        <div class="hero-team-identity"><div class="hero-team-crest"><img id="teamLogoHero" alt="" hidden><span id="teamLogoHeroFallback">TF</span></div><div><span class="eyebrow" data-i18n="overview">VISÃO GERAL</span><h2 id="heroTeamName">Sua equipe</h2><p data-i18n="overviewText">Informações essenciais para acompanhar a equipe de forma rápida.</p></div></div>
-        <button class="primary" id="openTeamModal2" data-i18n="registerTeam">Cadastrar equipe</button>
+      <div class="home-team">
+        <div class="home-team-main">
+          <div class="hero-team-crest"><img id="teamLogoHero" alt="" hidden><span id="teamLogoHeroFallback">TF</span></div>
+          <div class="home-team-copy">
+            <span class="eyebrow">MINHA EQUIPE</span>
+            <h2 id="heroTeamName">Sua equipe</h2>
+            <p>Agenda, equipe e comunicação em um só lugar.</p>
+          </div>
+        </div>
+        <button class="ghost small admin-only" id="openTeamModal2">Editar equipe</button>
       </div>
-      <div class="stats">
-        <article class="stat"><span data-i18n="activeOperators">Operadores ativos</span><strong id="statOperators">0</strong><small data-i18n="registeredTeam">cadastrados na equipe</small></article>
-        <article class="stat"><span data-i18n="nextGame">Próximo jogo</span><strong id="statNextGame">—</strong><small id="statNextGamePlace">Nenhum jogo cadastrado</small></article>
-        <article class="stat"><span data-i18n="cashBalance">Saldo da equipe</span><strong>R$ 0,00</strong><small data-i18n="financePending">financeiro ainda sem lançamentos</small></article>
-        <article class="stat"><span data-i18n="documents">Documentos</span><strong>1</strong><small data-i18n="responsibilityTerm">termo de responsabilidade</small></article>
+
+      <div class="home-primary-grid">
+        <article class="next-event-card" data-go="calendar" tabindex="0">
+          <div class="next-event-icon">▦</div>
+          <div class="next-event-copy">
+            <span>PRÓXIMO EVENTO</span>
+            <strong id="statNextGame">—</strong>
+            <small id="statNextGamePlace">Nenhum jogo cadastrado</small>
+          </div>
+          <span class="card-chevron">›</span>
+        </article>
+
+        <article class="home-summary-card" data-go="operators" tabindex="0">
+          <span class="summary-icon">◉</span>
+          <div><strong id="statOperators">0</strong><small>Integrantes da equipe</small></div>
+          <span class="card-chevron">›</span>
+        </article>
+
+        <article class="home-summary-card" data-go="chat" tabindex="0">
+          <span class="summary-icon">●</span>
+          <div><strong>Chat</strong><small>Mensagens da equipe</small></div>
+          <span class="card-chevron">›</span>
+        </article>
       </div>
-      <div class="grid-2">
-        <article class="panel"><div class="panel-head"><h3 data-i18n="upcomingGames">Próximos jogos</h3><button class="ghost small" data-go="calendar" data-i18n="seeCalendar">Ver calendário</button></div><div id="dashboardGames" class="empty" data-i18n="noGames">Nenhum jogo registrado.</div></article>
-        <article class="panel"><div class="panel-head"><h3 data-i18n="quickActions">Ações rápidas</h3></div><div class="quick-actions"><button class="quick" id="quickOperator">+ <span data-i18n="newOperator">Novo operador</span></button><button class="quick" id="quickGame">+ <span data-i18n="registerGame">Registrar jogo</span></button><button class="quick" id="quickField">+ <span data-i18n="newField">Novo campo</span></button><button class="quick" data-go="documents"><span>▱</span> <span data-i18n="openDocuments">Abrir documentos</span></button></div></article>
+
+      <div class="home-section">
+        <div class="home-section-head"><div><span class="section-kicker">AGENDA</span><h3>Próximos eventos</h3></div><button class="text-action" data-go="calendar">Ver agenda</button></div>
+        <div id="dashboardGames" class="empty">Nenhum jogo registrado.</div>
+      </div>
+
+      <div class="home-section admin-only">
+        <div class="home-section-head"><div><span class="section-kicker">ATALHOS</span><h3>Ações rápidas</h3></div></div>
+        <div class="quick-actions">
+          <button class="quick" id="quickGame"><span>＋</span><b>Novo evento</b></button>
+          <button class="quick" id="quickOperator"><span>＋</span><b>Novo integrante</b></button>
+          <button class="quick" id="quickField"><span>＋</span><b>Novo campo</b></button>
+          <button class="quick" data-go="documents"><span>▱</span><b>Documentos</b></button>
+        </div>
       </div>
     </section>
 
@@ -119,6 +148,19 @@
     <div class="chat-messages" id="chatMessages"><div class="empty">Carregando mensagens…</div></div>
     <form class="chat-compose" id="chatForm"><textarea id="chatInput" maxlength="2000" rows="1" placeholder="Mensagem para a equipe…" aria-label="Mensagem"></textarea><button class="primary" type="submit">Enviar</button></form>
   </article>
+</section>
+
+<section class="view" id="view-more">
+  <div class="section-head">
+    <div><h2>Mais</h2><p>Outros recursos da equipe.</p></div>
+  </div>
+  <div class="more-grid">
+    <button class="more-card" data-go="finance"><span class="more-icon">▤</span><span><strong>Financeiro</strong><small>Mensalidades e pagamentos</small></span><b>›</b></button>
+    <button class="more-card" data-go="fields"><span class="more-icon">⌖</span><span><strong>Campos</strong><small>Locais e endereços</small></span><b>›</b></button>
+    <button class="more-card" data-go="documents"><span class="more-icon">▱</span><span><strong>Documentos</strong><small>Termos e arquivos</small></span><b>›</b></button>
+    <button class="more-card" data-go="contacts"><span class="more-icon">☏</span><span><strong>Contatos</strong><small>Contatos úteis da equipe</small></span><b>›</b></button>
+    <button class="more-card" data-go="settings"><span class="more-icon">⚙</span><span><strong>Configurações</strong><small>Equipe e preferências</small></span><b>›</b></button>
+  </div>
 </section>
 
 <section class="view" id="view-contacts"><div class="section-head"><div><h2 data-i18n="contacts">Contatos</h2><p data-i18n="contactsSubtitle">Contatos administrativos e serviços úteis à equipe.</p></div></div><div class="empty" data-i18n="noContacts">Nenhum contato cadastrado.</div></section>
@@ -185,8 +227,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js?v=20260929-1700"></script>
-<script src="js/translations.js?v=20260929-1700"></script>
+<script src="js/translations.js?v=20260930-sports1"></script>
 <script src="js/auth-clean.js?v=20260930-role1"></script>
-<script src="js/app.js?v=20260930-navfix4"></script>\n<script src="js/navigation.js?v=20260930-stable1"></script>
+<script src="js/app.js?v=20260930-sports1"></script>\n<script src="js/navigation.js?v=20260930-stable2"></script>
 </body>
 </html>
