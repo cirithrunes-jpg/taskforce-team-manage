@@ -425,3 +425,28 @@ input:focus,select:focus,textarea:focus{border-color:var(--tf-amber)}
   .stats .stat{flex-basis:78vw}
   .quick-actions{grid-template-columns:1fr}
 }
+
+/* Team chat */
+.chat-shell{height:min(680px,calc(100dvh - 150px));display:grid;grid-template-rows:auto 1fr auto;border:1px solid rgba(141,152,98,.22);background:linear-gradient(145deg,rgba(25,29,22,.98),rgba(12,15,11,.98));overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.14)}
+.chat-head strong,.chat-head small{display:block}.chat-head small{color:var(--muted);margin-top:2px;font-size:10px}
+.chat-team-crest{width:38px;height:38px;display:grid;place-items:center;overflow:hidden;border:1px solid rgba(217,164,65,.32);color:var(--tf-amber-soft);font-weight:900;background:#090b09}
+.chat-team-crest img{width:100%;height:100%;object-fit:contain}
+.chat-messages{overflow:auto;padding:18px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.chat-line{display:flex}.chat-line.mine{justify-content:flex-end}
+.chat-bubble{max-width:min(76%,560px);padding:9px 11px;background:#1b2118;border:1px solid rgba(141,152,98,.18);border-radius:3px 10px 10px 10px}
+.chat-line.mine .chat-bubble{background:rgba(217,164,65,.13);border-color:rgba(217,164,65,.24);border-radius:10px 3px 10px 10px}
+.chat-bubble strong{display:block;color:var(--tf-amber-soft);font-size:10px;margin-bottom:3px}
+.chat-bubble p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4;font-size:13px}
+.chat-bubble small{display:block;text-align:right;color:var(--muted);font-size:9px;margin-top:4px}
+.chat-compose{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px;border-top:1px solid var(--line);background:#0d100c}
+.chat-compose textarea{resize:none;min-height:42px;max-height:100px}
+.chat-compose .primary{min-width:82px}
+@media(max-width:700px){
+ .chat-shell{height:calc(100dvh - 150px);margin:0 -12px;border-left:0;border-right:0}
+ .chat-messages{padding:12px 10px}
+ .chat-bubble{max-width:84%}
+ .chat-compose{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+ .chat-compose .primary{min-width:68px;padding:8px}
+ #view-chat .section-head{padding:0 2px}
+}
