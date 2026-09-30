@@ -575,6 +575,25 @@ function newsTimeLeft(expiresAt){
   const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
   return h>0?("restam "+h+"h "+m+"min"):("restam "+m+"min");
 }
+function syncBirthdaySettings(){
+  const day=$("#birthdayDaySelect"),month=$("#birthdayMonthSelect");
+  if(day)day.value=currentProfile?.birthday_day?String(currentProfile.birthday_day):"";
+  if(month)month.value=currentProfile?.birthday_month?String(currentProfile.birthday_month):"";
+}
+$("#birthdaySettingsForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const form=e.currentTarget,statusEl=$("#birthdaySettingsStatus"),button=form.querySelector('button[type="submit"]');
+  const f=new FormData(form),day=Number(f.get("day")||0),month=Number(f.get("month")||0);
+  if(!day||!month){if(statusEl)statusEl.textContent="Selecione dia e mês.";return}
+  button.disabled=true;if(statusEl)statusEl.textContent="Salvando...";
+  try{
+    const updated=await financeRpc("set_my_birthday",{day_value:day,month_value:month});
+    currentProfile=updated||{...currentProfile,birthday_day:day,birthday_month:month};
+    if(statusEl)statusEl.textContent="Aniversário salvo.";
+  }catch(err){
+    if(statusEl)statusEl.textContent="Não foi possível salvar: "+err.message;
+  }finally{button.disabled=false}
+});
 function renderAdminContacts(){
   const root=$("#adminContactsList");if(!root)return;
   if(!adminContacts.length){root.innerHTML='<div class="empty">Nenhum administrador com contato disponível.</div>';return}
@@ -605,7 +624,7 @@ function renderNews(){
       const del=membership?.role==="admin"&&!x.is_system?'<button class="news-delete" data-news-delete="'+esc(x.id)+'">Excluir</button>':"";
       return '<article class="news-story '+(i===0?"news-lead":"")+'"><div class="news-story-meta"><span>'+cat+'</span>'+sys+'<small>'+esc(newsTimeLeft(x.expires_at))+'</small></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.body)+'</p>'+del+'</article>';
     }).join("");
-    $("[data-news-delete]").forEach(b=>b.onclick=()=>deleteTeamNews(b.dataset.newsDelete));
+    $$("[data-news-delete]").forEach(b=>b.onclick=()=>deleteTeamNews(b.dataset.newsDelete));
   }
   if(platformRoot){
     if(!platformNews.length)platformRoot.innerHTML='<div class="empty">Sem atualizações institucionais nas últimas 24 horas.</div>';
@@ -653,7 +672,7 @@ $("#newsPostForm")?.addEventListener("submit",async e=>{
   }catch(err){if(statusEl)statusEl.textContent="Não foi possível publicar: "+err.message}
   finally{button.disabled=false}
 });
-function renderAll(){renderTeam();renderOperators();renderGames();renderFields();renderFinance();renderTermDocuments();renderAdminContacts();renderNews()}
+function renderAll(){renderTeam();renderOperators();renderGames();renderFields();renderFinance();renderTermDocuments();syncBirthdaySettings();renderAdminContacts();renderNews()}
 
 async function loadTeamData(detail){
   membership=detail.membership;
