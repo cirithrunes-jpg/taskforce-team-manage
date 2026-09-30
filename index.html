@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style-modern.css?v=20260930-chatcrest1">
+<link rel="stylesheet" href="css/style-modern.css?v=20260930-nochat1">
 </head>
 <body>
 <div class="app-shell">
@@ -20,7 +20,7 @@
       <button class="nav-item" data-view="fields"><span>⌖</span><span data-i18n="fields">Campos</span></button>
       <button class="nav-item" data-view="finance"><span>▤</span><span data-i18n="finance">Financeiro</span></button>
       <button class="nav-item" data-view="documents"><span>▱</span><span data-i18n="documents">Documentos</span></button>
-      <button class="nav-item" data-view="chat"><span>●</span><span>Chat</span></button><button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
+      <button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
       <button class="nav-item" data-view="settings"><span>⚙</span><span data-i18n="settings">Configurações</span></button>
     </nav>
     <div class="sidebar-footer"><small>v0.2 • Atualização 29/09</small></div>
@@ -31,7 +31,7 @@
   <button class="mobile-nav-item active" data-mobile-view="command"><span class="mobile-nav-icon">⌂</span><small>Início</small></button>
   <button class="mobile-nav-item" data-mobile-view="calendar"><span class="mobile-nav-icon">▦</span><small>Agenda</small></button>
   <button class="mobile-nav-item" data-mobile-view="operators"><span class="mobile-nav-icon">◉</span><small>Equipe</small></button>
-  <button class="mobile-nav-item" data-mobile-view="chat"><span class="mobile-nav-icon">●</span><small>Chat</small></button>
+  <button class="mobile-nav-item" data-mobile-view="finance"><span class="mobile-nav-icon">▤</span><small>Financeiro</small></button>
   <button class="mobile-nav-item" data-mobile-view="more"><span class="mobile-nav-icon">•••</span><small>Mais</small></button>
 </nav>
 
@@ -72,9 +72,9 @@
           <span class="card-chevron">›</span>
         </article>
 
-        <article class="home-summary-card" data-go="chat" tabindex="0">
-          <span class="summary-icon">●</span>
-          <div><strong>Chat</strong><small>Mensagens da equipe</small></div>
+        <article class="home-summary-card" data-go="finance" tabindex="0">
+          <span class="summary-icon">▤</span>
+          <div><strong>Financeiro</strong><small>Mensalidades e pagamentos</small></div>
           <span class="card-chevron">›</span>
         </article>
       </div>
@@ -141,27 +141,7 @@
       <p class="legal-note">Os registros de aceite são mantidos como arquivo administrativo da equipe. A utilidade ou força probatória de um registro depende do contexto e da legislação aplicável; recomenda-se revisão jurídica para uso formal.</p>
     </section>
 
-    <section class="view" id="view-chat">
-  <article class="chat-shell chat-whatsapp">
-    <header class="chat-head">
-      <div class="chat-team-crest"><img id="chatTeamLogo" alt="" hidden><span id="chatTeamFallback">TF</span></div>
-      <div class="chat-head-copy">
-        <strong id="chatTeamName">Equipe</strong>
-        <small>Canal geral • equipe online</small>
-      </div>
-      <span class="chat-head-dot" aria-hidden="true"></span>
-    </header>
-    <div class="chat-messages" id="chatMessages">
-      <div class="chat-loading">Carregando mensagens…</div>
-    </div>
-    <form class="chat-compose" id="chatForm">
-      <div class="chat-input-wrap">
-        <textarea id="chatInput" maxlength="2000" rows="1" placeholder="Mensagem" aria-label="Mensagem"></textarea>
-      </div>
-      <button class="chat-send" type="submit" aria-label="Enviar mensagem"><span aria-hidden="true">➤</span></button>
-    </form>
-  </article>
-</section>
+    
 
 <section class="view" id="view-more">
   <div class="section-head">
@@ -242,6 +222,6 @@
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260930-sports1"></script>
 <script src="js/auth-clean.js?v=20260930-role1"></script>
-<script src="js/app.js?v=20260930-chatcrest1"></script>\n<script src="js/navigation.js?v=20260930-stable2"></script>
+<script src="js/app.js?v=20260930-nochat1"></script>\n<script src="js/navigation.js?v=20260930-stable2"></script>
 </body>
 </html>
