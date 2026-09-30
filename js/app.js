@@ -1,6 +1,17 @@
 const $=(s)=>document.querySelector(s), $$=(s)=>[...document.querySelectorAll(s)];
 const pref={get(k,f){try{return JSON.parse(localStorage.getItem("tf_pref_"+k))??f}catch{return f}},set(k,v){localStorage.setItem("tf_pref_"+k,JSON.stringify(v))}};
 const db=window.TASKFORCE_DB;
+async function authRest(path,{method="GET",body=null,prefer=""}={}){
+  const token=window.TASKFORCE_AUTH?.state?.session?.access_token;
+  if(!token)throw new Error("Sessão autenticada não encontrada.");
+  const headers={"apikey":window.TASKFORCE_CONFIG.supabasePublishableKey,"Authorization":"Bearer "+token};
+  if(body!==null)headers["Content-Type"]="application/json";
+  if(prefer)headers["Prefer"]=prefer;
+  const res=await fetch(window.TASKFORCE_CONFIG.supabaseUrl+"/rest/v1/"+path,{method,headers,body:body===null?undefined:JSON.stringify(body)});
+  const raw=await res.text();let data=null;try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!res.ok)throw new Error(data?.message||data?.details||String(data||"Erro no servidor."));
+  return data;
+}
 let team={},operators=[],games=[],fields=[],membership=null,currentProfile=null;
 let pendingTeamLogoData=null;
 let billingSettings=null,monthlyFees=[],adminEmails=[],termAcceptances=[];
@@ -99,8 +110,9 @@ $("#gameForm").addEventListener("submit",async e=>{
   try{
     assertAdmin();
     const data=formObject(e.target);
-    const {data:row,error}=await db.from("team_resources").insert({team_id:membership.team_id,kind:"game",data}).select("id,kind,data").single();
-    if(error)throw error;
+    const rows=await authRest("team_resources?select=id,kind,data",{method:"POST",body:{team_id:membership.team_id,kind:"game",data},prefer:"return=representation"});
+    const row=Array.isArray(rows)?rows[0]:rows;
+    if(!row)throw new Error("O evento foi salvo, mas não retornou confirmação.");
     games.push({id:row.id,...row.data});
     e.target.reset();$("#gameModal").close();renderAll();
   }catch(err){alert(err.message)}
@@ -111,8 +123,9 @@ $("#fieldForm").addEventListener("submit",async e=>{
   try{
     assertAdmin();
     const data=formObject(e.target);
-    const {data:row,error}=await db.from("team_resources").insert({team_id:membership.team_id,kind:"field",data}).select("id,kind,data").single();
-    if(error)throw error;
+    const rows=await authRest("team_resources?select=id,kind,data",{method:"POST",body:{team_id:membership.team_id,kind:"field",data},prefer:"return=representation"});
+    const row=Array.isArray(rows)?rows[0]:rows;
+    if(!row)throw new Error("O campo foi salvo, mas não retornou confirmação.");
     fields.push({id:row.id,...row.data});
     e.target.reset();$("#fieldModal").close();renderAll();
   }catch(err){alert(err.message)}
@@ -126,8 +139,7 @@ $("#teamForm").addEventListener("submit",async e=>{
     const name=form.name.trim();
     const data={...form};delete data.name;
     if(pendingTeamLogoData!==null)data.logoData=pendingTeamLogoData;
-    const {error}=await db.from("teams").update({name,data}).eq("id",membership.team_id);
-    if(error)throw error;
+    await authRest("teams?id=eq."+encodeURIComponent(membership.team_id),{method:"PATCH",body:{name,data},prefer:"return=minimal"});
     team={name,...data};
     pendingTeamLogoData=null;
     $("#teamModal").close();renderAll();
@@ -158,16 +170,15 @@ async function submitPlatformContact(form){
   button.disabled=true;
   setStatus("Enviando...");
   try{
-    const {data:{user},error:userError}=await db.auth.getUser();
-    if(userError||!user)throw userError||new Error("Sessão não encontrada.");
-    const {error}=await db.from("platform_support_requests").insert({
+    const userId=currentProfile?.user_id||window.TASKFORCE_AUTH?.state?.session?.user?.id;
+    if(!userId)throw new Error("Sessão não encontrada.");
+    await authRest("platform_support_requests",{method:"POST",body:{
       team_id:membership.team_id,
-      user_id:user.id,
+      user_id:userId,
       category,
       subject,
       message
-    });
-    if(error)throw error;
+    },prefer:"return=minimal"});
     form.reset();
     setStatus("Mensagem enviada. A plataforma recebeu sua solicitação.","success");
   }catch(err){
@@ -527,8 +538,10 @@ async function loadTeamData(detail){
   const td=detail.team?.data||{};
   team={name:detail.team?.name||"",...td};
 
-  const {data:resources,error:rErr}=await db.from("team_resources").select("id,kind,data").eq("team_id",membership.team_id).order("created_at");
-  if(rErr){console.error(rErr)}
+  let resources=[];
+  try{
+    resources=await authRest("team_resources?select=id,kind,data&team_id=eq."+encodeURIComponent(membership.team_id)+"&order=created_at.asc");
+  }catch(err){console.error("Recursos da equipe:",err)}
   games=(resources||[]).filter(r=>r.kind==="game").map(r=>({id:r.id,...r.data}));
   fields=(resources||[]).filter(r=>r.kind==="field").map(r=>({id:r.id,...r.data}));
 
