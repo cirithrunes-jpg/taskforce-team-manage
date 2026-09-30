@@ -34,3 +34,146 @@
   .section-head{align-items:flex-start;flex-direction:column}
   .admin-search{width:100%}
 }
+
+/* Control Center visual identity — tactical cinematic, original TASKFORCE design */
+:root{
+  --cc-amber:#d9a441;
+  --cc-amber-soft:#f0c66a;
+  --cc-olive:#8d9862;
+  --cc-black:#090b09;
+}
+body{
+  background:
+    radial-gradient(circle at 72% 8%,rgba(217,164,65,.075),transparent 24rem),
+    linear-gradient(135deg,rgba(255,255,255,.018) 25%,transparent 25%) 0 0/28px 28px,
+    var(--bg);
+}
+.admin-sidebar{
+  background:
+    linear-gradient(180deg,rgba(217,164,65,.055),transparent 22%),
+    linear-gradient(180deg,#11140f 0%,#090b09 100%);
+  border-right-color:rgba(217,164,65,.22);
+}
+.admin-sidebar:before{
+  content:"";
+  position:absolute;inset:0 0 auto 0;height:3px;
+  background:linear-gradient(90deg,var(--cc-amber),transparent 75%);
+}
+.admin-sidebar .brand{padding-bottom:28px}
+.admin-sidebar .brand-mark{
+  background:linear-gradient(135deg,var(--cc-amber-soft),#8b6725);
+  box-shadow:0 0 24px rgba(217,164,65,.16);
+  clip-path:polygon(14% 0,100% 0,86% 100%,0 100%);
+}
+.admin-sidebar .brand strong{
+  font-size:13px;letter-spacing:.14em
+}
+.admin-sidebar .brand small{
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase
+}
+.admin-sidebar .nav-item{
+  position:relative;border:1px solid transparent;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.075em;font-size:12px;font-weight:750
+}
+.admin-sidebar .nav-item:hover{
+  border-color:rgba(217,164,65,.16);background:rgba(217,164,65,.045)
+}
+.admin-sidebar .nav-item.active{
+  color:#f5f0df;
+  background:linear-gradient(90deg,rgba(217,164,65,.16),rgba(217,164,65,.025));
+  border-color:rgba(217,164,65,.25);
+  box-shadow:inset 3px 0 var(--cc-amber);
+}
+.admin-main{position:relative}
+.admin-main:before{
+  content:"";position:fixed;z-index:-1;right:0;top:0;width:48vw;height:55vh;
+  background:linear-gradient(135deg,transparent,rgba(141,152,98,.035));
+  clip-path:polygon(34% 0,100% 0,100% 100%,0 48%);
+}
+.admin-main .topbar{
+  border-bottom-color:rgba(217,164,65,.16)
+}
+.admin-main .topbar h1{
+  text-transform:uppercase;letter-spacing:.08em;font-size:16px
+}
+.admin-main .topbar p{letter-spacing:.025em}
+.admin-main .status-chip{
+  border-radius:4px;border-color:rgba(217,164,65,.25);
+  background:rgba(217,164,65,.045);text-transform:uppercase;letter-spacing:.08em
+}
+.admin-main .status-chip .dot{background:var(--cc-amber)}
+.admin-hero{
+  min-height:205px;position:relative;overflow:hidden;border-radius:5px;
+  border-color:rgba(217,164,65,.24);
+  background:
+    linear-gradient(100deg,rgba(9,11,9,.98) 0%,rgba(18,22,16,.94) 52%,rgba(40,38,23,.68) 100%),
+    var(--panel);
+}
+.admin-hero:before{
+  content:"";position:absolute;right:-8%;top:-60%;width:48%;height:220%;
+  border-left:1px solid rgba(217,164,65,.18);
+  background:linear-gradient(90deg,transparent,rgba(217,164,65,.055));
+  transform:skewX(-17deg)
+}
+.admin-hero:after{
+  content:"TASKFORCE // COMMAND";
+  position:absolute;right:26px;bottom:18px;
+  color:rgba(217,164,65,.18);font-size:11px;font-weight:900;letter-spacing:.22em
+}
+.admin-hero>div,.admin-hero>button{position:relative;z-index:1}
+.admin-hero .eyebrow{color:var(--cc-amber);font-weight:800}
+.admin-hero h2{
+  font-size:34px;letter-spacing:-.035em;text-transform:uppercase;
+  margin:8px 0 10px
+}
+.admin-hero p{max-width:560px}
+.admin-hero .ghost{
+  border-radius:3px;border-color:rgba(217,164,65,.42);
+  background:rgba(217,164,65,.07);text-transform:uppercase;
+  letter-spacing:.08em;font-size:11px;font-weight:800
+}
+.admin-stats{gap:10px}
+.admin-main .stat,.admin-main .panel{
+  border-radius:4px;position:relative;overflow:hidden;
+  border-color:rgba(141,152,98,.22);
+  background:linear-gradient(145deg,rgba(25,29,22,.98),rgba(15,18,14,.98));
+}
+.admin-main .stat:before,.admin-main .panel:before{
+  content:"";position:absolute;left:0;top:0;width:34px;height:2px;background:var(--cc-amber)
+}
+.admin-main .stat strong{
+  color:#f5f0df;font-size:28px;letter-spacing:-.04em
+}
+.admin-main .stat span{
+  text-transform:uppercase;letter-spacing:.09em;font-size:10px
+}
+.admin-main .stat small{font-size:11px}
+.admin-main .panel h3{
+  text-transform:uppercase;letter-spacing:.07em;font-size:12px
+}
+.admin-main .badge{
+  border-radius:3px;border-color:rgba(217,164,65,.22);
+  color:#c7b98f;text-transform:uppercase;letter-spacing:.07em
+}
+.metric-list>div,.app-health>div{border-bottom-color:rgba(141,152,98,.16)}
+.metric-list strong{color:var(--cc-amber-soft)}
+.admin-table-wrap{
+  border-radius:4px;border-color:rgba(141,152,98,.22);
+  box-shadow:0 18px 60px rgba(0,0,0,.15)
+}
+.admin-table th{
+  background:#12150f;color:#aaaF9a;
+  text-transform:uppercase;letter-spacing:.09em
+}
+.admin-table tbody tr:hover{background:rgba(217,164,65,.035)}
+.admin-search{border-radius:3px}
+.admin-main .section-head h2{
+  text-transform:uppercase;letter-spacing:.07em;font-size:19px
+}
+.future-list span{border-radius:3px}
+.admin-side-actions .ghost{border-radius:3px}
+@media(max-width:560px){
+  .admin-hero{min-height:auto}
+  .admin-hero h2{font-size:27px}
+  .admin-hero:after{display:none}
+}
