@@ -338,6 +338,7 @@ function renderProfileForm(user,existing={}){
         '<label><span>Codinome</span><input name="callsign"></label>'+
         '<label><span>Função na equipe</span><select name="role"><option>Assault</option><option>Sniper</option><option>DMR</option><option>Suporte</option><option>Outra</option></select></label>'+
         '<label><span>Tipo sanguíneo</span><select name="blood"><option value="">Não informado</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></label>'+
+        '<label><span>Aniversário</span><div class="birthday-fields"><select name="birthday_day"><option value="">Dia</option>'+Array.from({length:31},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'</option>').join("")+'</select><select name="birthday_month"><option value="">Mês</option><option value="1">Jan</option><option value="2">Fev</option><option value="3">Mar</option><option value="4">Abr</option><option value="5">Mai</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Ago</option><option value="9">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div><small>Usado apenas para as felicitações automáticas da equipe.</small></label>'+
         '<label><span>Contato de emergência</span><input name="emergency" required></label>'+
         '<label><span>Telefone de emergência</span><input name="emergencyPhone" required></label>'+
         '<label><span>Parentesco / relação</span><input name="relationship" required></label>'+
@@ -372,6 +373,8 @@ function renderProfileForm(user,existing={}){
       blood:String(f.get("blood")||"").trim(),
       allergy:String(f.get("allergy")||"").trim(),
       health:String(f.get("health")||"").trim(),
+      birthday_day:f.get("birthday_day")?Number(f.get("birthday_day")):null,
+      birthday_month:f.get("birthday_month")?Number(f.get("birthday_month")):null,
       privacy_ack:true
     };
     try{
@@ -657,7 +660,7 @@ function renderReadOnlyProfile(){
   const p=state.profile||{};
   const rows=[
     ["Nome",p.name],["E-mail",p.email],["Telefone",p.phone],["Endereço",p.address],
-    ["Codinome",p.callsign],["Função",p.role],["Tipo sanguíneo",p.blood],
+    ["Codinome",p.callsign],["Função",p.role],["Tipo sanguíneo",p.blood],["Aniversário",p.birthday_day&&p.birthday_month?String(p.birthday_day).padStart(2,"0")+"/"+String(p.birthday_month).padStart(2,"0"):"—"],
     ["Contato de emergência",p.emergency],["Telefone de emergência",p.emergencyPhone],
     ["Parentesco / relação",p.relationship],["Alergias a medicamentos",p.allergy],
     ["Informações de saúde",p.health]
