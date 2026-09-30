@@ -62,6 +62,29 @@ async function rpcAuth(name,body={}){
   }
   return data;
 }
+async function tableAuth(path,{method="GET",body=null,prefer=""}={}){
+  const token=state.session?.access_token;
+  if(!token)throw new Error("Sessão não autenticada.");
+  const headers={
+    "apikey":C.supabasePublishableKey,
+    "Authorization":"Bearer "+token
+  };
+  if(body!==null)headers["Content-Type"]="application/json";
+  if(prefer)headers["Prefer"]=prefer;
+  const res=await fetch(C.supabaseUrl+"/rest/v1/"+path,{
+    method,
+    headers,
+    body:body===null?undefined:JSON.stringify(body)
+  });
+  const raw=await res.text();
+  let data=null;
+  try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!res.ok){
+    const message=data?.message||data?.hint||data?.details||String(data||"Erro no servidor.");
+    throw new Error(message);
+  }
+  return data;
+}
 function togglePassword(btn,input){
   btn.onclick=()=>{
     const visible=input.type==="text";
@@ -590,8 +613,17 @@ async function injectAdminInvite(){
 
   document.getElementById("newInviteBtn").onclick=async()=>{
     const out=document.getElementById("inviteResult");
-    const {data:groups,error}=await client.from("team_groups").select("id,name").eq("team_id",state.membership.team_id).order("name");
-    if(error){out.textContent=error.message;return}
+    let groups=[];
+    try{
+      groups=await tableAuth("team_groups?select=id,name&team_id=eq."+encodeURIComponent(state.membership.team_id)+"&order=name.asc");
+    }catch(err){
+      out.innerHTML='<div class="auth-message error">Não foi possível carregar os grupos da equipe: '+h(err.message)+'</div>';
+      return;
+    }
+    if(!groups.length){
+      out.innerHTML='<div class="auth-message error">Nenhum grupo disponível para esta equipe. Crie ou restaure o grupo padrão antes de gerar o convite.</div>';
+      return;
+    }
 
     out.innerHTML=
       '<div class="invite-form">'+
