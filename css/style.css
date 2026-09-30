@@ -450,3 +450,260 @@ input:focus,select:focus,textarea:focus{border-color:var(--tf-amber)}
  .chat-compose .primary{min-width:68px;padding:8px}
  #view-chat .section-head{padding:0 2px}
 }
+
+
+/* TASKFORCE visual polish v2 — restrained tactical / premium */
+:root{
+  --bg:#090c0a;
+  --panel:#111611;
+  --panel2:#171d16;
+  --text:#f0eee6;
+  --muted:#98a093;
+  --line:#293128;
+  --accent:#d2a24a;
+  --accent2:#f1cd77;
+  --danger:#cf746d;
+  --tf-amber:#d2a24a;
+  --tf-amber-soft:#f1cd77;
+  --tf-olive:#737d59;
+  --shadow:0 20px 55px rgba(0,0,0,.34);
+}
+:root[data-theme="light"]{
+  --bg:#ebece6;
+  --panel:#f8f8f3;
+  --panel2:#f0f1ea;
+  --text:#1d211b;
+  --muted:#646c60;
+  --line:#d4d8ce;
+  --accent:#9a6d22;
+  --accent2:#755016;
+  --tf-amber:#a87729;
+  --tf-amber-soft:#755016;
+  --tf-olive:#68724f;
+  --shadow:0 18px 42px rgba(34,39,29,.12);
+}
+
+body{
+  background:
+    radial-gradient(circle at 80% -5%,rgba(210,162,74,.085),transparent 28rem),
+    radial-gradient(circle at 8% 95%,rgba(115,125,89,.05),transparent 24rem),
+    linear-gradient(180deg,#0b0f0c 0%,var(--bg) 48%,#080a08 100%);
+}
+
+.app-shell{grid-template-columns:248px minmax(0,1fr)}
+.main{max-width:1500px;width:100%;margin:0 auto;padding-left:34px;padding-right:34px}
+
+.sidebar{
+  padding:20px 14px;
+  background:linear-gradient(180deg,#11150f 0%,#0b0e0b 62%,#080a08 100%);
+  box-shadow:18px 0 55px rgba(0,0,0,.16)
+}
+.brand{padding:2px 8px 18px}
+.brand-mark{width:36px;height:36px}
+.team-card{
+  margin-bottom:16px;padding:11px;
+  background:linear-gradient(135deg,rgba(29,34,25,.98),rgba(16,20,15,.98));
+  box-shadow:inset 0 1px rgba(255,255,255,.018)
+}
+.nav{gap:4px}
+.nav-item{
+  min-height:43px;padding:10px 11px;
+  color:#9ca497;
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease
+}
+.nav-item:hover{transform:translateX(2px);color:#e9e6dc}
+.nav-item.active{
+  color:#fff8e8;
+  background:linear-gradient(90deg,rgba(210,162,74,.16),rgba(210,162,74,.025) 72%);
+}
+
+.topbar{
+  height:76px;margin-bottom:22px;
+  border-bottom-color:rgba(210,162,74,.13)
+}
+.topbar h1{font-size:16px;font-weight:850}
+.topbar p{color:#8f988b}
+.status-chip{
+  background:rgba(210,162,74,.045);
+  border-color:rgba(210,162,74,.2);
+  color:#aaa992
+}
+
+.hero{
+  min-height:176px;padding:26px 28px;
+  border-color:rgba(210,162,74,.23);
+  background:
+    linear-gradient(100deg,rgba(9,12,9,.99) 0%,rgba(18,23,16,.97) 57%,rgba(53,43,22,.63) 100%);
+  box-shadow:0 18px 44px rgba(0,0,0,.17),inset 0 1px rgba(255,255,255,.018)
+}
+.hero:after{
+  content:"";position:absolute;inset:auto -7% -48% auto;width:360px;height:210px;
+  transform:rotate(-13deg);
+  border:1px solid rgba(210,162,74,.08);
+  background:linear-gradient(135deg,transparent,rgba(210,162,74,.03));
+  pointer-events:none
+}
+.hero h2{font-size:31px;line-height:1.03;margin:6px 0 8px}
+.hero p{max-width:720px;color:#9ca596}
+.hero .primary{box-shadow:0 8px 22px rgba(210,162,74,.12)}
+
+.stats{gap:12px;margin-top:14px}
+.stat{
+  min-height:112px;padding:17px 18px;
+  background:linear-gradient(150deg,rgba(25,31,22,.98),rgba(13,17,13,.98));
+  transition:transform .16s ease,border-color .16s ease,background .16s ease
+}
+.stat:hover{transform:translateY(-2px);border-color:rgba(210,162,74,.25)}
+.stat:before{width:38px}
+.stat strong{font-size:26px;letter-spacing:-.025em}
+.stat span{color:#8f998b}
+
+.grid-2{gap:14px;margin-top:14px}
+.panel,.card-row,.document-card{
+  border-color:rgba(115,125,89,.25);
+  box-shadow:inset 0 1px rgba(255,255,255,.015)
+}
+.panel{padding:19px}
+.panel:before{width:42px}
+.panel-head h3,.section-head h2{font-weight:820}
+.section-head{margin-bottom:15px}
+.section-head p{color:#929b8d}
+
+.primary,.ghost,.quick,.theme-btn{
+  transition:transform .14s ease,background .14s ease,border-color .14s ease,box-shadow .14s ease
+}
+.primary{
+  background:linear-gradient(135deg,#e0b55a,#bd8732);
+  border-color:#d5a64f;
+  box-shadow:0 7px 18px rgba(210,162,74,.10)
+}
+.primary:hover{transform:translateY(-1px);box-shadow:0 10px 23px rgba(210,162,74,.16)}
+.primary:active{transform:translateY(0)}
+.ghost,.quick{
+  background:linear-gradient(145deg,rgba(26,31,23,.92),rgba(16,20,15,.92));
+  border-color:rgba(115,125,89,.27)
+}
+.ghost:hover,.quick:hover{
+  border-color:rgba(210,162,74,.34);
+  background:linear-gradient(145deg,rgba(38,35,23,.92),rgba(18,21,15,.92))
+}
+.quick{min-height:46px;font-weight:720}
+
+.card-row{
+  padding:15px 16px;
+  background:linear-gradient(145deg,rgba(23,29,21,.98),rgba(13,17,13,.98));
+  transition:border-color .15s ease,transform .15s ease
+}
+.card-row:hover{border-color:rgba(210,162,74,.24);transform:translateY(-1px)}
+.avatar{
+  width:44px;height:44px;
+  background:linear-gradient(145deg,#20271c,#151a13);
+  border:1px solid rgba(210,162,74,.12)
+}
+.badge{
+  background:rgba(210,162,74,.035);
+  color:#aaa997;
+  border-color:rgba(210,162,74,.18)
+}
+
+input,select,textarea{
+  background:#0f140f;
+  border-color:#313a2f;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.012)
+}
+input:hover,select:hover,textarea:hover{border-color:#3b4638}
+input:focus,select:focus,textarea:focus{
+  border-color:#c89943;
+  box-shadow:0 0 0 3px rgba(210,162,74,.08)
+}
+label span{color:#929a8d}
+
+.modal,.auth-card{
+  border-color:rgba(210,162,74,.23);
+  background:linear-gradient(145deg,#151a13,#0d100d);
+  box-shadow:0 28px 80px rgba(0,0,0,.46)
+}
+
+.chat-shell{
+  border-color:rgba(210,162,74,.18);
+  background:linear-gradient(160deg,#121811,#0b0f0c);
+  box-shadow:inset 0 1px rgba(255,255,255,.012)
+}
+.chat-head{background:linear-gradient(90deg,rgba(210,162,74,.045),rgba(0,0,0,.08))}
+.chat-messages{
+  background:
+    radial-gradient(circle at 85% 10%,rgba(210,162,74,.025),transparent 16rem),
+    linear-gradient(180deg,rgba(255,255,255,.008),transparent)
+}
+.chat-bubble{
+  background:#182018;border-color:#2a3428;
+  box-shadow:0 4px 14px rgba(0,0,0,.12)
+}
+.chat-line.mine .chat-bubble{
+  background:linear-gradient(145deg,rgba(112,85,38,.34),rgba(54,45,25,.30));
+  border-color:rgba(210,162,74,.30)
+}
+.chat-compose{background:#0b0f0c}
+.chat-compose textarea{background:#111711}
+
+@media(max-width:900px){
+  .main{max-width:none;padding-left:16px;padding-right:16px}
+}
+@media(max-width:700px){
+  body{
+    background:
+      radial-gradient(circle at 90% 2%,rgba(210,162,74,.07),transparent 19rem),
+      var(--bg)
+  }
+  .main{padding:0 12px 22px}
+  .topbar{
+    height:58px;margin-bottom:12px;
+    background:rgba(9,12,10,.93);
+    border-bottom:1px solid rgba(210,162,74,.11)
+  }
+  .hero{
+    min-height:0;padding:16px 14px;
+    background:linear-gradient(105deg,#0b0f0c 0%,#151b12 67%,#332b19 100%)
+  }
+  .hero h2{font-size:20px;letter-spacing:-.015em}
+  .hero p{color:#979f92}
+  .stats{margin-top:9px}
+  .stats .stat{
+    flex-basis:min(69vw,225px);min-height:100px;padding:13px 14px
+  }
+  .stat strong{font-size:22px}
+  .panel{padding:14px}
+  .quick-actions{gap:6px}
+  .quick{min-height:46px}
+  .mobile-nav{
+    left:7px;right:7px;bottom:calc(7px + env(safe-area-inset-bottom));
+    min-height:61px;
+    border-color:rgba(210,162,74,.20);
+    background:linear-gradient(180deg,rgba(17,22,16,.985),rgba(9,12,9,.985));
+    box-shadow:0 -10px 32px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.018);
+    border-radius:10px
+  }
+  .mobile-nav-item{border:1px solid transparent;transition:.14s ease}
+  .mobile-nav-item.active{
+    color:#f2cf79;
+    border-color:rgba(210,162,74,.16);
+    background:linear-gradient(180deg,rgba(210,162,74,.13),rgba(210,162,74,.045))
+  }
+  .mobile-nav-icon{font-size:17px}
+  .mobile-nav-item small{font-size:8.5px;font-weight:750}
+  .mobile-more-sheet{
+    bottom:calc(76px + env(safe-area-inset-bottom));
+    padding:8px;
+    border-color:rgba(210,162,74,.22);
+    background:linear-gradient(155deg,#151a13,#0d100d);
+    box-shadow:0 22px 70px rgba(0,0,0,.48)
+  }
+  .mobile-more-sheet button{
+    background:#151b14;
+    border-color:#293228;
+    min-height:50px
+  }
+  .section-head h2{font-size:17px}
+  .card-row{padding:13px}
+  .chat-shell{background:#0d110d}
+}
