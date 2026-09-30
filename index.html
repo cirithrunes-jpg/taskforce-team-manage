@@ -6,13 +6,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style.css?v=20260929-tactical2">
+<link rel="stylesheet" href="css/style.css?v=20260929-crest1">
 </head>
 <body>
 <div class="app-shell">
   <aside class="sidebar" id="sidebar">
     <div class="brand"><div class="brand-mark">TF</div><div><strong id="teamNameTop">TASKFORCE</strong><small data-i18n="teamManager">Gerência de equipe</small></div></div>
-    <button class="team-card" id="openTeamModal"><span class="team-badge">T</span><span><strong id="teamNameSide">Sua equipe</strong><small id="teamCitySide" data-i18n="registerTeam">Cadastrar equipe</small></span></button>
+    <button class="team-card" id="openTeamModal"><span class="team-badge"><img id="teamLogoSide" alt="" hidden><span id="teamLogoFallback">T</span></span><span><strong id="teamNameSide">Sua equipe</strong><small id="teamCitySide" data-i18n="registerTeam">Cadastrar equipe</small></span></button>
     <nav class="nav">
       <button class="nav-item active" data-view="command"><span>⌂</span><span data-i18n="command">Comando</span></button>
       <button class="nav-item" data-view="operators"><span>◉</span><span data-i18n="operators">Operadores</span></button>
@@ -37,7 +37,7 @@
 
     <section class="view active" id="view-command">
       <div class="hero">
-        <div><span class="eyebrow" data-i18n="overview">VISÃO GERAL</span><h2 id="heroTeamName">Sua equipe</h2><p data-i18n="overviewText">Informações essenciais para acompanhar a equipe de forma rápida.</p></div>
+        <div class="hero-team-identity"><div class="hero-team-crest"><img id="teamLogoHero" alt="" hidden><span id="teamLogoHeroFallback">TF</span></div><div><span class="eyebrow" data-i18n="overview">VISÃO GERAL</span><h2 id="heroTeamName">Sua equipe</h2><p data-i18n="overviewText">Informações essenciais para acompanhar a equipe de forma rápida.</p></div></div>
         <button class="primary" id="openTeamModal2" data-i18n="registerTeam">Cadastrar equipe</button>
       </div>
       <div class="stats">
@@ -125,7 +125,7 @@
 <dialog id="fieldModal" class="modal"><form method="dialog" id="fieldForm"><div class="modal-head"><h2 data-i18n="newField">Novo campo</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid"><label class="wide"><span data-i18n="fieldName">Nome do campo</span><input name="name" required></label><label class="wide"><span data-i18n="address">Endereço</span><input name="address"></label><label><span>Latitude</span><input name="lat"></label><label><span>Longitude</span><input name="lng"></label><label class="wide"><span data-i18n="gpsLink">Link GPS / Maps</span><input name="gps"></label><label class="wide"><span data-i18n="fieldContact">Contato do campo</span><input name="contact"></label></div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveField">Salvar campo</button></div></form></dialog>
 
 <dialog id="teamModal" class="modal"><form method="dialog" id="teamForm"><div class="modal-head"><h2 data-i18n="teamRegistration">Cadastro da equipe</h2><button value="cancel" class="icon-btn">×</button></div><div class="form-grid">
-<label><span data-i18n="teamName">Nome da equipe</span><input name="name" required></label><label><span data-i18n="teamAcronym">Sigla</span><input name="acronym"></label><label><span data-i18n="foundationDate">Data de fundação</span><input type="date" name="founded"></label><label><span data-i18n="cityState">Cidade / UF</span><input name="city"></label>
+<label class="wide team-logo-field"><span>Brasão / logo da equipe</span><div class="team-logo-editor"><div class="team-logo-preview"><img id="teamLogoPreview" alt="" hidden><span id="teamLogoPreviewFallback">TF</span></div><div><input id="teamLogoInput" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPG ou WebP. Recomendado: imagem quadrada, até 2 MB.</small><button type="button" class="ghost small" id="removeTeamLogo">Remover brasão</button></div></div></label><label><span data-i18n="teamName">Nome da equipe</span><input name="name" required></label><label><span data-i18n="teamAcronym">Sigla</span><input name="acronym"></label><label><span data-i18n="foundationDate">Data de fundação</span><input type="date" name="founded"></label><label><span data-i18n="cityState">Cidade / UF</span><input name="city"></label>
 <label class="wide"><span data-i18n="teamHistory">História da equipe</span><textarea name="history" rows="4"></textarea></label><label class="wide"><span data-i18n="founders">Fundadores</span><textarea name="founders" rows="2"></textarea></label><label class="wide"><span data-i18n="supporters">Apoiadores / parceiros</span><textarea name="supporters" rows="2"></textarea></label>
 <label><span data-i18n="responsible">Responsável</span><input name="responsible"></label><label><span data-i18n="phone">Telefone / WhatsApp</span><input name="phone"></label><label><span data-i18n="email">E-mail</span><input type="email" name="email"></label><label><span data-i18n="social">Site / rede social</span><input name="social"></label>
 </div><div class="modal-actions"><button value="cancel" class="ghost" data-i18n="cancel">Cancelar</button><button type="submit" class="primary" data-i18n="saveTeam">Salvar equipe</button></div></form></dialog>
@@ -164,6 +164,6 @@
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260929-1700"></script>
 <script src="js/auth-clean.js?v=20260929-cc1"></script>
-<script src="js/app.js?v=20260929-1935"></script>
+<script src="js/app.js?v=20260929-crest1"></script>
 </body>
 </html>
