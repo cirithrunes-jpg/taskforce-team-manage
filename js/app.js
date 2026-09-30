@@ -38,7 +38,8 @@ function updateHeader(view){
   $("#pageSubtitle").textContent=t(pair[1]);
 }
 function showView(view){
-  $$(".view").forEach(v=>v.classList.remove("active"));
+  if(membership?.role==="operator"&&view==="documents")return;
+  $(".view").forEach(v=>v.classList.remove("active"));
   $$(".nav-item").forEach(v=>v.classList.remove("active"));
   $("#view-"+view)?.classList.add("active");
   document.querySelector('.nav-item[data-view="'+view+'"]')?.classList.add("active");
@@ -70,7 +71,10 @@ setTheme(theme);
 $("#languageSelect").onchange=e=>{lang=e.target.value;pref.set("lang",lang);translate()};
 
 function openDialog(id){$(id)?.showModal()}
-["#openTeamModal","#openTeamModal2","#openTeamModal3"].forEach(id=>$(id).onclick=()=>{fillTeamForm();openDialog("#teamModal")});
+["#openTeamModal","#openTeamModal2","#openTeamModal3"].forEach(id=>$(id).onclick=()=>{
+  if(membership?.role!=="admin")return;
+  fillTeamForm();openDialog("#teamModal");
+});
 $("#viewTerm").onclick=()=>showCurrentTerm();
 $("#printTermBtn").onclick=()=>window.print();
 
@@ -89,7 +93,26 @@ $("#addField").onclick=$("#quickField").onclick=()=>{if(membership?.role==="admi
 function formObject(form){return Object.fromEntries(new FormData(form).entries())}
 function initials(n){return String(n||"").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase()||"OP"}
 function formatDate(v){if(!v)return"—";const p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
-function sortedGames(){return [...games].sort((a,b)=>(a.date||"").localeCompare(b.date||""))}
+function gameVisibleUntil(g){
+  if(!g?.date)return Infinity;
+  const base=g.time?new Date(g.date+"T"+g.time+":00"):new Date(g.date+"T23:59:59");
+  if(Number.isNaN(base.getTime()))return Infinity;
+  return base.getTime()+12*60*60*1000;
+}
+function sortedGames(){
+  const now=Date.now();
+  return [...games].filter(g=>gameVisibleUntil(g)>now).sort((a,b)=>{
+    const ad=(a.date||"")+" "+(a.time||"23:59");
+    const bd=(b.date||"")+" "+(b.time||"23:59");
+    return ad.localeCompare(bd);
+  });
+}
+function renderGameFieldOptions(){
+  const select=$("#gameFieldSelect");if(!select)return;
+  const selected=select.value;
+  select.innerHTML='<option value="">Nenhum campo definido</option>'+fields.map(f=>'<option value="'+esc(f.id)+'">'+esc(f.name||"Campo")+(f.address?' — '+esc(f.address):'')+'</option>').join("");
+  if([...select.options].some(o=>o.value===selected))select.value=selected;
+}
 function assertAdmin(){if(membership?.role!=="admin")throw new Error("Apenas administradores podem realizar esta ação.")}
 function teamLogo(){return pendingTeamLogoData!==null?pendingTeamLogoData:(team.logoData||"")}
 function setLogoImage(imgSel,fallbackSel,src,fallbackText="TF"){
@@ -121,6 +144,9 @@ $("#gameForm").addEventListener("submit",async e=>{
   try{
     assertAdmin();
     const data=formObject(e.target);
+    const selectedField=fields.find(f=>f.id===data.field_id);
+    data.place=selectedField?.name||"";
+    data.field_address=selectedField?.address||"";
     const rows=await authRest("team_resources?select=id,kind,data",{method:"POST",body:{team_id:membership.team_id,kind:"game",data},prefer:"return=representation"});
     const row=Array.isArray(rows)?rows[0]:rows;
     if(!row)throw new Error("O evento foi salvo, mas não retornou confirmação.");
@@ -138,7 +164,7 @@ $("#fieldForm").addEventListener("submit",async e=>{
     const row=Array.isArray(rows)?rows[0]:rows;
     if(!row)throw new Error("O campo foi salvo, mas não retornou confirmação.");
     fields.push({id:row.id,...row.data});
-    e.target.reset();$("#fieldModal").close();renderAll();
+    e.target.reset();$("#fieldModal").close();renderAll();renderGameFieldOptions();
   }catch(err){alert(err.message)}
 });
 
@@ -273,6 +299,7 @@ function renderGames(){
   $("#statNextGamePlace").textContent=list[0].place||list[0].name||"—";
 }
 function renderFields(){
+  renderGameFieldOptions();
   const root=$("#fieldsList");
   if(!fields.length){root.innerHTML='<div class="empty">Nenhum campo cadastrado.</div>';return}
   root.innerHTML=fields.map(f=>{
@@ -526,14 +553,13 @@ function renderTermDocuments(){
   $$("[data-term-acceptance]").forEach(b=>b.onclick=()=>showAcceptedTerm(b.dataset.termAcceptance));
 }
 async function loadTermDocuments(){
+  if(membership?.role!=="admin"){
+    termAcceptances=[];
+    return;
+  }
   try{
-    if(membership?.role==="admin"){
-      const data=await financeRpc("admin_list_term_acceptances");
-      termAcceptances=Array.isArray(data)?data:[];
-    }else{
-      const a=await financeRpc("get_my_term_acceptance");
-      termAcceptances=a?[a]:[];
-    }
+    const data=await financeRpc("admin_list_term_acceptances");
+    termAcceptances=Array.isArray(data)?data:[];
     renderTermDocuments();
   }catch(err){
     console.error("Documentos:",err);
@@ -558,12 +584,18 @@ async function loadTeamData(detail){
   fields=(resources||[]).filter(r=>r.kind==="field").map(r=>({id:r.id,...r.data}));
 
   operators=[];
-  if(membership.role==="admin"){
-    try{await loadAdminMembers()}catch(err){console.error("Operadores:",err)}
-  }
+  try{
+    if(membership.role==="admin"){
+      await loadAdminMembers();
+    }else{
+      const roster=await financeRpc("list_team_members_public");
+      operators=Array.isArray(roster)?roster:[];
+    }
+  }catch(err){console.error("Equipe:",err)}
   renderAll();
   await Promise.all([loadFinanceData(),loadTermDocuments()]);
 }
 window.addEventListener("taskforce:auth-ready",e=>loadTeamData(e.detail));
 if(window.TASKFORCE_AUTH?.state?.membership)loadTeamData(window.TASKFORCE_AUTH.state);
 translate();
+window.TASKFORCE_AGENDA_CLEANUP_TIMER=setInterval(()=>{if(membership)renderGames()},15*60*1000);
