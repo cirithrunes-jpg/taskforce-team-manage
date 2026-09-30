@@ -71,7 +71,30 @@ $$(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.theme));
 setTheme(theme);
 $("#languageSelect").onchange=e=>{lang=e.target.value;pref.set("lang",lang);translate()};
 
-function openDialog(id){$(id)?.showModal()}
+function openDialog(id){
+  const dlg=$(id);
+  if(dlg&&!dlg.open)dlg.showModal();
+}
+function installDialogSafety(){
+  document.addEventListener("click",e=>{
+    const closeBtn=e.target.closest("[data-dialog-close]");
+    if(closeBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      closeBtn.closest("dialog")?.close("cancel");
+      return;
+    }
+    const dlg=e.target.closest("dialog");
+    if(dlg&&e.target===dlg)dlg.close("cancel");
+  });
+  $("dialog").forEach(dlg=>{
+    dlg.addEventListener("cancel",e=>{
+      e.preventDefault();
+      dlg.close("cancel");
+    });
+  });
+}
+installDialogSafety();
 ["#openTeamModal","#openTeamModal2","#openTeamModal3"].forEach(id=>$(id).onclick=()=>{
   if(membership?.role!=="admin")return;
   fillTeamForm();openDialog("#teamModal");
