@@ -10,7 +10,7 @@ let lang=pref.get("lang","pt"),theme=pref.get("theme","dark");
 const titles={
 command:["command","commandSubtitle"],operators:["operators","operatorsSubtitle"],calendar:["calendar","calendarSubtitle"],
 fields:["fields","fieldsSubtitle"],finance:["finance","financeSubtitle"],documents:["documents","documentsSubtitle"],
-contacts:["contacts","contactsSubtitle"],chat:["Chat da equipe","Conversa geral em tempo real"],settings:["settings","settingsSubtitle"]
+contacts:["contacts","contactsSubtitle"],chat:["Chat da equipe","Conversa geral em tempo real"],more:["Mais","Outros recursos da equipe"],settings:["settings","settingsSubtitle"]
 };
 
 function t(key){return (window.I18N[lang]&&window.I18N[lang][key])||window.I18N.pt[key]||key}
