@@ -131,3 +131,15 @@ body[data-role="operator"] .admin-only{display:none!important}
 }
 @media(max-width:390px){.home-summary-card{grid-template-columns:auto 1fr}.home-summary-card .card-chevron{display:none}.quick-actions{grid-template-columns:1fr}.mobile-nav-item small{font-size:8px}}
 @media print{.sidebar,.topbar,.mobile-nav,.modal-actions,.status-chip{display:none!important}.main{padding:0;max-width:none}.view{display:none!important}.view.active{display:block!important}body{background:#fff;color:#111}}
+
+.auth-link{
+  justify-self:center;
+  border:0;
+  background:transparent;
+  color:var(--brand-strong);
+  padding:4px 8px;
+  font-weight:750;
+  font-size:12px;
+  text-decoration:none;
+}
+.auth-link:hover{text-decoration:underline}
