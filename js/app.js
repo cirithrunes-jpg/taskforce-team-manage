@@ -168,7 +168,9 @@ function chatDayLabel(date){
 function renderChat(){
   const root=$("#chatMessages");if(!root)return;
   $("#chatTeamName").textContent=team.name||"Equipe";
-  setLogoImage("#chatTeamLogo","#chatTeamFallback",team.logoData||"",(team.acronym||"TF").slice(0,3).toUpperCase());
+  const chatLogo=team.logoData||"";
+  setLogoImage("#chatTeamLogo","#chatTeamFallback",chatLogo,(team.acronym||"TF").slice(0,3).toUpperCase());
+  root.style.setProperty("--chat-team-mark",chatLogo?'url("'+chatLogo+'")':"none");
   if(!chatMessages.length){root.innerHTML='<div class="chat-loading">Nenhuma mensagem ainda. Inicie a conversa.</div>';return}
   const myId=currentProfile?.user_id;
   let lastDay="",html="";
