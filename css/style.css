@@ -172,3 +172,125 @@ body[data-role="operator"] .admin-only{display:none!important}
   #financeMonth{width:100%}
   .fee-actions{width:100%;justify-content:flex-start}
 }
+
+
+/* TASKFORCE global visual identity — tactical cinematic */
+:root{
+  --tf-amber:#d9a441;
+  --tf-amber-soft:#f0c66a;
+  --tf-olive:#8d9862;
+}
+body{
+  background:
+    radial-gradient(circle at 78% 8%,rgba(217,164,65,.06),transparent 25rem),
+    linear-gradient(135deg,rgba(255,255,255,.014) 25%,transparent 25%) 0 0/28px 28px,
+    var(--bg);
+}
+.sidebar{
+  background:
+    linear-gradient(180deg,rgba(217,164,65,.045),transparent 20%),
+    linear-gradient(180deg,#11140f,#090b09);
+  border-right-color:rgba(217,164,65,.2);
+}
+.sidebar:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:linear-gradient(90deg,var(--tf-amber),transparent 75%);
+}
+.brand-mark{
+  background:linear-gradient(135deg,var(--tf-amber-soft),#8b6725);
+  box-shadow:0 0 22px rgba(217,164,65,.14);
+}
+.brand strong{letter-spacing:.1em;font-size:13px}
+.brand small{text-transform:uppercase;letter-spacing:.07em;font-size:10px}
+.team-card{
+  border-radius:4px;border-color:rgba(141,152,98,.22);
+  background:linear-gradient(135deg,rgba(31,35,26,.95),rgba(18,21,16,.95));
+}
+.team-badge{background:var(--tf-amber);border-radius:3px}
+.nav-item{
+  position:relative;border:1px solid transparent;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.065em;font-size:12px;font-weight:700
+}
+.nav-item:hover{border-color:rgba(217,164,65,.14);background:rgba(217,164,65,.04)}
+.nav-item.active{
+  color:#f5f0df;background:linear-gradient(90deg,rgba(217,164,65,.15),rgba(217,164,65,.02));
+  border-color:rgba(217,164,65,.22);box-shadow:inset 3px 0 var(--tf-amber)
+}
+.topbar{border-bottom-color:rgba(217,164,65,.14)}
+.topbar h1{text-transform:uppercase;letter-spacing:.075em;font-size:17px}
+.status-chip{
+  border-radius:4px;border-color:rgba(217,164,65,.23);
+  background:rgba(217,164,65,.04);text-transform:uppercase;letter-spacing:.07em
+}
+.dot{background:var(--tf-amber)}
+.hero{
+  position:relative;overflow:hidden;border-radius:5px;
+  border-color:rgba(217,164,65,.22);
+  background:linear-gradient(105deg,rgba(10,12,9,.98),rgba(22,26,18,.95) 60%,rgba(50,43,23,.6));
+}
+.hero:before{
+  content:"";position:absolute;right:-10%;top:-80%;width:42%;height:260%;
+  transform:skewX(-18deg);border-left:1px solid rgba(217,164,65,.16);
+  background:linear-gradient(90deg,transparent,rgba(217,164,65,.04));pointer-events:none
+}
+.hero>*{position:relative;z-index:1}
+.hero h2{text-transform:uppercase;letter-spacing:-.025em}
+.eyebrow{color:var(--tf-amber);font-weight:800}
+.stat,.panel,.document-card,.card-row{
+  border-radius:4px;border-color:rgba(141,152,98,.22);
+  background:linear-gradient(145deg,rgba(25,29,22,.98),rgba(15,18,14,.98));
+}
+.stat,.panel{position:relative;overflow:hidden}
+.stat:before,.panel:before{
+  content:"";position:absolute;left:0;top:0;width:32px;height:2px;background:var(--tf-amber)
+}
+.stat span,.stat small{letter-spacing:.03em}
+.stat span{text-transform:uppercase;font-size:10px;letter-spacing:.085em}
+.stat strong{color:#f5f0df}
+.panel h3,.panel-head h3,.section-head h2{
+  text-transform:uppercase;letter-spacing:.065em
+}
+.primary{
+  border-radius:3px;border-color:var(--tf-amber);
+  background:linear-gradient(135deg,var(--tf-amber-soft),#b9852e);color:#111
+}
+.ghost,.quick,.theme-btn{border-radius:3px}
+.ghost:hover,.quick:hover{border-color:rgba(217,164,65,.38);background:rgba(217,164,65,.05)}
+.badge{
+  border-radius:3px;border-color:rgba(217,164,65,.2);
+  text-transform:uppercase;letter-spacing:.06em
+}
+.avatar{border-radius:3px;color:var(--tf-amber-soft)}
+input,select,textarea{
+  border-radius:3px;background:#121610;border-color:rgba(141,152,98,.3)
+}
+input:focus,select:focus,textarea:focus{border-color:var(--tf-amber)}
+.modal{
+  border-radius:5px;border-color:rgba(217,164,65,.26);
+  background:linear-gradient(145deg,#171b14,#0f120e)
+}
+.modal-head{border-bottom-color:rgba(217,164,65,.16)}
+.auth-gate{
+  background:
+    radial-gradient(circle at 70% 15%,rgba(217,164,65,.08),transparent 24rem),
+    rgba(5,7,5,.96)
+}
+.auth-card{
+  position:relative;border-radius:5px;border-color:rgba(217,164,65,.25);
+  background:linear-gradient(145deg,#171b14,#0d100c)
+}
+.auth-card:before{
+  content:"";position:absolute;left:0;top:0;width:64px;height:3px;background:var(--tf-amber)
+}
+.auth-tabs{border-radius:3px}
+.auth-tab{border-radius:2px}
+.auth-tab.active{background:var(--tf-amber);color:#111}
+.document-card{border-left:2px solid rgba(217,164,65,.35)}
+.doc-icon{color:var(--tf-amber-soft)}
+.segmented{border-radius:3px}
+.theme-btn.active{background:var(--tf-amber)}
+.legal-note,.privacy-box,.detail-item{border-radius:3px}
+.finance-card,.fee-card{border-radius:4px}
+@media(max-width:560px){
+  .hero h2{font-size:25px}
+}
