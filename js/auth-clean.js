@@ -11,8 +11,14 @@ function gate(){
 function setGate(html){const g=gate();g.classList.add("show");g.innerHTML=html}
 function hideGate(){const g=gate();g.classList.remove("show");g.innerHTML=""}
 function status(text,type=""){const e=document.getElementById("authStatus");if(e){e.className="auth-message "+type;e.textContent=text||""}}
+const initialUrl=new URL(location.href);
+const initialHash=new URLSearchParams(initialUrl.hash.replace(/^#/,""));
+const recoveryRequested=initialUrl.searchParams.get("recovery")==="1"||initialHash.get("type")==="recovery";
 function cleanUrl(){
-  if(location.hash) history.replaceState({},"",location.pathname+location.search);
+  if(location.hash&&!recoveryRequested) history.replaceState({},"",location.pathname+location.search);
+}
+function clearRecoveryUrl(){
+  history.replaceState({},"",location.pathname);
 }
 cleanUrl();
 
@@ -75,6 +81,7 @@ function renderLogin(tab="login"){
         '<label>E-mail<input name="email" type="email" autocomplete="email" required></label>'+
         '<label>Senha<div class="password-wrap"><input id="loginPassword" name="password" type="password" autocomplete="current-password" minlength="8" required><button type="button" id="toggleLoginPassword" class="password-toggle">Mostrar</button></div></label>'+
         '<button class="primary" type="submit">Entrar</button>'+
+        '<button class="auth-link" type="button" id="forgotPasswordBtn">Esqueci minha senha</button>'+
       '</form>'+
       '<form id="signupForm" class="auth-form">'+
         '<label>E-mail<input name="email" type="email" autocomplete="email" required></label>'+
@@ -104,6 +111,10 @@ function renderLogin(tab="login"){
   switchTab(tab);
 
   togglePassword(document.getElementById("toggleLoginPassword"),document.getElementById("loginPassword"));
+  document.getElementById("forgotPasswordBtn").onclick=()=>{
+    const email=String(loginForm.elements.email?.value||"").trim();
+    renderForgotPassword(email);
+  };
   togglePassword(document.getElementById("toggleSignupPassword"),document.getElementById("signupPassword"));
   togglePassword(document.getElementById("toggleSignupPassword2"),document.getElementById("signupPassword2"));
 
@@ -168,6 +179,121 @@ function renderLogin(tab="login"){
       button.disabled=false;
     }
   };
+}
+
+function renderForgotPassword(prefill=""){
+  setGate(
+    '<div class="auth-card">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Recuperar senha</strong><small>Receba um link seguro por e-mail</small></div></div>'+
+      '<div id="authStatus" class="auth-message">Informe o e-mail usado no TASKFORCE.</div>'+
+      '<form id="forgotPasswordForm" class="auth-form">'+
+        '<label>E-mail<input name="email" type="email" autocomplete="email" value="'+h(prefill)+'" required></label>'+
+        '<button class="primary" type="submit">Enviar link de recuperação</button>'+
+        '<button class="ghost" type="button" id="backToLogin">Voltar ao login</button>'+
+      '</form>'+
+      '<p class="auth-foot">Se existir uma conta para esse e-mail, enviaremos as instruções de recuperação.</p>'+
+    '</div>'
+  );
+  document.getElementById("backToLogin").onclick=()=>renderLogin("login");
+  document.getElementById("forgotPasswordForm").onsubmit=async e=>{
+    e.preventDefault();
+    const button=e.target.querySelector('button[type="submit"]');
+    const email=String(new FormData(e.target).get("email")||"").trim();
+    button.disabled=true;
+    status("Enviando link...");
+    try{
+      const redirectTo=(C.appUrl||location.origin)+"/?recovery=1";
+      const {error}=await withTimeout(client.auth.resetPasswordForEmail(email,{redirectTo}));
+      if(error)throw error;
+      status("Se houver uma conta para este e-mail, o link de recuperação foi enviado. Verifique também a caixa de spam.","success");
+    }catch(err){
+      status(err.message||"Não foi possível enviar o link de recuperação.","error");
+    }finally{
+      button.disabled=false;
+    }
+  };
+}
+
+function renderRecoveryExpired(){
+  setGate(
+    '<div class="auth-card">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Link inválido ou expirado</strong><small>Recuperação de senha</small></div></div>'+
+      '<div class="auth-message error">Não foi possível validar este link de recuperação.</div>'+
+      '<button class="primary" type="button" id="requestNewRecovery">Solicitar novo link</button>'+
+      '<button class="ghost" type="button" id="recoveryBackLogin">Voltar ao login</button>'+
+    '</div>'
+  );
+  document.getElementById("requestNewRecovery").onclick=()=>renderForgotPassword();
+  document.getElementById("recoveryBackLogin").onclick=()=>{clearRecoveryUrl();renderLogin("login")};
+}
+
+function renderPasswordRecovery(){
+  setGate(
+    '<div class="auth-card">'+
+      '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>Nova senha</strong><small>Defina sua nova senha de acesso</small></div></div>'+
+      '<div id="authStatus" class="auth-message">Use pelo menos 8 caracteres.</div>'+
+      '<form id="recoveryPasswordForm" class="auth-form">'+
+        '<label>Nova senha<div class="password-wrap"><input id="recoveryPassword" name="password" type="password" autocomplete="new-password" minlength="8" required><button type="button" id="toggleRecoveryPassword" class="password-toggle">Mostrar</button></div></label>'+
+        '<label>Confirmar nova senha<div class="password-wrap"><input id="recoveryPassword2" name="password2" type="password" autocomplete="new-password" minlength="8" required><button type="button" id="toggleRecoveryPassword2" class="password-toggle">Mostrar</button></div></label>'+
+        '<button class="primary" type="submit">Salvar nova senha</button>'+
+      '</form>'+
+    '</div>'
+  );
+  togglePassword(document.getElementById("toggleRecoveryPassword"),document.getElementById("recoveryPassword"));
+  togglePassword(document.getElementById("toggleRecoveryPassword2"),document.getElementById("recoveryPassword2"));
+  document.getElementById("recoveryPasswordForm").onsubmit=async e=>{
+    e.preventDefault();
+    const f=new FormData(e.target);
+    const password=String(f.get("password")||"");
+    const password2=String(f.get("password2")||"");
+    if(password.length<8)return status("A senha precisa ter pelo menos 8 caracteres.","error");
+    if(password!==password2)return status("As senhas não conferem.","error");
+    const button=e.target.querySelector('button[type="submit"]');
+    button.disabled=true;
+    status("Atualizando senha...");
+    try{
+      const {error}=await withTimeout(client.auth.updateUser({password}));
+      if(error)throw error;
+      status("Senha alterada com sucesso. Voltando ao login...","success");
+      await client.auth.signOut();
+      state.session=null;
+      clearRecoveryUrl();
+      setTimeout(()=>{renderLogin("login");status("Senha alterada. Entre com a nova senha.","success")},550);
+    }catch(err){
+      status(err.message||"Não foi possível alterar a senha.","error");
+      button.disabled=false;
+    }
+  };
+}
+
+async function startPasswordRecovery(){
+  try{
+    const access_token=initialHash.get("access_token");
+    const refresh_token=initialHash.get("refresh_token");
+    let session=null;
+    if(access_token&&refresh_token){
+      const {data,error}=await withTimeout(client.auth.setSession({access_token,refresh_token}),10000);
+      if(error)throw error;
+      session=data?.session||null;
+    }else{
+      const code=initialUrl.searchParams.get("code");
+      if(code){
+        const {data,error}=await withTimeout(client.auth.exchangeCodeForSession(code),10000);
+        if(error)throw error;
+        session=data?.session||null;
+      }else{
+        const {data,error}=await withTimeout(client.auth.getSession(),10000);
+        if(error)throw error;
+        session=data?.session||null;
+      }
+    }
+    if(!session){renderRecoveryExpired();return}
+    state.session=session;
+    renderPasswordRecovery();
+  }catch(err){
+    console.error("Recuperação de senha:",err);
+    renderRecoveryExpired();
+  }
 }
 
 function renderProfileForm(user,existing={}){
@@ -542,6 +668,7 @@ async function logout(){
 }
 
 async function start(){
+  if(recoveryRequested){await startPasswordRecovery();return}
   setGate('<div class="auth-card"><div class="auth-message">Verificando sessão...</div></div>');
   try{
     const {data,error}=await withTimeout(client.auth.getSession(),10000);
