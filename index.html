@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style-modern.css?v=20260930-recovery1">
+<link rel="stylesheet" href="css/style-modern.css?v=20260930-support1">
 <link rel="stylesheet" href="css/beginners.css?v=20260930-demo1">
 </head>
 <body>
@@ -343,7 +343,16 @@
       <article class="panel"><h3 data-i18n="teamIdentity">Identificação da equipe</h3><p data-i18n="teamIdentityText">Nome, história, fundadores, apoiadores e contatos.</p><button class="primary" id="openTeamModal3" data-i18n="editTeam">Cadastrar / Editar equipe</button></article>
       <article class="panel"><h3 data-i18n="language">Idioma</h3><select id="languageSelect"><option value="pt">Português</option><option value="es">Español</option><option value="en">English</option></select></article>
       <article class="panel"><h3 data-i18n="appearance">Aparência</h3><div class="segmented"><button data-theme="dark" class="theme-btn active" data-i18n="dark">Escuro</button><button data-theme="light" class="theme-btn" data-i18n="light">Claro</button></div></article>
-      <article class="panel"><h3 data-i18n="dataStatus">Status dos dados</h3><p data-i18n="localPrototype">Protótipo local. A conexão segura com o Supabase será ativada na próxima etapa.</p></article>
+      <article class="panel"><h3 data-i18n="dataStatus">Status dos dados</h3><p data-i18n="localPrototype">Dados da equipe sincronizados com segurança.</p></article>
+      <article class="panel platform-contact-panel">
+        <div class="platform-contact-head"><div class="platform-contact-icon">?</div><div><h3>Contato com a plataforma</h3><p>Envie dúvidas, problemas ou sugestões diretamente para a equipe responsável pelo TASKFORCE.</p></div></div>
+        <form id="platformContactForm" class="platform-contact-form">
+          <label><span>Assunto</span><select name="category" required><option value="duvida">Dúvida</option><option value="problema">Problema no aplicativo</option><option value="sugestao">Sugestão</option><option value="financeiro">Financeiro</option><option value="privacidade">Privacidade / dados</option><option value="outro">Outro</option></select></label>
+          <label><span>Título</span><input name="subject" maxlength="140" minlength="3" placeholder="Resuma o que você precisa" required></label>
+          <label><span>Mensagem</span><textarea name="message" rows="4" maxlength="4000" minlength="10" placeholder="Conte o que aconteceu ou como podemos ajudar" required></textarea></label>
+          <div class="platform-contact-actions"><span id="platformContactStatus" class="platform-contact-status" aria-live="polite"></span><button class="primary" type="submit">Enviar mensagem</button></div>
+        </form>
+      </article>
     </div></section>
   </main>
 </div>
@@ -401,9 +410,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js?v=20260929-1700"></script>
-<script src="js/translations.js?v=20260930-sports1"></script>
-<script src="js/auth-clean.js?v=20260930-recovery1"></script>
-<script src="js/app.js?v=20260930-beginnerdemo1"></script>
+<script src="js/translations.js?v=20260930-support1"></script>
+<script src="js/auth-clean.js?v=20260930-nocontrol1"></script>
+<script src="js/app.js?v=20260930-support1"></script>
 <script src="js/beginners.js?v=20260930-demo1"></script>
 <script src="js/navigation.js?v=20260930-stable2"></script>
 </body>
