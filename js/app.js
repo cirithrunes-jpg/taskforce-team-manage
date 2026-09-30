@@ -141,6 +141,44 @@ function fillTeamForm(){
   $("#teamLogoInput").value="";
   renderTeamLogoPreview();
 }
+async function submitPlatformContact(form){
+  const statusEl=$("#platformContactStatus");
+  const button=form.querySelector('button[type="submit"]');
+  const setStatus=(msg,type="")=>{
+    if(!statusEl)return;
+    statusEl.textContent=msg;
+    statusEl.className="platform-contact-status "+type;
+  };
+  if(!membership?.team_id){setStatus("Não foi possível identificar sua equipe.","error");return}
+  const f=new FormData(form);
+  const category=String(f.get("category")||"duvida");
+  const subject=String(f.get("subject")||"").trim();
+  const message=String(f.get("message")||"").trim();
+  if(subject.length<3||message.length<10){setStatus("Preencha o título e explique um pouco mais a solicitação.","error");return}
+  button.disabled=true;
+  setStatus("Enviando...");
+  try{
+    const {data:{user},error:userError}=await db.auth.getUser();
+    if(userError||!user)throw userError||new Error("Sessão não encontrada.");
+    const {error}=await db.from("platform_support_requests").insert({
+      team_id:membership.team_id,
+      user_id:user.id,
+      category,
+      subject,
+      message
+    });
+    if(error)throw error;
+    form.reset();
+    setStatus("Mensagem enviada. A plataforma recebeu sua solicitação.","success");
+  }catch(err){
+    console.error("Contato com a plataforma:",err);
+    setStatus("Não foi possível enviar agora. Tente novamente em instantes.","error");
+  }finally{
+    button.disabled=false;
+  }
+}
+$("#platformContactForm")?.addEventListener("submit",e=>{e.preventDefault();submitPlatformContact(e.currentTarget)});
+
 function renderTeam(){
   const name=team.name||t("registerTeam");
   $("#teamNameTop").textContent=team.acronym||team.name||"TASKFORCE";
