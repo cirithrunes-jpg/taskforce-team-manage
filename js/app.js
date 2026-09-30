@@ -99,7 +99,7 @@ function setLogoImage(imgSel,fallbackSel,src,fallbackText="TF"){
 function applyTeamWallpaper(src){
   const root=document.documentElement;
   if(src){
-    const safe=String(src).replace(/["\\\n\r]/g,m=>m==="""?"%22":m==="\\"?"%5C":"");
+    const safe=String(src).replace(/"/g,"%22").replace(/\\/g,"%5C").replace(/[\n\r]/g,"");
     root.style.setProperty("--team-wallpaper",'url("'+safe+'")');
     root.classList.add("has-team-wallpaper");
   }else{
