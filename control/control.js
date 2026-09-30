@@ -13,6 +13,17 @@ if(!window.supabase||!C.supabaseUrl||!C.supabasePublishableKey){
 const db=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const state={session:null,overview:{},users:{},teams:[],finance:{},plans:[],discounts:[],subscriptions:[],payments:[],credits:[],cancellations:[],support:[]};
 
+async function rest(path,{method="GET",body=null,prefer=""}={}){
+  const token=state.session?.access_token;if(!token)throw new Error("Sessão não autenticada.");
+  const headers={"apikey":C.supabasePublishableKey,"Authorization":"Bearer "+token};
+  if(body!==null)headers["Content-Type"]="application/json";
+  if(prefer)headers["Prefer"]=prefer;
+  const res=await fetch(C.supabaseUrl+"/rest/v1/"+path,{method,headers,body:body===null?undefined:JSON.stringify(body)});
+  const raw=await res.text();let data=null;try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!res.ok){const err=new Error(data?.message||data?.details||String(data||"Erro no servidor."));err.code=data?.code;throw err}
+  return data;
+}
+
 function status(msg,type=""){const el=$("#controlStatus");if(el){el.textContent=msg||"";el.className="message "+type}}
 function formStatus(id,msg,type=""){const el=$(id);if(el){el.textContent=msg||"";el.className="form-status "+type}}
 function gate(show){$("#controlGate").hidden=!show;$("#controlShell").hidden=show}
@@ -42,17 +53,16 @@ async function loadAll(){
       rpc("get_platform_teams"),
       rpc("get_platform_user_stats"),
       rpc("get_platform_finance_overview"),
-      db.from("platform_plans").select("*").order("created_at",{ascending:false}),
-      db.from("platform_discounts").select("*").order("created_at",{ascending:false}),
-      db.from("platform_subscriptions").select("*").order("created_at",{ascending:false}),
-      db.from("platform_payments").select("*").order("created_at",{ascending:false}).limit(1000),
-      db.from("platform_credit_ledger").select("*").order("created_at",{ascending:false}).limit(1000),
-      db.from("platform_cancellation_feedback").select("*").order("created_at",{ascending:false}).limit(1000),
-      db.from("platform_support_requests").select("id,team_id,user_id,category,subject,message,status,created_at").order("created_at",{ascending:false}).limit(300)
+      rest("platform_plans?select=*&order=created_at.desc"),
+      rest("platform_discounts?select=*&order=created_at.desc"),
+      rest("platform_subscriptions?select=*&order=created_at.desc"),
+      rest("platform_payments?select=*&order=created_at.desc&limit=1000"),
+      rest("platform_credit_ledger?select=*&order=created_at.desc&limit=1000"),
+      rest("platform_cancellation_feedback?select=*&order=created_at.desc&limit=1000"),
+      rest("platform_support_requests?select=id,team_id,user_id,category,subject,message,status,created_at&order=created_at.desc&limit=300")
     ]);
-    for(const r of [plansR,discountsR,subsR,payR,creditsR,cancelR,supportR])if(r.error)throw r.error;
     state.overview=overview||{};state.teams=Array.isArray(teams)?teams:[];state.users=users||{};state.finance=finance||{};
-    state.plans=plansR.data||[];state.discounts=discountsR.data||[];state.subscriptions=subsR.data||[];state.payments=payR.data||[];state.credits=creditsR.data||[];state.cancellations=cancelR.data||[];state.support=supportR.data||[];
+    state.plans=plansR||[];state.discounts=discountsR||[];state.subscriptions=subsR||[];state.payments=payR||[];state.credits=creditsR||[];state.cancellations=cancelR||[];state.support=supportR||[];
     renderAll();
   }catch(err){console.error(err);alert(err.message||"Falha ao carregar Control.");}
   finally{$("#refreshControl").disabled=false}
@@ -179,32 +189,32 @@ $("#paymentSubscription")?.addEventListener("change",e=>{const opt=e.target.sele
 $("#planForm").onsubmit=async e=>{
   e.preventDefault();const f=new FormData(e.currentTarget);formStatus("#planStatus","Salvando...");
   const payload={name:String(f.get("name")).trim(),code:String(f.get("code")).trim().toLowerCase().replace(/[^a-z0-9_-]+/g,"-"),price_cents:cents(f.get("price")),billing_interval:String(f.get("interval")),trial_days:Number(f.get("trial_days")||0),active:true,updated_at:new Date().toISOString()};
-  const {error}=await db.from("platform_plans").insert(payload);if(error){formStatus("#planStatus",error.message,"error");return}
+  try{await rest("platform_plans",{method:"POST",body:payload,prefer:"return=minimal"})}catch(error){formStatus("#planStatus",error.message,"error");return}
   formStatus("#planStatus","Plano criado.","success");e.currentTarget.reset();setTimeout(()=>$("#planModal").close(),350);await loadAll();
 };
 $("#discountForm").onsubmit=async e=>{
   e.preventDefault();const f=new FormData(e.currentTarget),kind=String(f.get("kind")),duration=String(f.get("duration")),val=Number(f.get("value")||0);formStatus("#discountStatus","Criando...");
   const payload={name:String(f.get("name")).trim(),code:String(f.get("code")).trim().toUpperCase().replace(/[^A-Z0-9_-]+/g,"-"),kind,duration,percent_off:kind==="percent"?val:null,amount_off_cents:kind==="fixed"?cents(val):null,max_cycles:duration==="repeating"?Number(f.get("max_cycles")||0)||null:null,max_redemptions:Number(f.get("max_redemptions")||0)||null,valid_until:f.get("valid_until")?new Date(String(f.get("valid_until"))+"T23:59:59").toISOString():null,active:true};
-  const {error}=await db.from("platform_discounts").insert(payload);if(error){formStatus("#discountStatus",error.message,"error");return}
+  try{await rest("platform_discounts",{method:"POST",body:payload,prefer:"return=minimal"})}catch(error){formStatus("#discountStatus",error.message,"error");return}
   formStatus("#discountStatus","Benefício criado.","success");e.currentTarget.reset();setTimeout(()=>$("#discountModal").close(),350);await loadAll();
 };
 $("#subscriptionForm").onsubmit=async e=>{
   e.preventDefault();const f=new FormData(e.currentTarget),plan=state.plans.find(x=>x.id===f.get("plan_id"));if(!plan){formStatus("#subscriptionStatus","Crie ou selecione um plano.","error");return}
   const statusV=String(f.get("status")),now=new Date(),end=new Date(now),trialDays=Number(plan.trial_days||0);if(plan.billing_interval==="yearly")end.setFullYear(end.getFullYear()+1);else end.setMonth(end.getMonth()+1);
   const payload={team_id:String(f.get("team_id")),plan_id:plan.id,discount_id:f.get("discount_id")||null,status:statusV,provider:String(f.get("provider")),price_cents:plan.price_cents,billing_interval:plan.billing_interval,started_at:now.toISOString(),current_period_start:now.toISOString(),current_period_end:end.toISOString(),trial_ends_at:statusV==="trialing"&&trialDays?new Date(now.getTime()+trialDays*86400000).toISOString():null,updated_at:now.toISOString()};
-  formStatus("#subscriptionStatus","Registrando...");const {data,error}=await db.from("platform_subscriptions").insert(payload).select("id").single();if(error){formStatus("#subscriptionStatus",error.code==="23505"?"Esta equipe já possui uma assinatura atual.":"Não foi possível registrar: "+error.message,"error");return}
-  await db.from("platform_subscription_events").insert({subscription_id:data.id,team_id:payload.team_id,event_type:"subscription_created",data:{source:"control",status:statusV}});
+  formStatus("#subscriptionStatus","Registrando...");let data;try{const rows=await rest("platform_subscriptions?select=id",{method:"POST",body:payload,prefer:"return=representation"});data=Array.isArray(rows)?rows[0]:rows}catch(error){formStatus("#subscriptionStatus",error.code==="23505"?"Esta equipe já possui uma assinatura atual.":"Não foi possível registrar: "+error.message,"error");return}
+  await rest("platform_subscription_events",{method:"POST",body:{subscription_id:data.id,team_id:payload.team_id,event_type:"subscription_created",data:{source:"control",status:statusV}},prefer:"return=minimal"});
   formStatus("#subscriptionStatus","Assinatura registrada.","success");e.currentTarget.reset();setTimeout(()=>$("#subscriptionModal").close(),350);await loadAll();
 };
 $("#paymentForm").onsubmit=async e=>{
   e.preventDefault();const f=new FormData(e.currentTarget),sub=state.subscriptions.find(x=>x.id===f.get("subscription_id"));if(!sub){formStatus("#paymentStatus","Selecione uma assinatura.","error");return}
   const st=String(f.get("status")),now=new Date().toISOString();const payload={subscription_id:sub.id,team_id:sub.team_id,amount_cents:cents(f.get("amount")),status:st,provider:String(f.get("provider")),paid_at:st==="paid"?now:null,failed_at:st==="failed"?now:null,refunded_at:st==="refunded"?now:null};
-  formStatus("#paymentStatus","Registrando...");const {error}=await db.from("platform_payments").insert(payload);if(error){formStatus("#paymentStatus",error.message,"error");return}
+  formStatus("#paymentStatus","Registrando...");try{await rest("platform_payments",{method:"POST",body:payload,prefer:"return=minimal"})}catch(error){formStatus("#paymentStatus",error.message,"error");return}
   formStatus("#paymentStatus","Pagamento registrado.","success");e.currentTarget.reset();setTimeout(()=>$("#paymentModal").close(),350);await loadAll();
 };
 $("#creditForm").onsubmit=async e=>{
   e.preventDefault();const f=new FormData(e.currentTarget),payload={team_id:String(f.get("team_id")),amount_cents:cents(f.get("amount")),source:String(f.get("source")),reason:String(f.get("reason")).trim(),expires_at:f.get("expires_at")?new Date(String(f.get("expires_at"))+"T23:59:59").toISOString():null};
-  formStatus("#creditStatus","Salvando...");const {error}=await db.from("platform_credit_ledger").insert(payload);if(error){formStatus("#creditStatus",error.message,"error");return}
+  formStatus("#creditStatus","Salvando...");try{await rest("platform_credit_ledger",{method:"POST",body:payload,prefer:"return=minimal"})}catch(error){formStatus("#creditStatus",error.message,"error");return}
   formStatus("#creditStatus","Crédito concedido.","success");e.currentTarget.reset();setTimeout(()=>$("#creditModal").close(),350);await loadAll();
 };
 
