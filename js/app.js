@@ -33,10 +33,22 @@ function showView(view){
   document.querySelector('.nav-item[data-view="'+view+'"]')?.classList.add("active");
   updateHeader(view);
   $("#sidebar").classList.remove("open");
+  $(".mobile-nav-item[data-mobile-view]").forEach(v=>v.classList.toggle("active",v.dataset.mobileView===view));
+  closeMobileMore();
 }
 $$(".nav-item").forEach(b=>b.onclick=()=>showView(b.dataset.view));
 $$("[data-go]").forEach(b=>b.onclick=()=>showView(b.dataset.go));
 $("#menuBtn").onclick=$("#railToggle").onclick=()=>$("#sidebar").classList.toggle("open");
+function closeMobileMore(){
+  const sheet=$("#mobileMoreSheet"),back=$("#mobileSheetBackdrop");
+  if(sheet)sheet.hidden=true;if(back)back.hidden=true;
+}
+$("[data-mobile-view]").forEach(b=>b.onclick=()=>showView(b.dataset.mobileView));
+$("#mobileMoreBtn")?.addEventListener("click",()=>{
+  const sheet=$("#mobileMoreSheet"),back=$("#mobileSheetBackdrop");
+  const open=sheet.hidden;sheet.hidden=!open;back.hidden=!open;
+});
+$("#mobileSheetBackdrop")?.addEventListener("click",closeMobileMore);
 
 function setTheme(v){
   theme=v;pref.set("theme",v);document.documentElement.dataset.theme=v;
