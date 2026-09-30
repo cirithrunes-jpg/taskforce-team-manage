@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101310">
+<title>TASKFORCE Control</title>
+<link rel="stylesheet" href="control.css?v=20260930-finance1">
+</head>
+<body>
+<div id="controlGate" class="gate">
+  <div class="gate-card">
+    <div class="brand-lockup"><div class="brand-mark">TF</div><div><strong>TASKFORCE CONTROL</strong><small>Administração da plataforma</small></div></div>
+    <div id="controlStatus" class="message">Verificando acesso...</div>
+    <form id="controlLoginForm" class="stack" hidden>
+      <label>E-mail<input name="email" type="email" autocomplete="email" required></label>
+      <label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+      <button class="primary" type="submit">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<div class="control-shell" id="controlShell" hidden>
+  <aside class="sidebar">
+    <div class="brand-lockup sidebar-brand"><div class="brand-mark">TF</div><div><strong>TASKFORCE</strong><small>CONTROL</small></div></div>
+    <nav class="nav">
+      <button class="nav-item active" data-view="overview"><span>⌂</span><b>Visão geral</b></button>
+      <button class="nav-item" data-view="finance"><span>▤</span><b>Financeiro</b></button>
+      <button class="nav-item" data-view="teams"><span>◆</span><b>Equipes</b></button>
+      <button class="nav-item" data-view="users"><span>◉</span><b>Usuários</b></button>
+      <button class="nav-item" data-view="support"><span>?</span><b>Suporte</b></button>
+      <button class="nav-item" data-view="app"><span>▣</span><b>Aplicativo</b></button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="environment"><span></span>Produção</div>
+      <button class="ghost" id="controlLogout">Sair</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="controlMenuBtn" aria-label="Abrir menu">☰</button>
+      <div><h1 id="pageTitle">Visão geral</h1><p id="pageSubtitle">Panorama da plataforma TASKFORCE</p></div>
+      <button class="ghost small" id="refreshControl">Atualizar</button>
+    </header>
+
+    <section class="view active" id="view-overview">
+      <div class="hero">
+        <div><span class="eyebrow">PLATAFORMA</span><h2>TASKFORCE Control</h2><p>Acompanhe crescimento, clientes, receita e operação sem misturar a administração central ao app das equipes.</p></div>
+        <div class="hero-badge"><small>BACKEND</small><strong>Supabase</strong><span>Online</span></div>
+      </div>
+      <div class="stats stats-4">
+        <article class="stat"><span>Equipes</span><strong id="ovTeams">—</strong><small id="ovTeams30">— novas em 30 dias</small></article>
+        <article class="stat"><span>Usuários</span><strong id="ovUsers">—</strong><small id="ovUsers30">— novos em 30 dias</small></article>
+        <article class="stat"><span>Assinaturas ativas</span><strong id="ovActiveSubs">—</strong><small>clientes SaaS</small></article>
+        <article class="stat"><span>MRR</span><strong id="ovMrr">—</strong><small>receita recorrente mensal</small></article>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <div class="panel-head"><div><span class="section-kicker">NEGÓCIO</span><h3>Saúde financeira</h3></div><span class="badge">30 DIAS</span></div>
+          <div class="metric-list">
+            <div><span>Receita recebida</span><strong id="ovRevenue30">—</strong></div>
+            <div><span>Pagamentos pendentes</span><strong id="ovPendingPayments">—</strong></div>
+            <div><span>Falhas de pagamento</span><strong id="ovFailedPayments">—</strong></div>
+            <div><span>Cancelamentos</span><strong id="ovCanceled30">—</strong></div>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="section-kicker">OPERAÇÃO</span><h3>Plataforma</h3></div><span class="badge">GLOBAL</span></div>
+          <div class="metric-list">
+            <div><span>Operadores</span><strong id="ovOperators">—</strong></div>
+            <div><span>Administradores</span><strong id="ovAdmins">—</strong></div>
+            <div><span>Termos aceitos</span><strong id="ovTerms">—</strong></div>
+            <div><span>Solicitações de suporte</span><strong id="ovSupport">—</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="view" id="view-finance">
+      <div class="section-head">
+        <div><span class="section-kicker">SAAS BILLING</span><h2>Financeiro</h2><p>Assinaturas, pagamentos, descontos, créditos e retenção.</p></div>
+        <div class="actions"><button class="ghost" data-open="planModal">Novo plano</button><button class="ghost" data-open="discountModal">Novo benefício</button><button class="primary" data-open="subscriptionModal">Registrar assinatura</button></div>
+      </div>
+
+      <div class="stats stats-4">
+        <article class="stat"><span>MRR</span><strong id="finMrr">—</strong><small id="finArr">ARR —</small></article>
+        <article class="stat"><span>Receita 30 dias</span><strong id="finRevenue30">—</strong><small>pagamentos confirmados</small></article>
+        <article class="stat"><span>Assinaturas</span><strong id="finActive">—</strong><small id="finTrials">— em teste</small></article>
+        <article class="stat"><span>Atenção</span><strong id="finPastDue">—</strong><small id="finPaused">— pausadas</small></article>
+      </div>
+
+      <div class="grid-2 finance-grid">
+        <article class="panel">
+          <div class="panel-head"><div><span class="section-kicker">RECEITA</span><h3>Últimos 12 meses</h3></div><span class="badge">BRL</span></div>
+          <div class="bar-chart" id="revenueChart"><div class="empty">Sem pagamentos registrados.</div></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="section-kicker">RETENÇÃO</span><h3>Alertas</h3></div><span class="badge">AÇÃO</span></div>
+          <div class="alert-list">
+            <button data-fin-filter="past_due"><span class="alert-dot danger"></span><span><b id="alertPastDue">0</b> assinaturas em atraso</span><i>›</i></button>
+            <button data-fin-filter="failed"><span class="alert-dot warn"></span><span><b id="alertFailed">0</b> falhas de pagamento em 30 dias</span><i>›</i></button>
+            <button data-fin-filter="paused"><span class="alert-dot info"></span><span><b id="alertPaused">0</b> assinaturas pausadas</span><i>›</i></button>
+            <button data-fin-filter="canceled"><span class="alert-dot"></span><span><b id="alertCanceled">0</b> cancelamentos em 30 dias</span><i>›</i></button>
+          </div>
+        </article>
+      </div>
+
+      <div class="finance-tabs" role="tablist">
+        <button class="active" data-fin-tab="subscriptions">Clientes</button>
+        <button data-fin-tab="payments">Pagamentos</button>
+        <button data-fin-tab="plans">Planos</button>
+        <button data-fin-tab="benefits">Benefícios</button>
+        <button data-fin-tab="retention">Retenção</button>
+      </div>
+
+      <div class="fin-pane active" id="fin-pane-subscriptions">
+        <div class="pane-head"><div><h3>Quem comprou o TASKFORCE</h3><p>Uma assinatura atual por equipe. Histórico permanece preservado após cancelamento.</p></div><input id="subscriptionSearch" class="search" placeholder="Buscar equipe ou plano..."></div>
+        <div id="subscriptionsTable" class="table-wrap"></div>
+      </div>
+
+      <div class="fin-pane" id="fin-pane-payments">
+        <div class="pane-head"><div><h3>Pagamentos</h3><p>Registro financeiro da plataforma. Integrações automáticas podem alimentar esta mesma estrutura.</p></div><button class="primary" data-open="paymentModal">Registrar pagamento</button></div>
+        <div id="paymentsTable" class="table-wrap"></div>
+      </div>
+
+      <div class="fin-pane" id="fin-pane-plans">
+        <div class="pane-head"><div><h3>Planos</h3><p>Preços ficam separados da assinatura para permitir evolução sem perder o histórico.</p></div><button class="primary" data-open="planModal">Novo plano</button></div>
+        <div id="plansGrid" class="card-grid"></div>
+      </div>
+
+      <div class="fin-pane" id="fin-pane-benefits">
+        <div class="pane-head"><div><h3>Benefícios e descontos</h3><p>Cupons percentuais ou fixos, temporários ou recorrentes, com validade e limite de uso.</p></div><div class="actions"><button class="ghost" data-open="creditModal">Conceder crédito</button><button class="primary" data-open="discountModal">Novo benefício</button></div></div>
+        <div id="discountsGrid" class="card-grid"></div>
+        <article class="panel subtle-panel"><div class="panel-head"><div><span class="section-kicker">CRÉDITOS</span><h3>Saldo concedido</h3></div><strong id="creditBalance">—</strong></div><p class="meta">Créditos podem ser usados em campanhas, indicação, retenção e ajustes administrativos sem alterar permanentemente o preço do plano.</p></article>
+      </div>
+
+      <div class="fin-pane" id="fin-pane-retention">
+        <div class="grid-2">
+          <article class="panel">
+            <div class="panel-head"><div><span class="section-kicker">CHURN</span><h3>Motivos de cancelamento</h3></div><span class="badge">HISTÓRICO</span></div>
+            <div id="cancellationReasons" class="reason-list"><div class="empty">Nenhum motivo registrado.</div></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><span class="section-kicker">BOAS PRÁTICAS</span><h3>Ferramentas de retenção</h3></div></div>
+            <div class="practice-list">
+              <div><span>Ⅱ</span><p><b>Pausa</b><small>Evite cancelamento definitivo quando a equipe ficar temporariamente inativa.</small></p></div>
+              <div><span>↻</span><p><b>Recuperação de pagamento</b><small>Mantenha período de graça antes de suspender por falha temporária.</small></p></div>
+              <div><span>◇</span><p><b>Créditos seletivos</b><small>Use benefícios pontuais em vez de reduzir o preço para todos.</small></p></div>
+              <div><span>?</span><p><b>Motivo de saída</b><small>Registre por que o cliente cancelou para orientar produto e preço.</small></p></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-teams">
+      <div class="section-head"><div><h2>Equipes</h2><p>Visão administrativa das equipes cadastradas.</p></div><input id="teamSearch" class="search" placeholder="Buscar equipe..."></div>
+      <div id="teamsTable" class="table-wrap"></div>
+    </section>
+
+    <section class="view" id="view-users">
+      <div class="section-head"><div><h2>Usuários</h2><p>Indicadores de cadastro e ativação.</p></div></div>
+      <div class="stats stats-4">
+        <article class="stat"><span>Confirmados</span><strong id="userConfirmed">—</strong></article>
+        <article class="stat"><span>Não confirmados</span><strong id="userUnconfirmed">—</strong></article>
+        <article class="stat"><span>Com perfil</span><strong id="userProfile">—</strong></article>
+        <article class="stat"><span>Sem equipe</span><strong id="userNoTeam">—</strong></article>
+      </div>
+    </section>
+
+    <section class="view" id="view-support">
+      <div class="section-head"><div><h2>Suporte</h2><p>Mensagens enviadas pelos usuários em Configurações → Contato com a plataforma.</p></div></div>
+      <div id="supportTable" class="table-wrap"></div>
+    </section>
+
+    <section class="view" id="view-app">
+      <div class="section-head"><div><h2>Aplicativo</h2><p>Estado técnico e integrações da plataforma.</p></div></div>
+      <div class="grid-2">
+        <article class="panel"><h3>Produção</h3><div class="metric-list"><div><span>Backend</span><strong>Supabase</strong></div><div><span>Frontend</span><strong>Cloudflare Pages</strong></div><div><span>Ambiente</span><strong>Produção</strong></div></div></article>
+        <article class="panel"><h3>Billing provider</h3><p class="meta">Nenhum provedor de cobrança foi conectado ainda. O módulo financeiro foi criado de forma independente do provedor para permitir integração futura com Pix/cartão sem reconstruir o histórico.</p></article>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="planModal" class="modal"><form method="dialog" id="planForm">
+  <div class="modal-head"><div><small>CATÁLOGO</small><h3>Novo plano</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="form-grid">
+    <label>Nome<input name="name" required maxlength="120" placeholder="Ex.: TASKFORCE Team"></label>
+    <label>Código<input name="code" required maxlength="80" placeholder="team-monthly"></label>
+    <label>Preço (R$)<input name="price" type="number" step="0.01" min="0" required></label>
+    <label>Cobrança<select name="interval"><option value="monthly">Mensal</option><option value="yearly">Anual</option></select></label>
+    <label>Dias de teste<input name="trial_days" type="number" min="0" max="365" value="0"></label>
+  </div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Salvar plano</button></div>
+  <div class="form-status" id="planStatus"></div>
+</form></dialog>
+
+<dialog id="discountModal" class="modal"><form method="dialog" id="discountForm">
+  <div class="modal-head"><div><small>BENEFÍCIO</small><h3>Novo desconto</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="form-grid">
+    <label>Nome<input name="name" required maxlength="140" placeholder="Ex.: Lançamento"></label>
+    <label>Código<input name="code" required maxlength="80" placeholder="LANCAMENTO20"></label>
+    <label>Tipo<select name="kind" id="discountKind"><option value="percent">Percentual</option><option value="fixed">Valor fixo</option></select></label>
+    <label>Valor<input name="value" type="number" step="0.01" min="0.01" required></label>
+    <label>Duração<select name="duration" id="discountDuration"><option value="once">Uma cobrança</option><option value="repeating">Por alguns ciclos</option><option value="forever">Enquanto a assinatura existir</option></select></label>
+    <label>Ciclos máximos<input name="max_cycles" id="discountCycles" type="number" min="1" placeholder="Ex.: 3"></label>
+    <label>Limite de usos<input name="max_redemptions" type="number" min="1" placeholder="Sem limite"></label>
+    <label>Válido até<input name="valid_until" type="date"></label>
+  </div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Criar benefício</button></div>
+  <div class="form-status" id="discountStatus"></div>
+</form></dialog>
+
+<dialog id="subscriptionModal" class="modal"><form method="dialog" id="subscriptionForm">
+  <div class="modal-head"><div><small>CLIENTE</small><h3>Registrar assinatura</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="form-grid">
+    <label>Equipe<select name="team_id" id="subscriptionTeam" required></select></label>
+    <label>Plano<select name="plan_id" id="subscriptionPlan" required></select></label>
+    <label>Benefício<select name="discount_id" id="subscriptionDiscount"><option value="">Sem benefício</option></select></label>
+    <label>Status<select name="status"><option value="active">Ativa</option><option value="trialing">Em teste</option><option value="paused">Pausada</option><option value="past_due">Em atraso</option></select></label>
+    <label>Origem<select name="provider"><option value="manual">Manual</option><option value="mercadopago">Mercado Pago</option><option value="paddle">Paddle</option><option value="stripe">Stripe</option><option value="google_play">Google Play</option></select></label>
+  </div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Registrar</button></div>
+  <div class="form-status" id="subscriptionStatus"></div>
+</form></dialog>
+
+<dialog id="paymentModal" class="modal"><form method="dialog" id="paymentForm">
+  <div class="modal-head"><div><small>TRANSAÇÃO</small><h3>Registrar pagamento</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="form-grid">
+    <label>Assinatura<select name="subscription_id" id="paymentSubscription" required></select></label>
+    <label>Valor (R$)<input name="amount" type="number" min="0" step="0.01" required></label>
+    <label>Status<select name="status"><option value="paid">Pago</option><option value="pending">Pendente</option><option value="failed">Falhou</option><option value="refunded">Reembolsado</option></select></label>
+    <label>Origem<select name="provider"><option value="manual">Manual</option><option value="mercadopago">Mercado Pago</option><option value="paddle">Paddle</option><option value="stripe">Stripe</option><option value="google_play">Google Play</option></select></label>
+  </div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Registrar pagamento</button></div>
+  <div class="form-status" id="paymentStatus"></div>
+</form></dialog>
+
+<dialog id="creditModal" class="modal"><form method="dialog" id="creditForm">
+  <div class="modal-head"><div><small>CRÉDITO</small><h3>Conceder crédito</h3></div><button value="cancel" class="icon-btn">×</button></div>
+  <div class="form-grid">
+    <label>Equipe<select name="team_id" id="creditTeam" required></select></label>
+    <label>Valor (R$)<input name="amount" type="number" min="0.01" step="0.01" required></label>
+    <label>Origem<select name="source"><option value="campaign">Campanha</option><option value="referral">Indicação</option><option value="retention">Retenção</option><option value="manual">Manual</option><option value="adjustment">Ajuste</option></select></label>
+    <label class="wide">Motivo<input name="reason" minlength="3" maxlength="280" required placeholder="Ex.: Crédito por indicação"></label>
+    <label>Expira em<input name="expires_at" type="date"></label>
+  </div>
+  <div class="modal-actions"><button value="cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Conceder crédito</button></div>
+  <div class="form-status" id="creditStatus"></div>
+</form></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js?v=20260929-1700"></script>
+<script src="control.js?v=20260930-finance1"></script>
+</body>
+</html>
