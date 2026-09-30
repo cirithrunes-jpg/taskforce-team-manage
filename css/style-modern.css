@@ -143,3 +143,21 @@ body[data-role="operator"] .admin-only{display:none!important}
   text-decoration:none;
 }
 .auth-link:hover{text-decoration:underline}
+
+/* Platform contact panel */
+.platform-contact-panel{grid-column:1/-1}
+.platform-contact-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.platform-contact-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:12px;background:color-mix(in srgb,var(--brand) 13%,var(--surface));color:var(--brand-strong);font-weight:900;font-size:18px}
+.platform-contact-head h3{margin:1px 0 4px}
+.platform-contact-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.platform-contact-form{display:grid;grid-template-columns:220px 1fr;gap:11px}
+.platform-contact-form label:last-of-type{grid-column:1/-1}
+.platform-contact-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.platform-contact-status{min-height:18px;color:var(--muted);font-size:11px;line-height:1.4}
+.platform-contact-status.success{color:#5f8f65}.platform-contact-status.error{color:var(--danger)}
+@media(max-width:700px){
+  .platform-contact-form{grid-template-columns:1fr}
+  .platform-contact-form label:last-of-type,.platform-contact-actions{grid-column:auto}
+  .platform-contact-actions{align-items:stretch;flex-direction:column}
+  .platform-contact-actions .primary{width:100%}
+}
