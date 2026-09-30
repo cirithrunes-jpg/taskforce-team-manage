@@ -133,3 +133,195 @@ body[data-role="operator"] .admin-only{display:none!important}
 }
 @media(max-width:390px){.home-summary-card{grid-template-columns:auto 1fr}.home-summary-card .card-chevron{display:none}.quick-actions{grid-template-columns:1fr}.mobile-nav-item small{font-size:8px}}
 @media print{.sidebar,.topbar,.mobile-nav,.modal-actions,.status-chip{display:none!important}.main{padding:0;max-width:none}.view{display:none!important}.view.active{display:block!important}body{background:#fff;color:#111}}
+
+
+/* Chat messenger — familiar WhatsApp-like conversation layout */
+.chat-whatsapp{
+  --wa-green:#128c7e;
+  --wa-green-dark:#075e54;
+  --wa-send:#25d366;
+  --wa-paper:#efeae2;
+  --wa-in:#ffffff;
+  --wa-out:#d9fdd3;
+  --wa-text:#111b21;
+  --wa-muted:#667781;
+  height:min(720px,calc(100dvh - 126px));
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  overflow:hidden;
+  border:1px solid #d7ddd8;
+  border-radius:18px;
+  background:var(--wa-paper);
+  box-shadow:0 10px 34px rgba(17,27,33,.10);
+}
+:root[data-theme="dark"] .chat-whatsapp{
+  --wa-paper:#0b141a;
+  --wa-in:#202c33;
+  --wa-out:#005c4b;
+  --wa-text:#e9edef;
+  --wa-muted:#8696a0;
+  border-color:#2a3942;
+}
+.chat-whatsapp .chat-head{
+  min-height:62px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:9px 14px;
+  border:0;
+  background:var(--wa-green-dark);
+  color:#fff;
+}
+.chat-whatsapp .chat-team-crest{
+  width:42px;height:42px;flex:0 0 42px;
+  display:grid;place-items:center;overflow:hidden;
+  border-radius:50%;border:2px solid rgba(255,255,255,.22);
+  background:#e8f0ec;color:var(--wa-green-dark);font-weight:900;
+}
+.chat-whatsapp .chat-team-crest img{width:100%;height:100%;object-fit:contain;background:#fff}
+.chat-head-copy{min-width:0;flex:1}
+.chat-whatsapp .chat-head strong{display:block;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-whatsapp .chat-head small{display:block;margin-top:3px;color:rgba(255,255,255,.78);font-size:10px}
+.chat-head-dot{width:8px;height:8px;border-radius:50%;background:#8de09a;box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+.chat-whatsapp .chat-messages{
+  position:relative;
+  overflow:auto;
+  padding:14px 14px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  overscroll-behavior:contain;
+  background-color:var(--wa-paper);
+  background-image:
+    radial-gradient(circle at 20px 20px,rgba(17,27,33,.035) 1.2px,transparent 1.3px),
+    radial-gradient(circle at 60px 55px,rgba(17,27,33,.025) 1px,transparent 1.1px);
+  background-size:80px 80px;
+}
+:root[data-theme="dark"] .chat-whatsapp .chat-messages{
+  background-image:
+    radial-gradient(circle at 20px 20px,rgba(255,255,255,.025) 1.2px,transparent 1.3px),
+    radial-gradient(circle at 60px 55px,rgba(255,255,255,.018) 1px,transparent 1.1px);
+}
+.chat-loading{margin:auto;color:var(--wa-muted);font-size:12px}
+.chat-date-separator{
+  align-self:center;
+  margin:9px 0 7px;
+  padding:5px 9px;
+  border-radius:7px;
+  background:rgba(255,255,255,.78);
+  color:#54656f;
+  font-size:10px;
+  box-shadow:0 1px 1px rgba(0,0,0,.05);
+}
+:root[data-theme="dark"] .chat-date-separator{background:#182229;color:#aebac1}
+.chat-whatsapp .chat-line{display:flex;margin:1px 0}
+.chat-whatsapp .chat-line.mine{justify-content:flex-end}
+.chat-whatsapp .chat-bubble{
+  position:relative;
+  max-width:min(78%,560px);
+  padding:7px 9px 5px;
+  border:0;
+  border-radius:7px;
+  background:var(--wa-in);
+  color:var(--wa-text);
+  box-shadow:0 1px 1px rgba(0,0,0,.09);
+}
+.chat-whatsapp .chat-line:not(.mine) .chat-bubble{border-top-left-radius:2px}
+.chat-whatsapp .chat-line.mine .chat-bubble{
+  background:var(--wa-out);
+  border:0;
+  border-top-right-radius:2px;
+}
+.chat-whatsapp .chat-bubble strong{
+  display:block;
+  margin:0 0 2px;
+  color:#1f7a6e;
+  font-size:10px;
+  font-weight:800;
+}
+:root[data-theme="dark"] .chat-whatsapp .chat-bubble strong{color:#53bdeb}
+.chat-whatsapp .chat-line.mine .chat-bubble strong{display:none}
+.chat-whatsapp .chat-bubble p{
+  margin:0;
+  padding-right:42px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  color:var(--wa-text);
+  font-size:13px;
+  line-height:1.36;
+}
+.chat-whatsapp .chat-bubble small{
+  position:absolute;
+  right:7px;
+  bottom:4px;
+  margin:0;
+  color:var(--wa-muted);
+  font-size:8.5px;
+  line-height:1;
+}
+.chat-whatsapp .chat-compose{
+  display:grid;
+  grid-template-columns:1fr 46px;
+  align-items:end;
+  gap:8px;
+  padding:8px 10px 9px;
+  border:0;
+  background:#f0f2f5;
+}
+:root[data-theme="dark"] .chat-whatsapp .chat-compose{background:#202c33}
+.chat-input-wrap{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  padding:0 4px 0 12px;
+  border-radius:22px;
+  background:#fff;
+}
+:root[data-theme="dark"] .chat-input-wrap{background:#2a3942}
+.chat-whatsapp .chat-compose textarea{
+  width:100%;
+  min-height:42px;
+  max-height:110px;
+  resize:none;
+  overflow-y:auto;
+  padding:11px 7px;
+  border:0;
+  border-radius:0;
+  outline:0;
+  background:transparent;
+  color:var(--wa-text);
+  box-shadow:none;
+}
+.chat-whatsapp .chat-compose textarea::placeholder{color:#8696a0}
+.chat-send{
+  width:46px;height:46px;
+  display:grid;place-items:center;
+  border:0;border-radius:50%;
+  background:var(--wa-green);
+  color:#fff;
+  font-size:19px;
+  line-height:1;
+  box-shadow:0 2px 8px rgba(7,94,84,.20);
+}
+.chat-send:hover{background:#0f7f73}
+.chat-send:active{transform:scale(.97)}
+.chat-send span{transform:translateX(1px)}
+@media(max-width:700px){
+  #view-chat{margin:0 -12px}
+  .chat-whatsapp{
+    height:calc(100dvh - 124px);
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+  }
+  .chat-whatsapp .chat-head{min-height:58px;padding:8px 11px}
+  .chat-whatsapp .chat-team-crest{width:40px;height:40px;flex-basis:40px}
+  .chat-whatsapp .chat-messages{padding:10px 8px 14px}
+  .chat-whatsapp .chat-bubble{max-width:86%}
+  .chat-whatsapp .chat-compose{
+    grid-template-columns:1fr 44px;
+    gap:7px;
+    padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+  }
+  .chat-send{width:44px;height:44px}
+}
