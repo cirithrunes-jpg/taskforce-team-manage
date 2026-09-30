@@ -13,6 +13,27 @@ if(!window.supabase||!C.supabaseUrl||!C.supabasePublishableKey){
 const db=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const state={session:null,overview:{},users:{},teams:[],finance:{},plans:[],discounts:[],subscriptions:[],payments:[],credits:[],cancellations:[],support:[]};
 
+function installDialogSafety(){
+  document.addEventListener("click",e=>{
+    const closeBtn=e.target.closest("[data-dialog-close]");
+    if(closeBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      closeBtn.closest("dialog")?.close("cancel");
+      return;
+    }
+    const dlg=e.target.closest("dialog");
+    if(dlg&&e.target===dlg)dlg.close("cancel");
+  });
+  $("dialog").forEach(dlg=>{
+    dlg.addEventListener("cancel",e=>{
+      e.preventDefault();
+      dlg.close("cancel");
+    });
+  });
+}
+installDialogSafety();
+
 async function rest(path,{method="GET",body=null,prefer=""}={}){
   const token=state.session?.access_token;if(!token)throw new Error("Sessão não autenticada.");
   const headers={"apikey":C.supabasePublishableKey,"Authorization":"Bearer "+token};
