@@ -4,12 +4,13 @@ const db=window.TASKFORCE_DB;
 let team={},operators=[],games=[],fields=[],membership=null,currentProfile=null;
 let pendingTeamLogoData=null;
 let billingSettings=null,monthlyFees=[],adminEmails=[],termAcceptances=[];
+let chatMessages=[],chatChannel=null;
 let lang=pref.get("lang","pt"),theme=pref.get("theme","dark");
 
 const titles={
 command:["command","commandSubtitle"],operators:["operators","operatorsSubtitle"],calendar:["calendar","calendarSubtitle"],
 fields:["fields","fieldsSubtitle"],finance:["finance","financeSubtitle"],documents:["documents","documentsSubtitle"],
-contacts:["contacts","contactsSubtitle"],settings:["settings","settingsSubtitle"]
+contacts:["contacts","contactsSubtitle"],chat:["Chat da equipe","Conversa geral em tempo real"],settings:["settings","settingsSubtitle"]
 };
 
 function t(key){return (window.I18N[lang]&&window.I18N[lang][key])||window.I18N.pt[key]||key}
@@ -147,10 +148,50 @@ function renderTeam(){
   $("#teamNameSide").textContent=name;
   $("#heroTeamName").textContent=name;
   $("#teamCitySide").textContent=team.city||t("registerTeam");
+  if($("#chatTeamName"))$("#chatTeamName").textContent=team.name||"Equipe";
   const logo=team.logoData||"";
   setLogoImage("#teamLogoSide","#teamLogoFallback",logo,(team.acronym||team.name||"T").slice(0,2).toUpperCase());
   setLogoImage("#teamLogoHero","#teamLogoHeroFallback",logo,(team.acronym||"TF").slice(0,3).toUpperCase());
 }
+function chatAuthorName(userId){
+  if(currentProfile?.user_id===userId)return currentProfile.callsign||currentProfile.name||"Você";
+  const o=operators.find(x=>(x.user_id||x.id)===userId);
+  return o?.callsign||o?.name||"Integrante";
+}
+function renderChat(){
+  const root=$("#chatMessages");if(!root)return;
+  $("#chatTeamName").textContent=team.name||"Equipe";
+  setLogoImage("#chatTeamLogo","#chatTeamFallback",team.logoData||"",(team.acronym||"TF").slice(0,3).toUpperCase());
+  if(!chatMessages.length){root.innerHTML='<div class="empty">Nenhuma mensagem ainda. Inicie a conversa da equipe.</div>';return}
+  const myId=currentProfile?.user_id;
+  root.innerHTML=chatMessages.map(m=>{
+    const mine=m.user_id===myId;
+    const dt=new Date(m.created_at);
+    const when=dt.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    return '<div class="chat-line '+(mine?"mine":"")+'"><div class="chat-bubble"><strong>'+esc(mine?"Você":chatAuthorName(m.user_id))+'</strong><p>'+esc(m.body)+'</p><small>'+esc(when)+'</small></div></div>';
+  }).join("");
+  root.scrollTop=root.scrollHeight;
+}
+async function loadChat(){
+  if(!membership?.team_id)return;
+  const {data,error}=await db.from("team_chat_messages").select("id,team_id,user_id,body,created_at").eq("team_id",membership.team_id).order("created_at",{ascending:true}).limit(200);
+  if(error){console.error("chat load",error);return}
+  chatMessages=data||[];renderChat();
+  if(chatChannel)await db.removeChannel(chatChannel);
+  chatChannel=db.channel("team-chat-"+membership.team_id)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"team_chat_messages",filter:"team_id=eq."+membership.team_id},payload=>{
+      if(!chatMessages.some(x=>x.id===payload.new.id)){chatMessages.push(payload.new);renderChat()}
+    }).subscribe();
+}
+$("#chatForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const input=$("#chatInput"),body=input.value.trim();if(!body||!membership?.team_id)return;
+  const {data:{user}}=await db.auth.getUser();if(!user)return;
+  const {data,error}=await db.from("team_chat_messages").insert({team_id:membership.team_id,user_id:user.id,body}).select("id,team_id,user_id,body,created_at").single();
+  if(error){alert("Não foi possível enviar a mensagem.");console.error(error);return}
+  input.value="";
+  if(data&&!chatMessages.some(x=>x.id===data.id)){chatMessages.push(data);renderChat()}
+});
 function renderOperators(){
   const root=$("#operatorsList");
   $("#statOperators").textContent=membership?.role==="admin"?operators.length:"—";
@@ -499,7 +540,7 @@ async function loadTeamData(detail){
     try{await loadAdminMembers()}catch(err){console.error("Operadores:",err)}
   }
   renderAll();
-  await Promise.all([loadFinanceData(),loadTermDocuments()]);
+  await Promise.all([loadFinanceData(),loadTermDocuments(),loadChat()]);
 }
 window.addEventListener("taskforce:auth-ready",e=>loadTeamData(e.detail));
 if(window.TASKFORCE_AUTH?.state?.membership)loadTeamData(window.TASKFORCE_AUTH.state);
