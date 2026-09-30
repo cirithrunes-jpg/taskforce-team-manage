@@ -93,11 +93,11 @@ function togglePassword(btn,input){
   };
 }
 
-function renderLogin(tab="login"){
+function renderLogin(tab=inviteToken?"signup":"login"){
   setGate(
     '<div class="auth-card">'+
       '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>TASKFORCE</strong><small>Acesso seguro</small></div></div>'+
-      (inviteToken?'<div class="invite-banner">Este link contém a chave da equipe que convidou você.</div>':'')+
+      (inviteToken?'<div class="invite-banner"><strong>Você recebeu um convite para uma equipe.</strong><br>Se ainda não tem conta no TASKFORCE, use <b>Criar conta</b> com o mesmo e-mail que recebeu o convite.</div>':'')+
       '<div class="auth-tabs"><button id="tabLogin" class="auth-tab">Entrar</button><button id="tabSignup" class="auth-tab">Criar conta</button></div>'+
       '<div id="authStatus" class="auth-message">Conexão pronta.</div>'+
       '<form id="loginForm" class="auth-form">'+
@@ -127,7 +127,13 @@ function renderLogin(tab="login"){
     signupForm.classList.toggle("hidden",isLogin);
     tabLogin.classList.toggle("active",isLogin);
     tabSignup.classList.toggle("active",!isLogin);
-    status("Conexão pronta.");
+    if(inviteToken){
+      status(isLogin
+        ?"Se você já possui uma conta, entre normalmente. Ela precisa usar o mesmo e-mail do convite."
+        :"Primeira entrada? Crie sua conta usando exatamente o mesmo e-mail que recebeu o convite.");
+    }else{
+      status("Conexão pronta.");
+    }
   }
   tabLogin.onclick=()=>switchTab("login");
   tabSignup.onclick=()=>switchTab("signup");
@@ -154,7 +160,7 @@ function renderLogin(tab="login"){
       }));
       if(error){
         const lower=String(error.message||"").toLowerCase();
-        if(lower.includes("invalid login credentials")) throw new Error("E-mail ou senha incorretos.");
+        if(lower.includes("invalid login credentials")) throw new Error(inviteToken?"E-mail ou senha incorretos. Se esta é sua primeira entrada, use a aba Criar conta.":"E-mail ou senha incorretos.");
         if(lower.includes("email not confirmed")) throw new Error("E-mail ainda não confirmado.");
         throw error;
       }
@@ -194,7 +200,7 @@ function renderLogin(tab="login"){
         status("Conta criada e login confirmado.","success");
         setTimeout(()=>continueAfterLogin(data.session),350);
       }else{
-        status("Conta criada. Confirme o e-mail e depois use a aba Entrar.","success");
+        status(inviteToken?"Conta criada. Confirme o e-mail pelo link recebido; depois o TASKFORCE continuará o convite automaticamente.":"Conta criada. Confirme o e-mail e depois use a aba Entrar.","success");
         button.disabled=false;
       }
     }catch(err){
