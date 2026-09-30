@@ -17,7 +17,7 @@ function t(key){return (window.I18N[lang]&&window.I18N[lang][key])||window.I18N.
 function esc(v){return String(v||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function translate(){
   document.documentElement.lang=lang==="pt"?"pt-BR":lang;
-  $("[data-i18n]").forEach(el=>{const v=t(el.dataset.i18n);if(v)el.textContent=v});
+  $$("[data-i18n]").forEach(el=>{const v=t(el.dataset.i18n);if(v)el.textContent=v});
   $("#languageSelect").value=lang;
   updateHeader($(".nav-item.active")?.dataset.view||"command");
   renderAll();
@@ -34,7 +34,7 @@ function showView(view){
   document.querySelector('.nav-item[data-view="'+view+'"]')?.classList.add("active");
   updateHeader(view);
   $("#sidebar").classList.remove("open");
-  $(".mobile-nav-item[data-mobile-view]").forEach(v=>v.classList.toggle("active",v.dataset.mobileView===view));
+  $$(".mobile-nav-item[data-mobile-view]").forEach(v=>v.classList.toggle("active",v.dataset.mobileView===view));
   closeMobileMore();
 }
 $$(".nav-item").forEach(b=>b.onclick=()=>showView(b.dataset.view));
@@ -44,7 +44,7 @@ function closeMobileMore(){
   const sheet=$("#mobileMoreSheet"),back=$("#mobileSheetBackdrop");
   if(sheet)sheet.hidden=true;if(back)back.hidden=true;
 }
-$("[data-mobile-view]").forEach(b=>b.onclick=()=>showView(b.dataset.mobileView));
+$$("[data-mobile-view]").forEach(b=>b.onclick=()=>showView(b.dataset.mobileView));
 $("#mobileMoreBtn")?.addEventListener("click",()=>{
   const sheet=$("#mobileMoreSheet"),back=$("#mobileSheetBackdrop");
   const open=sheet.hidden;sheet.hidden=!open;back.hidden=!open;
@@ -353,21 +353,21 @@ function renderFinance(){
     return '<article class="card-row finance-fee"><div><h3>'+esc(name)+'</h3><div class="meta">Valor: '+money(f.amount)+' • Vencimento: '+formatDate(f.due_date)+'</div><div class="meta">Status: <strong>'+billingStatusLabel(f.status)+'</strong>'+(f.payment_date?' • Pagamento: '+formatDate(f.payment_date):'')+'</div></div><div class="fee-actions">'+actions.join("")+'</div></article>';
   }).join("");
 
-  $("[data-submit-payment]").forEach(b=>b.onclick=()=>{
+  $$("[data-submit-payment]").forEach(b=>b.onclick=()=>{
     const form=$("#paymentSubmitForm");
     form.reset();form.elements.fee_id.value=b.dataset.submitPayment;
     form.elements.payment_date.value=new Date().toISOString().slice(0,10);
     openDialog("#paymentSubmitModal");
   });
-  $("[data-paid]").forEach(b=>b.onclick=()=>confirmFeePaid(b.dataset.paid,true));
-  $("[data-exempt]").forEach(b=>b.onclick=()=>setFeeExempt(b.dataset.exempt,true));
-  $("[data-reopen]").forEach(b=>b.onclick=async()=>{
+  $$("[data-paid]").forEach(b=>b.onclick=()=>confirmFeePaid(b.dataset.paid,true));
+  $$("[data-exempt]").forEach(b=>b.onclick=()=>setFeeExempt(b.dataset.exempt,true));
+  $$("[data-reopen]").forEach(b=>b.onclick=async()=>{
     const id=b.dataset.reopen;
     const fee=fees.find(x=>x.id===id);
     if(fee?.status==="exempt")await setFeeExempt(id,false);
     else await confirmFeePaid(id,false);
   });
-  $("[data-receipt]").forEach(b=>b.onclick=()=>openReceipt(b.dataset.receipt));
+  $$("[data-receipt]").forEach(b=>b.onclick=()=>openReceipt(b.dataset.receipt));
 }
 async function openReceipt(path){
   try{
@@ -503,7 +503,7 @@ function renderTermDocuments(){
     const title=isAdmin?(p.name||p.callsign||"Operador"):"Meu termo de responsabilidade";
     return '<article class="card-row"><div><h3>'+esc(title)+'</h3><div class="meta">Aceito em '+esc(termDate(a.accepted_at))+' • '+esc(a.term_version||"")+'</div></div><button class="ghost small" data-term-acceptance="'+esc(a.id)+'">Ver cópia</button></article>';
   }).join("");
-  $("[data-term-acceptance]").forEach(b=>b.onclick=()=>showAcceptedTerm(b.dataset.termAcceptance));
+  $$("[data-term-acceptance]").forEach(b=>b.onclick=()=>showAcceptedTerm(b.dataset.termAcceptance));
 }
 async function loadTermDocuments(){
   try{
