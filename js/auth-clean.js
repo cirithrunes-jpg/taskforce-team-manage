@@ -181,7 +181,7 @@ function renderProfileForm(user,existing={}){
         '<label><span>Telefone</span><input name="phone" required></label>'+
         '<label class="wide"><span>Endereço</span><input name="address" required></label>'+
         '<label><span>Codinome</span><input name="callsign"></label>'+
-        '<label><span>Função na equipe</span><select name="role"><option>Assault</option><option>Suporte</option><option>Comunicação</option><option>Observador</option><option>Apoio médico</option><option>Liderança</option><option>Outra</option></select></label>'+
+        '<label><span>Função na equipe</span><select name="role"><option>Assault</option><option>Sniper</option><option>DMR</option><option>Suporte</option><option>Outra</option></select></label>'+
         '<label><span>Tipo sanguíneo</span><select name="blood"><option value="">Não informado</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></label>'+
         '<label><span>Contato de emergência</span><input name="emergency" required></label>'+
         '<label><span>Telefone de emergência</span><input name="emergencyPhone" required></label>'+
