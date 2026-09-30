@@ -230,3 +230,21 @@ body[data-role="operator"] .operator-no-access{display:none!important}
   .birthday-settings-actions{grid-column:1/-1;flex-direction:column;align-items:stretch}
   .birthday-settings-actions .primary{width:100%}
 }
+
+/* Dialog safety / scrollability */
+.modal{
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.modal .modal-head{
+  position:sticky;
+  top:0;
+  z-index:4;
+  background:var(--surface);
+}
+.modal .icon-btn{
+  flex:0 0 auto;
+  position:relative;
+  z-index:5;
+}
