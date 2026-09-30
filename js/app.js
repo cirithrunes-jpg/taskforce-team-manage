@@ -39,7 +39,7 @@ function updateHeader(view){
 }
 function showView(view){
   if(membership?.role==="operator"&&view==="documents")return;
-  $(".view").forEach(v=>v.classList.remove("active"));
+  $$(".view").forEach(v=>v.classList.remove("active"));
   $$(".nav-item").forEach(v=>v.classList.remove("active"));
   $("#view-"+view)?.classList.add("active");
   document.querySelector('.nav-item[data-view="'+view+'"]')?.classList.add("active");
