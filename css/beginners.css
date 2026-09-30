@@ -1,0 +1,53 @@
+/* Airsoft para Iniciantes — demo learning journey */
+.beginner-home-card{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:13px;padding:16px;border:1px solid color-mix(in srgb,var(--brand) 30%,var(--line));border-radius:var(--radius);background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 9%,var(--surface)),var(--surface));color:var(--text);text-align:left;box-shadow:var(--shadow)}
+.beginner-home-card:hover,.more-card-featured:hover{border-color:color-mix(in srgb,var(--brand) 55%,var(--line))}
+.beginner-home-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:var(--brand);color:#fff;font-size:21px}
+.beginner-home-copy{min-width:0}.beginner-home-copy small,.beginner-home-copy strong,.beginner-home-copy span{display:block}.beginner-home-copy small{font-size:9px;letter-spacing:.11em;color:var(--brand-strong);font-weight:900}.beginner-home-copy strong{margin:3px 0;font-size:15px}.beginner-home-copy span{font-size:11px;color:var(--muted)}.beginner-home-card>b{font-size:26px;color:var(--muted)}
+.more-card-featured{grid-column:1/-1;border-color:color-mix(in srgb,var(--brand) 28%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 8%,var(--surface)),var(--surface))}
+.beginner-shell{max-width:980px;margin:0 auto}
+.beginner-hero{display:grid;grid-template-columns:1.35fr .75fr;gap:16px;align-items:stretch;padding:26px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 12%,var(--surface)),var(--surface) 60%);box-shadow:var(--shadow)}
+.beginner-kicker{display:block;font-size:10px;letter-spacing:.14em;font-weight:900;color:var(--brand-strong)}
+.beginner-hero h2{margin:7px 0 8px;font-size:32px;line-height:1.05}.beginner-hero p{margin:0;color:var(--muted);max-width:620px;line-height:1.5}
+.beginner-progress-card{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.beginner-progress-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.beginner-progress-top span{font-size:11px;color:var(--muted)}.beginner-progress-top strong{font-size:17px}
+.beginner-progress-track{height:8px;margin:9px 0;border-radius:999px;background:var(--surface-2);overflow:hidden}.beginner-progress-track span{display:block;width:0;height:100%;border-radius:inherit;background:var(--brand);transition:width .25s ease}.beginner-progress-card small{color:var(--muted);font-size:10px}
+.beginner-notice{display:flex;gap:10px;align-items:flex-start;margin:12px 0 18px;padding:11px 13px;border-radius:14px;background:var(--surface-2);color:var(--muted);font-size:11px;line-height:1.5}.beginner-notice>span{width:22px;height:22px;display:grid;place-items:center;flex:0 0 22px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900}.beginner-notice p{margin:2px 0 0}
+.beginner-roadmap{display:grid;gap:9px}
+.lesson-card{width:100%;display:grid;grid-template-columns:48px 1fr auto;gap:13px;align-items:center;min-height:86px;padding:13px 15px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text);text-align:left;box-shadow:0 4px 18px rgba(0,0,0,.035);transition:.15s ease}
+button.lesson-card:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.lesson-card.is-done{border-color:color-mix(in srgb,var(--brand) 30%,var(--line));background:color-mix(in srgb,var(--brand) 5%,var(--surface))}
+.lesson-number{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--surface-2);color:var(--brand-strong);font-size:12px;font-weight:900}.lesson-card.is-done .lesson-number{background:var(--brand);color:#fff}
+.lesson-card-copy{min-width:0}.lesson-card-copy small,.lesson-card-copy strong,.lesson-card-copy span{display:block}.lesson-card-copy small{font-size:9px;letter-spacing:.1em;color:var(--brand-strong);font-weight:850}.lesson-card-copy strong{margin:3px 0;font-size:15px}.lesson-card-copy span{color:var(--muted);font-size:11px}
+.lesson-status{padding:6px 9px;border-radius:999px;background:var(--surface-2);color:var(--brand-strong);font-size:10px;font-weight:800}.lesson-status.is-done{background:color-mix(in srgb,var(--brand) 15%,var(--surface));color:var(--brand-strong)}
+.lesson-locked{opacity:.58;box-shadow:none}.lesson-lock{color:var(--muted)}
+.lesson-stage{scroll-margin-top:90px}
+.lesson-back{border:0;background:transparent;color:var(--brand-strong);font-weight:800;padding:5px 0 14px}
+.lesson-view{display:grid;gap:16px}
+.lesson-view-head{padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}.lesson-view-head h3{font-size:27px;margin:6px 0}.lesson-view-head p{margin:0;color:var(--muted);line-height:1.5}
+.lesson-pill{display:inline-block;padding:5px 8px;border-radius:999px;background:color-mix(in srgb,var(--brand) 12%,var(--surface));color:var(--brand-strong);font-size:9px;font-weight:900;letter-spacing:.09em}
+.story-timeline{display:grid;gap:10px}
+.story-step{display:grid;grid-template-columns:42px 1fr;gap:12px;padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.story-step>span{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:900}.story-step strong{display:block;margin:2px 0 4px}.story-step p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+.lesson-highlight{padding:18px;border-radius:18px;background:var(--brand);color:#fff}.lesson-highlight small,.lesson-highlight strong{display:block}.lesson-highlight small{font-size:9px;letter-spacing:.12em;font-weight:900;opacity:.75}.lesson-highlight strong{margin:4px 0;font-size:20px}.lesson-highlight p{margin:0;opacity:.9;line-height:1.5;font-size:12px}
+.mini-quiz,.scenario-card,.first-event-checklist{padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}.quiz-kicker,.scenario-card>small,.first-event-checklist small{font-size:9px;letter-spacing:.12em;font-weight:900;color:var(--brand-strong)}.mini-quiz h4,.scenario-card h4,.first-event-checklist h4{margin:5px 0 12px;font-size:17px}
+.quiz-options{display:grid;gap:7px}.quiz-options button{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--text);padding:11px 12px;text-align:left}.quiz-options button:hover{border-color:color-mix(in srgb,var(--brand) 35%,var(--line))}.quiz-options .answer-good{border-color:#5f9a68;background:color-mix(in srgb,#5f9a68 12%,var(--surface))}.quiz-options .answer-bad{border-color:#b96a64;background:color-mix(in srgb,#b96a64 10%,var(--surface))}
+.quiz-feedback,.scenario-feedback{min-height:18px;margin-top:9px;font-size:11px;line-height:1.45;color:var(--muted)}.quiz-feedback.good,.scenario-feedback.good{color:#5f8f65}.quiz-feedback.bad,.scenario-feedback.bad{color:#a8605a}
+.value-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.value-card{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.value-card>span{font-size:23px}.value-card strong{display:block;margin:8px 0 4px}.value-card p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}
+.safety-priority{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:18px;border-radius:18px;background:color-mix(in srgb,var(--brand) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--brand) 25%,var(--line))}.safety-symbol{width:50px;height:50px;display:grid;place-items:center;border-radius:15px;background:var(--brand);color:#fff;font-size:21px}.safety-priority small,.safety-priority strong{display:block}.safety-priority small{font-size:9px;letter-spacing:.1em;color:var(--brand-strong);font-weight:900}.safety-priority strong{font-size:18px;margin:3px 0}.safety-priority p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+.do-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.do-card{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.do-card small{font-weight:900;font-size:9px;letter-spacing:.1em}.do-card ul{margin:9px 0 0;padding-left:18px;color:var(--muted);font-size:11px;line-height:1.7}.do-good small{color:#5f8f65}.do-care small{color:#a77839}
+.first-event-checklist{display:grid;gap:8px}.first-event-checklist label{display:flex;align-items:center;gap:9px;padding:9px;border-radius:11px;background:var(--surface-2);font-size:12px}.first-event-checklist input{width:18px;height:18px;min-height:0;accent-color:var(--brand)}
+.lesson-complete{justify-self:end;min-width:180px}
+.beginner-finish{margin-top:18px;padding:26px;border:1px solid color-mix(in srgb,var(--brand) 30%,var(--line));border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 10%,var(--surface)),var(--surface));text-align:center}.finish-mark{width:52px;height:52px;display:grid;place-items:center;margin:0 auto 10px;border-radius:50%;background:var(--brand);color:#fff;font-size:24px}.beginner-finish>span{font-size:9px;letter-spacing:.12em;color:var(--brand-strong);font-weight:900}.beginner-finish h3{margin:6px 0}.beginner-finish p{margin:0 auto;max-width:620px;color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:700px){
+  .beginner-shell{margin:0}
+  .beginner-hero{grid-template-columns:1fr;padding:18px;border-radius:18px}.beginner-hero h2{font-size:26px}
+  .lesson-card{grid-template-columns:42px 1fr auto;padding:11px;gap:10px}.lesson-number{width:38px;height:38px}.lesson-card-copy strong{font-size:14px}.lesson-card-copy span{font-size:10px}.lesson-status{font-size:9px;padding:5px 7px}
+  .lesson-view-head{padding:17px}.lesson-view-head h3{font-size:23px}
+  .value-grid,.do-grid{grid-template-columns:1fr}
+  .story-step{padding:13px}
+  .safety-priority{grid-template-columns:1fr}.safety-symbol{width:44px;height:44px}
+  .lesson-complete{width:100%;min-height:46px}
+  .beginner-home-card{padding:13px}.beginner-home-copy span{display:none}
+}
+@media(max-width:390px){
+  .lesson-card{grid-template-columns:38px 1fr}.lesson-status,.lesson-lock{grid-column:2;justify-self:start}.lesson-number{width:34px;height:34px}
+}
