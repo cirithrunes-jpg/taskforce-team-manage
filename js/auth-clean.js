@@ -625,9 +625,18 @@ async function continueAfterProfile(){
 
 function applyPermissions(){
   const role=state.membership?.role||"operator";
+  const isAdmin=role==="admin";
   document.body.dataset.role=role;
-  document.querySelectorAll('.nav-item[data-view="operators"],.nav-item[data-view="settings"]').forEach(el=>el.hidden=role!=="admin");
-  ["addGame","quickGame","addField","quickField","openTeamModal","openTeamModal2","openTeamModal3","quickOperator"].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=role!=="admin"});
+  ["addOperator","quickOperator","addGame","quickGame","addField","quickField","openTeamModal2","openTeamModal3","financeAdminActions","teamIdentityPanel"].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.hidden=!isAdmin;
+  });
+  document.querySelectorAll('.nav-item[data-view="documents"],[data-go="documents"],#view-documents').forEach(el=>el.hidden=!isAdmin);
+  const teamCard=document.getElementById("openTeamModal");
+  if(teamCard){
+    teamCard.disabled=!isAdmin;
+    teamCard.setAttribute("aria-disabled",String(!isAdmin));
+    teamCard.title=isAdmin?"Editar equipe":"Equipe";
+  }
 }
 
 function injectSessionTools(){
