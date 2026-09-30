@@ -161,3 +161,33 @@ body[data-role="operator"] .admin-only{display:none!important}
   .platform-contact-actions{align-items:stretch;flex-direction:column}
   .platform-contact-actions .primary{width:100%}
 }
+
+/* Team crest wallpaper — decorative only, never intercepts clicks */
+.app-shell{position:relative;isolation:isolate}
+.app-shell::before{
+  content:"";
+  position:fixed;
+  inset:0 0 0 230px;
+  z-index:0;
+  pointer-events:none;
+  background-image:var(--team-wallpaper,none);
+  background-repeat:repeat;
+  background-size:170px 170px;
+  background-position:28px 22px;
+  opacity:0;
+  filter:grayscale(.18) saturate(.72);
+  transition:opacity .25s ease;
+}
+html.has-team-wallpaper .app-shell::before{opacity:.042}
+:root[data-theme="light"].has-team-wallpaper .app-shell::before{opacity:.034}
+.main{position:relative;z-index:1}
+.sidebar,.mobile-nav,.rail-toggle{position:relative;z-index:5}
+@media(max-width:900px){
+  .app-shell::before{
+    inset:0;
+    background-size:142px 142px;
+    background-position:18px 16px;
+  }
+  html.has-team-wallpaper .app-shell::before{opacity:.038}
+  :root[data-theme="light"].has-team-wallpaper .app-shell::before{opacity:.03}
+}
