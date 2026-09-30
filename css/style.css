@@ -320,3 +320,108 @@ input:focus,select:focus,textarea:focus{border-color:var(--tf-amber)}
   .hero-team-crest{width:58px;height:58px;flex-basis:58px}
   .team-logo-editor{align-items:flex-start;flex-direction:column}
 }
+
+/* Mobile-first navigation and ergonomics inspired by modern team-management apps */
+.mobile-nav,.mobile-more-sheet,.mobile-sheet-backdrop{display:none}
+@media(max-width:700px){
+  html{scroll-padding-bottom:92px}
+  body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+  .main{padding:0 12px 24px}
+  .rail-toggle{display:none!important}
+  .topbar{
+    position:sticky;top:0;z-index:20;height:62px;margin:0 -12px 14px;padding:0 12px;
+    background:color-mix(in srgb,var(--bg) 90%,transparent);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)
+  }
+  .topbar h1{font-size:14px}
+  .topbar p{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:54vw}
+  .hamburger{display:none}
+  .session-tools{margin-left:auto}
+  .session-tools .small{font-size:0;padding:8px;width:36px;height:36px;display:grid;place-items:center}
+  .session-tools #myProfileBtn:after{content:"◉";font-size:16px}
+  .session-tools #signOutBtn:after{content:"↪";font-size:17px}
+  .session-tools #controlCenterBtn{display:none!important}
+
+  .mobile-nav{
+    position:fixed;z-index:80;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));
+    min-height:62px;display:grid;grid-template-columns:repeat(5,1fr);
+    border:1px solid rgba(217,164,65,.22);background:rgba(12,15,11,.96);
+    box-shadow:0 -12px 38px rgba(0,0,0,.34);backdrop-filter:blur(16px);
+    padding:5px;border-radius:8px
+  }
+  .mobile-nav-item{
+    min-width:0;min-height:50px;border:0;background:transparent;color:var(--muted);
+    display:grid;place-items:center;align-content:center;gap:3px;padding:4px 2px;border-radius:4px
+  }
+  .mobile-nav-item.active{color:var(--tf-amber-soft);background:rgba(217,164,65,.09)}
+  .mobile-nav-icon{font-size:18px;line-height:1}
+  .mobile-nav-item small{font-size:9px;text-transform:uppercase;letter-spacing:.035em}
+  .mobile-sheet-backdrop{
+    display:block;position:fixed;z-index:81;inset:0;background:rgba(0,0,0,.52);backdrop-filter:blur(2px)
+  }
+  .mobile-sheet-backdrop[hidden],.mobile-more-sheet[hidden]{display:none}
+  .mobile-more-sheet{
+    display:grid;position:fixed;z-index:82;left:10px;right:10px;
+    bottom:calc(78px + env(safe-area-inset-bottom));padding:10px;gap:6px;
+    border:1px solid rgba(217,164,65,.25);background:#11150f;box-shadow:var(--shadow);border-radius:6px
+  }
+  .mobile-more-sheet button{
+    min-height:48px;border:1px solid var(--line);background:var(--panel2);color:var(--text);
+    text-align:left;padding:11px 14px;border-radius:3px;font-weight:700
+  }
+  .mobile-more-sheet button span{display:inline-block;width:30px;color:var(--tf-amber-soft)}
+
+  .hero{padding:18px 16px;gap:14px}
+  .hero-team-identity{gap:12px}
+  .hero-team-crest{width:54px;height:54px;flex-basis:54px}
+  .hero h2{font-size:21px;margin:4px 0 5px;line-height:1.05}
+  .hero p{font-size:12px;line-height:1.4}
+  .hero .eyebrow{font-size:9px}
+  .hero>.primary{width:100%;min-height:44px}
+  .stats{
+    display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:9px;margin:11px -12px 0;
+    padding:0 12px 5px;scrollbar-width:none
+  }
+  .stats::-webkit-scrollbar{display:none}
+  .stats .stat{flex:0 0 min(72vw,245px);scroll-snap-align:start;padding:14px}
+  .stat strong{font-size:23px;margin:6px 0 2px}
+  .grid-2{gap:10px;margin-top:10px}
+  .panel{padding:15px}
+  .panel-head{align-items:center}
+  .panel-head h3{font-size:11px;margin:0}
+  .quick-actions{grid-template-columns:1fr 1fr;gap:7px}
+  .quick{min-height:48px;padding:11px;font-size:12px}
+  .section-head{margin-bottom:12px;gap:10px}
+  .section-head h2{font-size:18px}
+  .section-head p{font-size:12px;line-height:1.4}
+  .section-head>.primary,.section-head>.finance-actions{width:100%}
+  .section-head>.primary{min-height:44px}
+  .card-row{padding:14px;gap:10px}
+  .card-main{width:100%}
+  .avatar{width:40px;height:40px;flex:0 0 40px}
+  .link-name{font-size:15px}
+  .meta{font-size:11px;line-height:1.45}
+  .badge{font-size:9px}
+  .empty{padding:22px 14px;font-size:12px}
+  .document-card{padding:14px;gap:11px}
+  .doc-icon{font-size:25px}
+  .document-card h3{font-size:13px}
+  .document-card p{font-size:11px;line-height:1.4}
+  .modal{
+    width:100vw;max-width:none;max-height:92dvh;margin:auto 0 0;border-radius:10px 10px 0 0;
+    border-left:0;border-right:0;border-bottom:0
+  }
+  .modal form{padding:16px;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  .modal-head{position:sticky;top:0;z-index:2;background:inherit}
+  .modal-actions{position:sticky;bottom:0;background:inherit;padding-top:10px}
+  .modal-actions button{min-height:44px;flex:1}
+  input,select,textarea{font-size:16px;min-height:44px}
+  .team-logo-editor{padding:11px}
+  .team-logo-preview{width:72px;height:72px;flex-basis:72px}
+}
+@media(max-width:380px){
+  .mobile-nav{left:4px;right:4px;bottom:calc(4px + env(safe-area-inset-bottom))}
+  .mobile-nav-item small{font-size:8px}
+  .stats .stat{flex-basis:78vw}
+  .quick-actions{grid-template-columns:1fr}
+}
