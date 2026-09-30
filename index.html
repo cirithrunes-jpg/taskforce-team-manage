@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
 <link rel="stylesheet" href="css/style-modern.css?v=20260930-recovery1">
+<link rel="stylesheet" href="css/beginners.css?v=20260930-demo1">
 </head>
 <body>
 <div class="app-shell">
@@ -84,6 +85,18 @@
         <div id="dashboardGames" class="empty">Nenhum jogo registrado.</div>
       </div>
 
+      <div class="home-section">
+        <button class="beginner-home-card" data-go="beginners">
+          <span class="beginner-home-icon">◎</span>
+          <span class="beginner-home-copy">
+            <small>NOVO NO AIRSOFT?</small>
+            <strong>Faça sua primeira missão de aprendizado</strong>
+            <span>História, cultura, segurança e preparação em etapas rápidas.</span>
+          </span>
+          <b>›</b>
+        </button>
+      </div>
+
       <div class="home-section admin-only">
         <div class="home-section-head"><div><span class="section-kicker">ATALHOS</span><h3>Ações rápidas</h3></div></div>
         <div class="quick-actions">
@@ -148,11 +161,179 @@
     <div><h2>Mais</h2><p>Outros recursos da equipe.</p></div>
   </div>
   <div class="more-grid">
+    <button class="more-card more-card-featured" data-go="beginners"><span class="more-icon">◎</span><span><strong>Airsoft para Iniciantes</strong><small>Do zero ao primeiro evento</small></span><b>›</b></button>
     <button class="more-card" data-go="finance"><span class="more-icon">▤</span><span><strong>Financeiro</strong><small>Mensalidades e pagamentos</small></span><b>›</b></button>
     <button class="more-card" data-go="fields"><span class="more-icon">⌖</span><span><strong>Campos</strong><small>Locais e endereços</small></span><b>›</b></button>
     <button class="more-card" data-go="documents"><span class="more-icon">▱</span><span><strong>Documentos</strong><small>Termos e arquivos</small></span><b>›</b></button>
     <button class="more-card" data-go="contacts"><span class="more-icon">☏</span><span><strong>Contatos</strong><small>Contatos úteis da equipe</small></span><b>›</b></button>
     <button class="more-card" data-go="settings"><span class="more-icon">⚙</span><span><strong>Configurações</strong><small>Equipe e preferências</small></span><b>›</b></button>
+  </div>
+</section>
+
+<section class="view" id="view-beginners">
+  <div class="beginner-shell">
+    <header class="beginner-hero">
+      <div>
+        <span class="beginner-kicker">AIRSOFT PARA INICIANTES</span>
+        <h2>Sua primeira missão começa aqui.</h2>
+        <p>Aprenda os fundamentos em etapas curtas, visuais e fáceis de lembrar.</p>
+      </div>
+      <div class="beginner-progress-card">
+        <div class="beginner-progress-top"><span>Seu progresso</span><strong id="beginnerProgressText">0/3</strong></div>
+        <div class="beginner-progress-track"><span id="beginnerProgressBar"></span></div>
+        <small id="beginnerProgressHint">Comece pela origem do esporte.</small>
+      </div>
+    </header>
+
+    <div class="beginner-notice">
+      <span>i</span>
+      <p>Esta demo apresenta fundamentos gerais. Regras específicas, requisitos e orientações podem variar conforme evento, campo e legislação vigente.</p>
+    </div>
+
+    <section class="beginner-roadmap" id="beginnerRoadmap">
+      <button class="lesson-card" data-lesson="origin">
+        <span class="lesson-number">01</span>
+        <span class="lesson-card-copy"><small>3 MIN</small><strong>Descubra o Airsoft</strong><span>Origem, evolução e o que torna o esporte diferente.</span></span>
+        <span class="lesson-status" data-status="origin">Começar</span>
+      </button>
+      <button class="lesson-card" data-lesson="honor">
+        <span class="lesson-number">02</span>
+        <span class="lesson-card-copy"><small>2 MIN</small><strong>O código do jogador</strong><span>Honra, respeito, fair play e convivência.</span></span>
+        <span class="lesson-status" data-status="honor">Começar</span>
+      </button>
+      <button class="lesson-card" data-lesson="safety">
+        <span class="lesson-number">03</span>
+        <span class="lesson-card-copy"><small>4 MIN</small><strong>Segurança primeiro</strong><span>Proteção, regras do evento e preparação responsável.</span></span>
+        <span class="lesson-status" data-status="safety">Começar</span>
+      </button>
+
+      <div class="lesson-card lesson-locked">
+        <span class="lesson-number">04</span>
+        <span class="lesson-card-copy"><small>EM BREVE</small><strong>Meu primeiro evento</strong><span>O que esperar e como se preparar.</span></span>
+        <span class="lesson-lock">○</span>
+      </div>
+      <div class="lesson-card lesson-locked">
+        <span class="lesson-number">05</span>
+        <span class="lesson-card-copy"><small>EM BREVE</small><strong>Equipamentos sem complicação</strong><span>O essencial explicado sem virar catálogo.</span></span>
+        <span class="lesson-lock">○</span>
+      </div>
+      <div class="lesson-card lesson-locked">
+        <span class="lesson-number">06</span>
+        <span class="lesson-card-copy"><small>EM BREVE</small><strong>Como funciona um evento</strong><span>Organização, objetivos e formatos de jogo.</span></span>
+        <span class="lesson-lock">○</span>
+      </div>
+      <div class="lesson-card lesson-locked">
+        <span class="lesson-number">07</span>
+        <span class="lesson-card-copy"><small>EM BREVE</small><strong>Responsabilidade e regras</strong><span>Conteúdo revisado com fontes atuais.</span></span>
+        <span class="lesson-lock">○</span>
+      </div>
+      <div class="lesson-card lesson-locked">
+        <span class="lesson-number">08</span>
+        <span class="lesson-card-copy"><small>EM BREVE</small><strong>Dicionário Airsoft</strong><span>Termos importantes em linguagem simples.</span></span>
+        <span class="lesson-lock">○</span>
+      </div>
+    </section>
+
+    <section class="lesson-stage" id="lessonStage" hidden>
+      <button class="lesson-back" id="lessonBack" type="button">‹ Voltar para a jornada</button>
+
+      <article class="lesson-view" data-lesson-view="origin" hidden>
+        <div class="lesson-view-head">
+          <span class="lesson-pill">MISSÃO 01 · 3 MIN</span>
+          <h3>Descubra o Airsoft</h3>
+          <p>Antes de regras e equipamentos, vale entender de onde veio a cultura do esporte.</p>
+        </div>
+
+        <div class="story-timeline">
+          <div class="story-step"><span>01</span><div><strong>Japão · décadas de 1970–80</strong><p>O Airsoft começou a ganhar forma no Japão a partir de equipamentos recreativos que lançavam pequenos projéteis plásticos.</p></div></div>
+          <div class="story-step"><span>02</span><div><strong>Realismo sem ser arma de fogo</strong><p>O visual realista chamou atenção de colecionadores e produções audiovisuais, enquanto o funcionamento interno seguia outra lógica.</p></div></div>
+          <div class="story-step"><span>03</span><div><strong>Virou atividade em equipe</strong><p>Com o tempo, surgiram jogos organizados com objetivos, regras e forte dependência de cooperação e honestidade entre participantes.</p></div></div>
+        </div>
+
+        <div class="lesson-highlight">
+          <small>GUARDE ISTO</small>
+          <strong>Airsoft não é só equipamento.</strong>
+          <p>É uma atividade baseada em regras, trabalho em equipe, responsabilidade e confiança entre participantes.</p>
+        </div>
+
+        <div class="mini-quiz" data-quiz="origin">
+          <span class="quiz-kicker">PERGUNTA RÁPIDA</span>
+          <h4>Qual elemento é essencial para uma partida funcionar bem?</h4>
+          <div class="quiz-options">
+            <button data-answer="wrong">Ter o equipamento mais caro</button>
+            <button data-answer="correct">Respeitar regras e agir com honestidade</button>
+            <button data-answer="wrong">Conhecer todas as estratégias avançadas</button>
+          </div>
+          <div class="quiz-feedback" aria-live="polite"></div>
+        </div>
+
+        <button class="lesson-complete primary" data-complete="origin">Concluir missão 01</button>
+      </article>
+
+      <article class="lesson-view" data-lesson-view="honor" hidden>
+        <div class="lesson-view-head">
+          <span class="lesson-pill">MISSÃO 02 · 2 MIN</span>
+          <h3>O código do jogador</h3>
+          <p>O fair play não é detalhe: ele sustenta a experiência de todos.</p>
+        </div>
+
+        <div class="value-grid">
+          <div class="value-card"><span>🤝</span><strong>Honra</strong><p>Reconheça o que aconteceu com honestidade, mesmo quando ninguém estiver cobrando.</p></div>
+          <div class="value-card"><span>◎</span><strong>Respeito</strong><p>Trate participantes, organização e regras do evento com consideração.</p></div>
+          <div class="value-card"><span>👥</span><strong>Equipe</strong><p>Cooperação vale mais que tentar aparecer sozinho.</p></div>
+          <div class="value-card"><span>✓</span><strong>Responsabilidade</strong><p>Se tiver dúvida sobre uma regra, pergunte antes de agir.</p></div>
+        </div>
+
+        <div class="scenario-card">
+          <small>SITUAÇÃO</small>
+          <h4>Você não tem certeza se um acerto contou. O que combina mais com o espírito do esporte?</h4>
+          <div class="quiz-options">
+            <button data-scenario="wrong">Ignorar e seguir normalmente</button>
+            <button data-scenario="correct">Priorizar honestidade e esclarecer a situação conforme as regras do evento</button>
+          </div>
+          <div class="scenario-feedback" aria-live="polite"></div>
+        </div>
+
+        <button class="lesson-complete primary" data-complete="honor">Concluir missão 02</button>
+      </article>
+
+      <article class="lesson-view" data-lesson-view="safety" hidden>
+        <div class="lesson-view-head">
+          <span class="lesson-pill">MISSÃO 03 · 4 MIN</span>
+          <h3>Segurança primeiro</h3>
+          <p>A melhor experiência começa antes de entrar na área de jogo.</p>
+        </div>
+
+        <div class="safety-priority">
+          <div class="safety-symbol">◉</div>
+          <div><small>PRIORIDADE ABSOLUTA</small><strong>Proteção ocular adequada</strong><p>Use proteção apropriada para a atividade e siga as exigências do organizador ou do campo. Se houver dúvida sobre o equipamento, não entre na área de jogo até confirmar.</p></div>
+        </div>
+
+        <div class="do-grid">
+          <div class="do-card do-good"><small>FAÇA</small><ul><li>Leia as regras específicas do evento.</li><li>Saiba onde ficam as áreas seguras.</li><li>Leve água e considere as condições do dia.</li><li>Siga as orientações da organização.</li></ul></div>
+          <div class="do-card do-care"><small>EVITE</small><ul><li>Entrar sem conhecer as regras.</li><li>Improvisar quando houver dúvida de segurança.</li><li>Ignorar sinais de calor, cansaço ou mal-estar.</li><li>Tratar regras locais como se fossem sempre iguais.</li></ul></div>
+        </div>
+
+        <div class="first-event-checklist">
+          <div><small>CHECKLIST RÁPIDO</small><h4>Antes de sair de casa</h4></div>
+          <label><input type="checkbox"> Li as regras do evento</label>
+          <label><input type="checkbox"> Confirmei horário e endereço</label>
+          <label><input type="checkbox"> Separei proteção adequada</label>
+          <label><input type="checkbox"> Preparei água</label>
+          <label><input type="checkbox"> Verifiquei clima e roupa apropriada</label>
+          <label><input type="checkbox"> Tenho contato da organização</label>
+        </div>
+
+        <button class="lesson-complete primary" data-complete="safety">Concluir missão 03</button>
+      </article>
+    </section>
+
+    <section class="beginner-finish" id="beginnerFinish" hidden>
+      <div class="finish-mark">✓</div>
+      <span>DEMO CONCLUÍDA</span>
+      <h3>Fundamentos iniciais concluídos.</h3>
+      <p>Esta é a base da experiência. Os próximos módulos podem expandir preparação, formatos de evento, glossário e conteúdo atualizado.</p>
+    </section>
   </div>
 </section>
 
@@ -222,6 +403,8 @@
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260930-sports1"></script>
 <script src="js/auth-clean.js?v=20260930-recovery1"></script>
-<script src="js/app.js?v=20260930-nochat1"></script>\n<script src="js/navigation.js?v=20260930-stable2"></script>
+<script src="js/app.js?v=20260930-beginnerdemo1"></script>
+<script src="js/beginners.js?v=20260930-demo1"></script>
+<script src="js/navigation.js?v=20260930-stable2"></script>
 </body>
 </html>
