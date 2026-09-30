@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#11130f">
 <title>TASKFORCE Team Manager</title>
-<link rel="stylesheet" href="css/style-modern.css?v=20260930-permissions1">
+<link rel="stylesheet" href="css/style-modern.css?v=20260930-news1">
 <link rel="stylesheet" href="css/beginners.css?v=20260930-demo1">
 </head>
 <body>
@@ -18,10 +18,10 @@
       <button class="nav-item active" data-view="command"><span>⌂</span><span data-i18n="command">Comando</span></button>
       <button class="nav-item" data-view="operators"><span>◉</span><span data-i18n="operators">Operadores</span></button>
       <button class="nav-item" data-view="calendar"><span>▦</span><span data-i18n="calendar">Calendário</span></button>
+      <button class="nav-item" data-view="news"><span>📰</span><span>News</span></button>
       <button class="nav-item" data-view="fields"><span>⌖</span><span data-i18n="fields">Campos</span></button>
       <button class="nav-item" data-view="finance"><span>▤</span><span data-i18n="finance">Financeiro</span></button>
       <button class="nav-item operator-no-access" data-view="documents"><span>▱</span><span data-i18n="documents">Documentos</span></button>
-      <button class="nav-item" data-view="contacts"><span>☏</span><span data-i18n="contacts">Contatos</span></button>
       <button class="nav-item" data-view="settings"><span>⚙</span><span data-i18n="settings">Configurações</span></button>
     </nav>
     <div class="sidebar-footer"><small>v0.2 • Atualização 29/09</small></div>
@@ -156,6 +156,41 @@
 
     
 
+
+<section class="view" id="view-news">
+  <div class="news-paper">
+    <header class="news-masthead">
+      <div class="news-rule"></div>
+      <div class="news-masthead-top"><span id="newsDate">—</span><span>EDIÇÃO DAS ÚLTIMAS 24 HORAS</span></div>
+      <h2>TASKFORCE NEWS</h2>
+      <p>Equipe • comunidade • aniversários • segurança e atualizações responsáveis</p>
+      <div class="news-rule"></div>
+    </header>
+
+    <section class="news-admin-editor admin-only" id="newsAdminEditor">
+      <div class="panel-head"><div><span class="section-kicker">REDAÇÃO</span><h3>Publicar no jornal da equipe</h3></div><span class="badge">24H</span></div>
+      <form id="newsPostForm" class="news-post-form">
+        <label>Seção<select name="category"><option value="equipe">Equipe</option><option value="evento">Evento</option><option value="comunicado">Comunicado</option></select></label>
+        <label class="wide">Manchete<input name="title" maxlength="180" minlength="3" required placeholder="Escreva uma manchete curta"></label>
+        <label class="wide">Texto<textarea name="body" rows="4" maxlength="4000" minlength="3" required placeholder="Escreva a notícia para a equipe"></textarea></label>
+        <div class="wide news-editor-actions"><span id="newsPostStatus" aria-live="polite"></span><button class="primary" type="submit">Publicar por 24 horas</button></div>
+      </form>
+    </section>
+
+    <div class="news-sections">
+      <section class="news-column news-main-column">
+        <div class="news-section-title"><span>DESTAQUES</span><small>Equipe e aniversários</small></div>
+        <div id="teamNewsList" class="news-list"><div class="empty">Nenhuma notícia da equipe nas últimas 24 horas.</div></div>
+      </section>
+      <aside class="news-column news-radar-column">
+        <div class="news-section-title"><span>RADAR</span><small>Segurança e regulamentação</small></div>
+        <div id="platformNewsList" class="news-radar-list"><div class="empty">Sem atualizações externas no momento.</div></div>
+        <div class="news-radar-note">O radar automático é limitado a conteúdos institucionais de esporte, segurança e regulamentação. Conteúdo comercial, de produtos ou instruções de uso não é incluído.</div>
+      </aside>
+    </div>
+  </div>
+</section>
+
 <section class="view" id="view-more">
   <div class="section-head">
     <div><h2>Mais</h2><p>Outros recursos da equipe.</p></div>
@@ -165,7 +200,7 @@
     <button class="more-card" data-go="finance"><span class="more-icon">▤</span><span><strong>Financeiro</strong><small>Mensalidades e pagamentos</small></span><b>›</b></button>
     <button class="more-card" data-go="fields"><span class="more-icon">⌖</span><span><strong>Campos</strong><small>Locais e endereços</small></span><b>›</b></button>
     <button class="more-card operator-no-access" data-go="documents"><span class="more-icon">▱</span><span><strong>Documentos</strong><small>Termos e arquivos</small></span><b>›</b></button>
-    <button class="more-card" data-go="contacts"><span class="more-icon">☏</span><span><strong>Contatos</strong><small>Contatos úteis da equipe</small></span><b>›</b></button>
+    <button class="more-card" data-go="news"><span class="more-icon">📰</span><span><strong>News</strong><small>Jornal da equipe</small></span><b>›</b></button>
     <button class="more-card" data-go="settings"><span class="more-icon">⚙</span><span><strong>Configurações</strong><small>Equipe e preferências</small></span><b>›</b></button>
   </div>
 </section>
@@ -337,13 +372,15 @@
   </div>
 </section>
 
-<section class="view" id="view-contacts"><div class="section-head"><div><h2 data-i18n="contacts">Contatos</h2><p data-i18n="contactsSubtitle">Contatos administrativos e serviços úteis à equipe.</p></div></div><div class="empty" data-i18n="noContacts">Nenhum contato cadastrado.</div></section>
-
-    <section class="view" id="view-settings"><div class="section-head"><div><h2 data-i18n="settings">Configurações</h2><p data-i18n="settingsSubtitle">Preferências do aplicativo e identificação da equipe.</p></div></div><div class="settings-grid">
+<section class="view" id="view-settings"><div class="section-head"><div><h2 data-i18n="settings">Configurações</h2><p data-i18n="settingsSubtitle">Preferências do aplicativo e identificação da equipe.</p></div></div><div class="settings-grid">
       <article class="panel admin-only" id="teamIdentityPanel"><h3 data-i18n="teamIdentity">Identificação da equipe</h3><p data-i18n="teamIdentityText">Nome, história, fundadores, apoiadores e contatos.</p><button class="primary" id="openTeamModal3" data-i18n="editTeam">Cadastrar / Editar equipe</button></article>
       <article class="panel"><h3 data-i18n="language">Idioma</h3><select id="languageSelect"><option value="pt">Português</option><option value="es">Español</option><option value="en">English</option></select></article>
       <article class="panel"><h3 data-i18n="appearance">Aparência</h3><div class="segmented"><button data-theme="dark" class="theme-btn active" data-i18n="dark">Escuro</button><button data-theme="light" class="theme-btn" data-i18n="light">Claro</button></div></article>
       <article class="panel"><h3 data-i18n="dataStatus">Status dos dados</h3><p data-i18n="localPrototype">Dados da equipe sincronizados com segurança.</p></article>
+      <article class="panel" id="adminContactsPanel">
+        <div class="panel-head"><div><h3>Contatos da equipe</h3><p>Administradores disponíveis para contato.</p></div><span class="badge">AUTOMÁTICO</span></div>
+        <div id="adminContactsList" class="admin-contacts-list"><div class="empty">Carregando contatos...</div></div>
+      </article>
       <article class="panel platform-contact-panel">
         <div class="platform-contact-head"><div class="platform-contact-icon">?</div><div><h3>Contato com a plataforma</h3><p>Envie dúvidas, problemas ou sugestões diretamente para a equipe responsável pelo TASKFORCE.</p></div></div>
         <form id="platformContactForm" class="platform-contact-form">
@@ -411,8 +448,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js?v=20260929-1700"></script>
 <script src="js/translations.js?v=20260930-support1"></script>
-<script src="js/auth-clean.js?v=20260930-permissions1"></script>
-<script src="js/app.js?v=20260930-permissions4"></script>
+<script src="js/auth-clean.js?v=20260930-news1"></script>
+<script src="js/app.js?v=20260930-news1"></script>
 <script src="js/beginners.js?v=20260930-demo1"></script>
 <script src="js/navigation.js?v=20260930-permissions1"></script>
 </body>
