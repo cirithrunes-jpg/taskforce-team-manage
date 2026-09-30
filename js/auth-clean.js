@@ -748,6 +748,17 @@ async function injectAdminInvite(){
   };
 }
 async function finishLogin(){
+  if(state.membership?.role==="operator"){
+    const acceptedVersion=state.termAcceptance?.term_version;
+    if(acceptedVersion!==RESPONSIBILITY_TERM.version){
+      const accepted=await withTimeout(rpcAuth("get_my_term_acceptance"));
+      state.termAcceptance=accepted||null;
+      if(state.termAcceptance?.term_version!==RESPONSIBILITY_TERM.version){
+        renderResponsibilityAcceptance();
+        return;
+      }
+    }
+  }
   hideGate();
   injectSessionTools();
   applyPermissions();
