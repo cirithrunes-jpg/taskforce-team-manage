@@ -12,7 +12,7 @@ const session={access_token:'access-test',refresh_token:'refresh-test',user:{id:
 async function boot(url='https://app.example/',{google=false,callbackError=false,existing=null,signupSession=null}={}){
   const elements=new Map(),calls=[];
   class Element{
-    constructor(id){this.id=id;this.classList={add(){},remove(){},toggle(){}};this.elements={};this.hidden=false;this.disabled=false;this._html='';}
+    constructor(id){this.id=id;const classes=new Set();this.classList={add:v=>classes.add(v),remove:v=>classes.delete(v),contains:v=>classes.has(v),toggle(v,on){if(on??!classes.has(v))classes.add(v);else classes.delete(v)}};this.elements={};this.hidden=false;this.disabled=false;this._html='';}
     set innerHTML(html){
       this._html=html;
       for(const match of html.matchAll(/\bid="([^"]+)"/g))elements.set(match[1],new Element(match[1]));
@@ -142,4 +142,24 @@ test('all dialogs receive Escape handlers, close buttons and backdrop close work
   assert.equal(dialogs[0].closed,'cancel');
   dialogs[1].closest=selector=>selector==='dialog'?dialogs[1]:null;
   click({target:dialogs[1]});assert.equal(dialogs[1].closed,'cancel');
+});
+
+
+test('Google is primary and email form expands with password recovery available',async()=>{
+  const b=await boot('https://app.example/',{google:true});
+  assert.equal(b.elements.get('emailAccessPanel').classList.contains('hidden'),true);
+  b.elements.get('emailAccessBtn').onclick();
+  assert.equal(b.elements.get('emailAccessPanel').classList.contains('hidden'),false);
+  b.elements.get('forgotPasswordBtn').onclick();assert.match(b.html(),/forgotPasswordForm/);
+});
+test('confirmation screen provides a direct route to password recovery',async()=>{
+  const b=await boot();b.elements.get('resendConfirmationBtn').onclick();
+  b.elements.get('resendForm').elements.email.value='test@example.invalid';
+  b.elements.get('resendForgotPassword').onclick();
+  assert.match(b.html(),/forgotPasswordForm/);assert.match(b.html(),/test@example.invalid/);
+});
+test('recovery rejects mismatched passwords without updating the account',async()=>{
+  const b=await boot('https://app.example/?recovery=1#type=recovery&access_token=access-test&refresh_token=refresh-test');
+  await b.submit('recoveryPasswordForm',{password:'new-password',password2:'different-password'});
+  assert.ok(!b.calls.some(c=>c[0]==='update'));assert.match(b.elements.get('authStatus').textContent,/não conferem/);
 });

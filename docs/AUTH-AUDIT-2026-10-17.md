@@ -80,7 +80,7 @@ uso, é uma hipótese forte para o bloqueio relatado, a confirmar no painel.
 
 ## Validação executada
 
-- `node --test tests/auth.test.cjs`: 14 testes passaram. São testes com doubles do
+- `node --test tests/auth.test.cjs`: 17 testes passaram. São testes com doubles do
   DOM, SDK e rede; cobrem callbacks implícitos/PKCE, erros, reenvio, senha, Google,
   convite preservado, token renovado e diálogos. Não equivalem a testes reais de
   entrega ou consentimento Google.
@@ -147,3 +147,14 @@ Nenhum APK, AAB ou IPA foi gerado; nenhuma versão móvel está pronta para publ
 - [Senhas comprometidas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)
 - [Changelog: retirada futura de cifras TLS antigas](https://supabase.com/changelog/cbc-tls-ciphers-deprecated)
   consultado; não exige mudança no fluxo web moderno desta correção.
+
+
+## Complemento: entrada simplificada e recuperação
+
+Quando Google estiver ativo, a primeira tela oferece Continuar com Google e
+Entrar com e-mail. A segunda opção expande os formulários existentes e mantém
+Esqueci minha senha acessível. Sem Google ativo, o formulário de e-mail continua
+aparecendo diretamente. A tela de confirmação também permite recuperar a senha.
+O fluxo de recuperação orienta usuários Google a usar seu método de entrada.
+Três testes adicionais cobrem esses acessos e a rejeição de senhas divergentes.
+A separação dos dados de emergência para uma etapa posterior ainda não foi aplicada.

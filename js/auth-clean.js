@@ -96,6 +96,14 @@ async function configureGoogleButton(){
     if(!settings.external?.google){button.hidden=true;return}
     button.hidden=false;
     button.disabled=false;
+    const emailPanel=document.getElementById("emailAccessPanel");
+    const emailButton=document.getElementById("emailAccessBtn");
+    emailPanel.classList.add("hidden");
+    emailButton.hidden=false;
+    emailButton.onclick=()=>{
+      emailPanel.classList.remove("hidden");
+      emailButton.hidden=true;
+    };
     button.onclick=async()=>{
       button.disabled=true;
       status("Abrindo acesso com Google...");
@@ -165,9 +173,11 @@ function renderLogin(tab=inviteToken?"signup":"login"){
     '<div class="auth-card">'+
       '<div class="auth-brand"><div class="brand-mark">TF</div><div><strong>TASKFORCE</strong><small>Acesso seguro</small></div></div>'+
       (inviteToken?'<div class="invite-banner"><strong>Você recebeu um convite para uma equipe.</strong><br>Se ainda não tem conta no TASKFORCE, use <b>Criar conta</b> com o mesmo e-mail que recebeu o convite.</div>':'')+
-      '<div class="auth-tabs"><button id="tabLogin" class="auth-tab">Entrar</button><button id="tabSignup" class="auth-tab">Criar conta</button></div>'+
       '<div id="authStatus" class="auth-message">Conexão pronta.</div>'+
-      '<button class="ghost" type="button" id="googleLoginBtn" hidden disabled>Continuar com Google</button>'+
+      '<button class="primary" type="button" id="googleLoginBtn" hidden disabled>Continuar com Google</button>'+
+      '<button class="ghost" type="button" id="emailAccessBtn" hidden>Entrar com e-mail</button>'+
+      '<div id="emailAccessPanel">'+
+      '<div class="auth-tabs"><button id="tabLogin" class="auth-tab">Entrar</button><button id="tabSignup" class="auth-tab">Criar conta</button></div>'+
       '<form id="loginForm" class="auth-form">'+
         '<label>E-mail<input name="email" type="email" autocomplete="email" required></label>'+
         '<label>Senha<div class="password-wrap"><input id="loginPassword" name="password" type="password" autocomplete="current-password" minlength="8" required><button type="button" id="toggleLoginPassword" class="password-toggle">Mostrar</button></div></label>'+
@@ -181,6 +191,7 @@ function renderLogin(tab=inviteToken?"signup":"login"){
         '<label>Confirmar senha<div class="password-wrap"><input id="signupPassword2" name="password2" type="password" autocomplete="new-password" minlength="8" required><button type="button" id="toggleSignupPassword2" class="password-toggle">Mostrar</button></div></label>'+
         '<button class="primary" type="submit">Criar conta</button>'+
       '</form>'+
+      '</div>'+
       '<p class="auth-foot">O administrador cria a equipe. Operadores entram por convite e são vinculados automaticamente à equipe correta.</p>'+
     '</div>'
   );
@@ -281,8 +292,9 @@ function renderResendConfirmation(prefill=""){
   setGate('<div class="auth-card"><div class="auth-brand"><strong>Confirmar e-mail</strong></div>'+
     '<div id="authStatus" class="auth-message">Informe seu e-mail para receber um novo link de confirmação.</div>'+
     '<form id="resendForm" class="auth-form"><label>E-mail<input name="email" type="email" autocomplete="email" value="'+h(prefill)+'" required></label>'+
-    '<button class="primary" type="submit">Reenviar confirmação</button><button class="ghost" type="button" id="resendBack">Voltar ao login</button></form></div>');
+    '<button class="primary" type="submit">Reenviar confirmação</button><button class="auth-link" type="button" id="resendForgotPassword">Esqueci minha senha</button><button class="ghost" type="button" id="resendBack">Voltar ao login</button></form></div>');
   document.getElementById("resendBack").onclick=()=>renderLogin("login");
+  document.getElementById("resendForgotPassword").onclick=()=>renderForgotPassword(String(document.getElementById("resendForm").elements.email.value||"").trim());
   document.getElementById("resendForm").onsubmit=async event=>{
     event.preventDefault();
     const button=event.target.querySelector('button[type="submit"]');
@@ -307,7 +319,7 @@ function renderForgotPassword(prefill=""){
         '<button class="primary" type="submit">Enviar link de recuperação</button>'+
         '<button class="ghost" type="button" id="backToLogin">Voltar ao login</button>'+
       '</form>'+
-      '<p class="auth-foot">Se existir uma conta para esse e-mail, enviaremos as instruções de recuperação.</p>'+
+      '<p class="auth-foot">Se existir uma conta para esse e-mail, enviaremos as instruções de recuperação. Se você entra pelo Google, volte ao login e use Continuar com Google.</p>'+
     '</div>'
   );
   document.getElementById("backToLogin").onclick=()=>renderLogin("login");
