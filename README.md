@@ -1,5 +1,12 @@
 # TASKFORCE Team Manager
 
+## Auditoria e validação de autenticação
+
+Consulte [a auditoria de 17/10/2026](docs/AUTH-AUDIT-2026-10-17.md) para achados,
+configuração pendente de SMTP/Google e critérios de homologação antes de produção.
+Execute os testes de fluxo com `node --test tests/auth.test.cjs` (Node.js 18+).
+Os testes usam SDK/rede/DOM simulados e não enviam e-mails.
+
 Aplicativo web responsivo para gerenciamento administrativo de equipes de Airsoft, pensado para uso no celular e no computador.
 
 ## Estado atual
