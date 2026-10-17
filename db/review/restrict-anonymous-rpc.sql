@@ -1,0 +1,22 @@
+-- REVIEW ONLY: apply in staging first. No row changes; preserve authenticated/service_role grants.
+begin;
+revoke execute on function public.accept_responsibility_term(supplied_version text, supplied_title text, supplied_text text) from public, anon;
+revoke execute on function public.admin_confirm_monthly_payment(target_fee uuid, mark_paid boolean, admin_message text) from public, anon;
+revoke execute on function public.admin_generate_monthly_fees(ref_month date) from public, anon;
+revoke execute on function public.admin_get_monthly_fees(ref_month date) from public, anon;
+revoke execute on function public.admin_list_members() from public, anon;
+revoke execute on function public.admin_list_term_acceptances() from public, anon;
+revoke execute on function public.admin_list_term_email_deliveries() from public, anon;
+revoke execute on function public.admin_remove_member(target_user uuid, reason_text text) from public, anon;
+revoke execute on function public.admin_save_billing_settings(payload jsonb) from public, anon;
+revoke execute on function public.admin_set_monthly_fee_exempt(target_fee uuid, is_exempt boolean) from public, anon;
+revoke execute on function public.create_team_v2(team_name text) from public, anon;
+revoke execute on function public.get_billing_settings() from public, anon;
+revoke execute on function public.get_my_monthly_fees() from public, anon;
+revoke execute on function public.get_my_profile() from public, anon;
+revoke execute on function public.get_my_team_context() from public, anon;
+revoke execute on function public.get_my_term_acceptance() from public, anon;
+revoke execute on function public.get_team_admin_emails() from public, anon;
+revoke execute on function public.save_my_profile(payload jsonb) from public, anon;
+revoke execute on function public.submit_monthly_payment(target_fee uuid, payment_on date, receipt text, submission_note text) from public, anon;
+commit;

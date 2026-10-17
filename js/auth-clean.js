@@ -15,12 +15,14 @@ const initialUrl=new URL(location.href);
 const initialHash=new URLSearchParams(initialUrl.hash.replace(/^#/,""));
 const recoveryRequested=initialUrl.searchParams.get("recovery")==="1"||initialHash.get("type")==="recovery";
 function cleanUrl(){
-  if(location.hash&&!recoveryRequested) history.replaceState({},"",location.pathname+location.search);
+  const url=new URL(location.href);
+  ["code","error","error_code","error_description","recovery"].forEach(key=>url.searchParams.delete(key));
+  url.hash="";
+  history.replaceState({},"",url.pathname+url.search);
 }
 function clearRecoveryUrl(){
-  history.replaceState({},"",location.pathname);
+  cleanUrl();
 }
-cleanUrl();
 
 if(!window.supabase||!C.supabaseUrl||!C.supabasePublishableKey){
   setGate('<div class="auth-card"><div class="auth-message error">Configuração do Supabase não encontrada.</div></div>');
@@ -35,11 +37,76 @@ window.TASKFORCE_DB=client;
 const state={session:null,profile:null,membership:null,team:null,group:null,access_revoked:false,revoked_at:null,termAcceptance:null};
 const inviteToken=new URLSearchParams(location.search).get("invite");
 
-function withTimeout(promise,ms=15000){
-  return Promise.race([
-    promise,
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error("Tempo de conexão excedido. Tente novamente.")),ms))
-  ]);
+async function withTimeout(promise,ms=15000){
+  let timer;
+  try{
+    return await Promise.race([
+      promise,
+      new Promise((_,rej)=>{timer=setTimeout(()=>rej(new Error("Tempo de conexão excedido. Tente novamente.")),ms)})
+    ]);
+  }finally{clearTimeout(timer)}
+}
+function authRedirect({recovery=false}={}){
+  const url=new URL(C.appUrl||location.origin);
+  if(inviteToken)url.searchParams.set("invite",inviteToken);
+  if(recovery)url.searchParams.set("recovery","1");
+  return url.href;
+}
+function authMessage(error){
+  const code=error?.code||"";
+  if(code==="email_not_confirmed")return "Confirme seu e-mail ou use Reenviar confirmação.";
+  if(code==="over_email_send_rate_limit"||code==="over_request_rate_limit")return "Limite de tentativas atingido. Aguarde alguns minutos e tente novamente.";
+  if(code==="email_address_not_authorized"||code==="email_address_not_allowed")return "O serviço de e-mail ainda não está liberado para este endereço. Contate o administrador.";
+  if(code==="unexpected_failure"||code==="email_send_failed")return "Não foi possível enviar o e-mail. Tente mais tarde ou contate o administrador.";
+  return error?.message||"Não foi possível concluir a autenticação.";
+}
+
+// URL detection is deliberately manual: capture the callback before cleaning it,
+// and use the same handler for confirmation, Google and password recovery.
+async function consumeAuthCallback(){
+  try{
+    if(initialHash.get("error")||initialUrl.searchParams.get("error")){
+      throw new Error("O link de acesso expirou ou a autorização foi cancelada. Tente novamente.");
+    }
+    const access_token=initialHash.get("access_token");
+    const refresh_token=initialHash.get("refresh_token");
+    const code=initialUrl.searchParams.get("code");
+    let result;
+    if(access_token&&refresh_token){
+      result=await withTimeout(client.auth.setSession({access_token,refresh_token}),10000);
+    }else if(code){
+      result=await withTimeout(client.auth.exchangeCodeForSession(code),10000);
+    }else if(access_token||refresh_token){
+      throw new Error("Link de acesso incompleto. Solicite um novo link.");
+    }else{return null}
+    if(result.error)throw result.error;
+    if(!result.data?.session)throw new Error("Não foi possível validar a sessão deste link.");
+    return result.data.session;
+  }finally{cleanUrl()}
+}
+
+async function configureGoogleButton(){
+  const button=document.getElementById("googleLoginBtn");
+  try{
+    const response=await fetch(C.supabaseUrl+"/auth/v1/settings",{
+      headers:{apikey:C.supabasePublishableKey},signal:AbortSignal.timeout(10000)
+    });
+    if(!response.ok)throw new Error("Configuração indisponível");
+    const settings=await response.json();
+    if(!settings.external?.google){button.hidden=true;return}
+    button.hidden=false;
+    button.disabled=false;
+    button.onclick=async()=>{
+      button.disabled=true;
+      status("Abrindo acesso com Google...");
+      try{
+        const {error}=await withTimeout(client.auth.signInWithOAuth({
+          provider:"google",options:{redirectTo:authRedirect(),queryParams:{prompt:"select_account"}}
+        }));
+        if(error)throw error;
+      }catch(error){status(authMessage(error),"error");button.disabled=false}
+    };
+  }catch{button.hidden=true}
 }
 async function rpcAuth(name,body={}){
   const token=state.session?.access_token;
@@ -100,11 +167,13 @@ function renderLogin(tab=inviteToken?"signup":"login"){
       (inviteToken?'<div class="invite-banner"><strong>Você recebeu um convite para uma equipe.</strong><br>Se ainda não tem conta no TASKFORCE, use <b>Criar conta</b> com o mesmo e-mail que recebeu o convite.</div>':'')+
       '<div class="auth-tabs"><button id="tabLogin" class="auth-tab">Entrar</button><button id="tabSignup" class="auth-tab">Criar conta</button></div>'+
       '<div id="authStatus" class="auth-message">Conexão pronta.</div>'+
+      '<button class="ghost" type="button" id="googleLoginBtn" hidden disabled>Continuar com Google</button>'+
       '<form id="loginForm" class="auth-form">'+
         '<label>E-mail<input name="email" type="email" autocomplete="email" required></label>'+
         '<label>Senha<div class="password-wrap"><input id="loginPassword" name="password" type="password" autocomplete="current-password" minlength="8" required><button type="button" id="toggleLoginPassword" class="password-toggle">Mostrar</button></div></label>'+
         '<button class="primary" type="submit">Entrar</button>'+
         '<button class="auth-link" type="button" id="forgotPasswordBtn">Esqueci minha senha</button>'+
+        '<button class="auth-link" type="button" id="resendConfirmationBtn">Reenviar confirmação</button>'+
       '</form>'+
       '<form id="signupForm" class="auth-form">'+
         '<label>E-mail<input name="email" type="email" autocomplete="email" required></label>'+
@@ -120,6 +189,7 @@ function renderLogin(tab=inviteToken?"signup":"login"){
   const signupForm=document.getElementById("signupForm");
   const tabLogin=document.getElementById("tabLogin");
   const tabSignup=document.getElementById("tabSignup");
+  configureGoogleButton();
 
   function switchTab(name){
     const isLogin=name==="login";
@@ -144,6 +214,7 @@ function renderLogin(tab=inviteToken?"signup":"login"){
     const email=String(loginForm.elements.email?.value||"").trim();
     renderForgotPassword(email);
   };
+  document.getElementById("resendConfirmationBtn").onclick=()=>renderResendConfirmation(String(loginForm.elements.email?.value||"").trim());
   togglePassword(document.getElementById("toggleSignupPassword"),document.getElementById("signupPassword"));
   togglePassword(document.getElementById("toggleSignupPassword2"),document.getElementById("signupPassword2"));
 
@@ -161,21 +232,16 @@ function renderLogin(tab=inviteToken?"signup":"login"){
       if(error){
         const lower=String(error.message||"").toLowerCase();
         if(lower.includes("invalid login credentials")) throw new Error(inviteToken?"E-mail ou senha incorretos. Se esta é sua primeira entrada, use a aba Criar conta.":"E-mail ou senha incorretos.");
-        if(lower.includes("email not confirmed")) throw new Error("E-mail ainda não confirmado.");
+        if(lower.includes("email not confirmed")) throw new Error("Confirme seu e-mail ou use Reenviar confirmação.");
         throw error;
       }
       if(!data?.session)throw new Error("Login aceito, mas nenhuma sessão foi criada.");
-      const persisted=await client.auth.setSession({
-        access_token:data.session.access_token,
-        refresh_token:data.session.refresh_token
-      });
-      if(persisted.error)throw persisted.error;
-      const activeSession=persisted.data.session||data.session;
+      const activeSession=data.session;
       state.session=activeSession;
       status("Senha correta. Login confirmado.","success");
       setTimeout(()=>continueAfterLogin(activeSession),350);
     }catch(err){
-      status(err.message||"Falha ao entrar.","error");
+      status(authMessage(err),"error");
       button.disabled=false;
     }
   };
@@ -188,7 +254,7 @@ function renderLogin(tab=inviteToken?"signup":"login"){
     button.disabled=true;
     status("Criando conta...");
     try{
-      const redirectTo=(C.appUrl||location.origin)+(inviteToken?"/?invite="+encodeURIComponent(inviteToken):"");
+      const redirectTo=authRedirect();
       const {data,error}=await withTimeout(client.auth.signUp({
         email:String(f.get("email")).trim(),
         password:String(f.get("password")),
@@ -200,13 +266,34 @@ function renderLogin(tab=inviteToken?"signup":"login"){
         status("Conta criada e login confirmado.","success");
         setTimeout(()=>continueAfterLogin(data.session),350);
       }else{
-        status(inviteToken?"Conta criada. Confirme o e-mail pelo link recebido; depois o TASKFORCE continuará o convite automaticamente.":"Conta criada. Confirme o e-mail e depois use a aba Entrar.","success");
+        renderResendConfirmation(String(f.get("email")).trim());
+        status("Se o cadastro puder ser concluído, você receberá um link de confirmação. Verifique também o spam. Se já possui conta, use Entrar ou Esqueci minha senha.","success");
         button.disabled=false;
       }
     }catch(err){
-      status(err.message||"Falha ao criar conta.","error");
+      status(authMessage(err),"error");
       button.disabled=false;
     }
+  };
+}
+
+function renderResendConfirmation(prefill=""){
+  setGate('<div class="auth-card"><div class="auth-brand"><strong>Confirmar e-mail</strong></div>'+
+    '<div id="authStatus" class="auth-message">Informe seu e-mail para receber um novo link de confirmação.</div>'+
+    '<form id="resendForm" class="auth-form"><label>E-mail<input name="email" type="email" autocomplete="email" value="'+h(prefill)+'" required></label>'+
+    '<button class="primary" type="submit">Reenviar confirmação</button><button class="ghost" type="button" id="resendBack">Voltar ao login</button></form></div>');
+  document.getElementById("resendBack").onclick=()=>renderLogin("login");
+  document.getElementById("resendForm").onsubmit=async event=>{
+    event.preventDefault();
+    const button=event.target.querySelector('button[type="submit"]');
+    button.disabled=true;
+    try{
+      const email=String(new FormData(event.target).get("email")||"").trim();
+      const {error}=await withTimeout(client.auth.resend({type:"signup",email,options:{emailRedirectTo:authRedirect()}}));
+      if(error)throw error;
+      status("Se houver um cadastro pendente para este e-mail, enviaremos um novo link. Verifique também o spam.","success");
+    }catch(error){status(authMessage(error),"error")}
+    finally{button.disabled=false}
   };
 }
 
@@ -231,12 +318,12 @@ function renderForgotPassword(prefill=""){
     button.disabled=true;
     status("Enviando link...");
     try{
-      const redirectTo=(C.appUrl||location.origin)+"/?recovery=1";
+      const redirectTo=authRedirect({recovery:true});
       const {error}=await withTimeout(client.auth.resetPasswordForEmail(email,{redirectTo}));
       if(error)throw error;
       status("Se houver uma conta para este e-mail, o link de recuperação foi enviado. Verifique também a caixa de spam.","success");
     }catch(err){
-      status(err.message||"Não foi possível enviar o link de recuperação.","error");
+      status(authMessage(err),"error");
     }finally{
       button.disabled=false;
     }
@@ -297,30 +384,12 @@ function renderPasswordRecovery(){
 
 async function startPasswordRecovery(){
   try{
-    const access_token=initialHash.get("access_token");
-    const refresh_token=initialHash.get("refresh_token");
-    let session=null;
-    if(access_token&&refresh_token){
-      const {data,error}=await withTimeout(client.auth.setSession({access_token,refresh_token}),10000);
-      if(error)throw error;
-      session=data?.session||null;
-    }else{
-      const code=initialUrl.searchParams.get("code");
-      if(code){
-        const {data,error}=await withTimeout(client.auth.exchangeCodeForSession(code),10000);
-        if(error)throw error;
-        session=data?.session||null;
-      }else{
-        const {data,error}=await withTimeout(client.auth.getSession(),10000);
-        if(error)throw error;
-        session=data?.session||null;
-      }
-    }
+    const session=await consumeAuthCallback();
     if(!session){renderRecoveryExpired();return}
     state.session=session;
     renderPasswordRecovery();
   }catch(err){
-    console.error("Recuperação de senha:",err);
+    console.warn("Não foi possível validar o link de recuperação.");
     renderRecoveryExpired();
   }
 }
@@ -788,15 +857,21 @@ async function start(){
   if(recoveryRequested){await startPasswordRecovery();return}
   setGate('<div class="auth-card"><div class="auth-message">Verificando sessão...</div></div>');
   try{
+    const callbackSession=await consumeAuthCallback();
+    if(callbackSession){await continueAfterLogin(callbackSession);return}
     const {data,error}=await withTimeout(client.auth.getSession(),10000);
     if(error)throw error;
     if(data?.session){await continueAfterLogin(data.session);return}
     renderLogin();
-  }catch{
+  }catch(error){
     renderLogin();
-    status("Não foi possível recuperar uma sessão anterior. Faça login normalmente.","error");
+    status(authMessage(error),"error");
   }
 }
+
+client.auth.onAuthStateChange((_event,session)=>{
+  state.session=session;
+});
 
 window.TASKFORCE_AUTH={client,state,start,logout};
 start();
