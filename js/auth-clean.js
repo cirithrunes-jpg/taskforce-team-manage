@@ -256,6 +256,45 @@ function renderRecoveryExpired(){
   document.getElementById("recoveryBackLogin").onclick=()=>{clearRecoveryUrl();renderLogin("login")};
 }
 
+
+async function recoveryRequest(method,body){
+  const token=state.session?.access_token;
+  if(!token){
+    const err=new Error("Sua sessão de recuperação expirou. Solicite um novo link.");
+    err.recoveryExpired=true;
+    throw err;
+  }
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),15000);
+  try{
+    const response=await fetch(C.supabaseUrl+"/auth/v1/user",{
+      method,
+      headers:{
+        "apikey":C.supabasePublishableKey,
+        "Authorization":"Bearer "+token,
+        "Content-Type":"application/json"
+      },
+      body:body===undefined?undefined:JSON.stringify(body),
+      signal:controller.signal
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok){
+      const err=new Error(response.status===401||response.status===403
+        ?"Sua sessão de recuperação expirou. Solicite um novo link."
+        :data.msg||data.message||data.error_description||"Não foi possível salvar a nova senha.");
+      err.recoveryExpired=response.status===401||response.status===403;
+      throw err;
+    }
+    if(!data?.id)throw new Error("O servidor não confirmou a alteração. Tente novamente.");
+    return data;
+  }catch(err){
+    if(err.name==="AbortError")throw new Error("A conexão demorou demais. Verifique a internet e tente novamente.");
+    throw err;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
 function renderPasswordRecovery(){
   setGate(
     '<div class="auth-card">'+
@@ -281,14 +320,20 @@ function renderPasswordRecovery(){
     button.disabled=true;
     status("Atualizando senha...");
     try{
-      const {error}=await withTimeout(client.auth.updateUser({password}));
-      if(error)throw error;
+      // Use the validated recovery bearer directly. Another tab clearing the
+      // SDK's cached session must not discard this tab's valid recovery link.
+      await recoveryRequest("PUT",{password});
       status("Senha alterada com sucesso. Voltando ao login...","success");
-      await client.auth.signOut();
+      try{await client.auth.signOut()}catch{}
       state.session=null;
       clearRecoveryUrl();
       setTimeout(()=>{renderLogin("login");status("Senha alterada. Entre com a nova senha.","success")},550);
     }catch(err){
+      if(err.recoveryExpired){
+        state.session=null;
+        renderRecoveryExpired();
+        return;
+      }
       status(err.message||"Não foi possível alterar a senha.","error");
       button.disabled=false;
     }
@@ -318,9 +363,13 @@ async function startPasswordRecovery(){
     }
     if(!session){renderRecoveryExpired();return}
     state.session=session;
+    // Check the token against Auth before displaying an editable password form.
+    await recoveryRequest("GET");
+    history.replaceState({},"",location.pathname+"?recovery=1");
     renderPasswordRecovery();
   }catch(err){
-    console.error("Recuperação de senha:",err);
+    // Do not log authentication errors that could contain link details.
+    state.session=null;
     renderRecoveryExpired();
   }
 }
