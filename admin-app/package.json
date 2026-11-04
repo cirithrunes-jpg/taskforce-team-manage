@@ -1,0 +1,11 @@
+{
+  "name": "taskforce-admin",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node ../tests/run-admin-tests.mjs"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12"
+  }
+}

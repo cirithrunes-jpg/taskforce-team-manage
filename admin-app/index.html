@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151b17">
+<meta name="robots" content="noindex,nofollow">
+<title>TaskForce — Administração</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<section id="gate" class="gate">
+  <div class="login-card">
+    <div class="brand"><span class="mark">TF</span><div><strong>TASKFORCE</strong><small>ADMINISTRAÇÃO DA EQUIPE</small></div></div>
+    <h1>Organização em campo.<br>Controle nas suas mãos.</h1>
+    <p>Operadores, agenda e mensalidades. O essencial para cuidar da equipe.</p>
+    <form id="loginForm">
+      <label>E-mail do administrador<input name="email" type="email" autocomplete="username" required></label>
+      <label>Senha<input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Entrar no painel <span aria-hidden="true">↗</span></button>
+    </form>
+    <button id="recover" class="text-button" type="button">Esqueci minha senha</button>
+    <p id="gateStatus" role="status" aria-live="polite">Use sua conta de administrador do TaskForce.</p>
+    <small class="muted">Acesso exclusivo dos administradores. Operadores não precisam criar conta.</small>
+  </div>
+  <div class="login-art" aria-hidden="true"><div class="rings"></div><div class="art-copy"><span>MENOS RUÍDO. MAIS ORGANIZAÇÃO.</span><strong>A equipe conversa.<br>Você organiza.</strong></div><span class="art-footer">TASKFORCE / CENTRAL ADMINISTRATIVA</span></div>
+</section>
+<div id="shell" class="shell" hidden>
+  <aside>
+    <div class="brand"><span class="mark">TF</span><div><strong>TASKFORCE</strong><small>PAINEL ADMINISTRATIVO</small></div></div>
+    <div class="team"><span class="eyebrow">SUA EQUIPE</span><h2 id="teamName">—</h2></div>
+    <nav aria-label="Navegação principal">
+      <button data-view="home" class="selected"><span aria-hidden="true">⌂</span>Início</button>
+      <button data-view="operators"><span aria-hidden="true">◉</span>Operadores</button>
+      <button data-view="agenda"><span aria-hidden="true">▦</span>Agenda</button>
+      <button data-view="finance"><span aria-hidden="true">▤</span>Financeiro</button>
+    </nav>
+    <div class="aside-footer"><button id="install" class="secondary" hidden>Instalar no celular</button><button id="logout" class="text-button">Sair da conta</button><small>Gestão simples. Equipe organizada.</small></div>
+  </aside>
+  <main>
+    <header><div><span class="eyebrow" id="today"></span><h1 id="pageTitle">Visão geral</h1></div><div class="header-tools"><span class="admin-tag">ADMIN</span><button id="refresh" class="secondary">Atualizar</button></div></header>
+    <div id="status" class="notice" role="status" aria-live="polite" hidden></div>
+    <section id="view-home" class="view"></section>
+    <section id="view-operators" class="view" hidden></section>
+    <section id="view-agenda" class="view" hidden></section>
+    <section id="view-finance" class="view" hidden></section>
+    <footer>TaskForce · Administração <span id="sync"></span></footer>
+  </main>
+</div>
+<dialog id="editor"><div class="dialog-head"><h2 id="editorTitle"></h2><button id="closeEditor" class="icon-button" aria-label="Fechar formulário">×</button></div><form id="editForm"></form></dialog>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
+<script src="config.js"></script>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const vm=require("node:vm");
+const path=require("node:path");
+module.exports=function coreTests(root){
+const context={module:{exports:{}}};
+vm.runInNewContext(fs.readFileSync(path.join(root,"admin-app/core.js"),"utf8"),context);
+const c=context.module.exports;
+assert.equal(c.dueDate("2028-02",31),"2028-02-29");
+assert.equal(c.dueDate("2027-02",31),"2027-02-28");
+assert.throws(()=>c.dueDate("2026-13",1));
+assert.equal(c.localDate(new Date("2026-11-05T01:00:00Z")),"2026-11-04");
+assert.equal(c.financeSummary([{amount:.1,status:"paid"},{amount:.2,status:"paid"}]).paidCents,30);
+assert.equal(c.financeSummary([{amount:40,status:"pending"},{amount:999,status:"exempt"}]).pendingCents,4000);
+assert.equal(c.esc('<img onerror="x">'),"&lt;img onerror=&quot;x&quot;&gt;");
+const ops=c.mergeOperators([{user_id:"u",member_role:"operator",name:"Antigo"},{user_id:"a",member_role:"admin"}],[{id:"r",data:{source_user_id:"u",name:"Novo"}},{id:"m",data:{name:"Manual"}}]);
+assert.equal(ops.length,2);
+assert.equal(ops.find(x=>x.key==="user:u").data.name,"Novo");
+assert.equal(ops.find(x=>x.key==="user:u").recordId,"r");
+return 10;
+};
