@@ -1,0 +1,13 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {createRequire} from "node:module";
+import {runTests} from "./admin-app-flows.mjs";
+import coreTests from "./admin-app-core.cjs";
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
+const require=createRequire(new URL("../admin-app/package.json",import.meta.url));
+const {parseHTML}=require("linkedom");
+const files={};
+for(const name of ["index.html","config.js","core.js","app.js"])files["admin-app/"+name]=await fs.readFile(path.join(root,"admin-app",name),"utf8");
+console.log(coreTests(root)+" core checks passed");
+for(const name of await runTests(parseHTML,files))console.log("PASS "+name);
